@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spin. Solve. Survive. (DSA Patterns: LeetCode Practice)</title>
+<style>
+:root{--bg:#f6f7f4;--surface:#fff;--ink:#1d2421;--muted:#5d6762;--line:#d9ddd6;--accent:#1f6f5c;
+--easy:#1a7f4b;--easy-bg:#dff3e7;--med:#8a5a00;--med-bg:#fbefcf;--hard:#b3261e;--hard-bg:#fbe0dd;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a18;--surface:#1c2421;--ink:#e8ede9;--muted:#9aa6a0;--line:#2e3834;--accent:#5fc3a8;
+--easy:#6fd49b;--easy-bg:#1d3a2a;--med:#f0c56a;--med-bg:#3b3118;--hard:#ff8f86;--hard-bg:#41201d}}
+:root[data-theme="dark"]{--bg:#141a18;--surface:#1c2421;--ink:#e8ede9;--muted:#9aa6a0;--line:#2e3834;--accent:#5fc3a8;--easy:#6fd49b;--easy-bg:#1d3a2a;--med:#f0c56a;--med-bg:#3b3118;--hard:#ff8f86;--hard-bg:#41201d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+main{max-width:760px;margin:0 auto;padding:32px 18px 56px}
+h1{font-size:1.9rem;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 28px}
+section{margin-bottom:30px}
+h2{font-size:1.2rem;margin:0 0 4px;color:var(--accent)}
+.note{color:var(--muted);font-size:.9rem;margin:0 0 10px}
+ul{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+li:last-child{border-bottom:0}
+a{color:var(--ink);text-decoration:none;font-weight:500}
+a:hover{text-decoration:underline;color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+.tag{flex:none;font-size:.8rem;font-weight:600;padding:2px 10px;border-radius:999px}
+.Easy{color:var(--easy);background:var(--easy-bg)}
+.Medium{color:var(--med);background:var(--med-bg)}
+.Hard{color:var(--hard);background:var(--hard-bg)}
+.tip{color:var(--muted);font-size:.82rem;font-weight:400}
+li{flex-wrap:wrap}li>a{flex:1}.num{flex:none;min-width:28px;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.85rem}li.hit{background:var(--easy-bg)}.sim{display:none;width:100%;padding:2px 0 0 40px;font-size:.88rem;color:var(--muted)}.show-sim .sim{display:block}.sim a{font-weight:400;margin-left:8px}.sim .tag{font-size:.7rem;padding:0 7px;margin-left:6px}.psim{display:none;margin-top:8px}.show-sim .psim{display:block}.psim a{font-weight:400;margin-right:6px}.psim .tag{font-size:.7rem;padding:0 7px;margin-right:12px}.top{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:28px}.top h2{margin:14px 0 6px}.top h2:first-child{margin-top:0}.slot,.rule{padding:6px 0;border-bottom:1px solid var(--line)}.slot b{display:inline-block;min-width:64px;color:var(--accent)}.wheelbox{position:relative;width:320px;max-width:100%;margin:14px auto}.wheelbox canvas{width:100%;height:auto;display:block;border-radius:50%;transition:transform 4s cubic-bezier(.2,.7,.2,1)}.ptr{position:absolute;top:-8px;left:50%;transform:translateX(-50%);border-left:10px solid transparent;border-right:10px solid transparent;border-top:22px solid var(--hard);z-index:2}.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin:8px 0}button{font:inherit;padding:8px 16px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}button.ghost{background:transparent;color:var(--accent)}select{font:inherit;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}.clock{font-size:2.4rem;font-weight:700;text-align:center;font-variant-numeric:tabular-nums}#panel{text-align:center;margin-top:8px}#panel h2{margin:0 0 10px}#panel h2 a{color:var(--accent);text-decoration:underline}a.go{display:inline-block;padding:10px 20px;border-radius:8px;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none}a.go:hover{color:var(--bg);opacity:.9;text-decoration:none}
+</style>
+</head>
+<body>
+<main>
+<h1>Spin. Solve. Survive. (DSA Patterns: LeetCode Practice)</h1>
+<p class="sub">Seven patterns, each problem numbered and linked to LeetCode with its difficulty.</p>
+<div class='top'>
+<h2>Time slots (Learning)</h2>
+<div class='slot'><b>Slot 1</b> Concepts (No Memorization)</div>
+<div class='slot'><b>Slot 2</b> Coding, Syntax, Implementation</div>
+<div class='slot'><b>Slot 3</b> R/R/R: Repetition, Revision, Recall</div>
+<div class='slot'><b>Slot 4</b> Beyond Your Capacity</div>
+<h2>Guidelines (For Test Your Skills)</h2>
+<div class='rule'>1. Spin the wheel and take the number it lands on.</div>
+<div class='rule'>2. The timer starts when the wheel stops. Set 30 minutes at most.</div>
+<div class='rule'>3. Think first, then analyse, then complete the solution.</div>
+<div class='rule'>4. Produce all the answers inside the time.</div>
+<div class='rule'>5. Turn on similar problems to also solve 2 related problems for each one.</div>
+<div class='rule'>6. Do not copy and paste the code.</div>
+<div class='rule'>7. Do not run to the solutions.</div>
+<h2>Spin the wheel</h2>
+<div class='wheelbox'><div class='ptr'></div><canvas id='wheel' width='320' height='320'></canvas></div>
+<div class='ctrl'><button id='spin'>Spin</button><label>Timer <select id='mins'><option>10</option><option>15</option><option>20</option><option>25</option><option selected>30</option></select> min</label><label><input type='checkbox' id='simToggle'> Include similar problems</label></div>
+<div id='panel'></div>
+<div class='clock' id='clock'>30:00</div>
+<div class='ctrl'><button class='ghost' id='pause'>Pause</button><button class='ghost' id='reset'>Reset</button></div>
+</div>
+
+<section>
+<h2>Two Pointers</h2>
+<ul>
+<li><a href="https://leetcode.com/problems/3sum/" target="_blank" rel="noopener">Three Sum</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/remove-duplicates-from-sorted-array/" target="_blank" rel="noopener">Remove Duplicates from Sorted Array</a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/trapping-rain-water/" target="_blank" rel="noopener">Trapping Rain Water</a><span class="tag Hard">Hard</span></li>
+<li><a href="https://leetcode.com/problems/container-with-most-water/" target="_blank" rel="noopener">Container With Most Water</a><span class="tag Medium">Medium</span></li>
+</ul>
+</section>
+
+<section>
+<h2>Sliding Window</h2>
+<ul>
+<li><a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank" rel="noopener">Longest Substring Without Repeating Characters</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/fruit-into-baskets/" target="_blank" rel="noopener">Fruits Into Baskets</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/longest-repeating-character-replacement/" target="_blank" rel="noopener">Longest Repeating Character Replacement</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/permutation-in-string/" target="_blank" rel="noopener">Permutation in String</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/minimum-window-substring/" target="_blank" rel="noopener">Minimum Window Substring</a><span class="tag Hard">Hard</span></li>
+<li><a href="https://leetcode.com/problems/sliding-window-maximum/" target="_blank" rel="noopener">Sliding Window Maximum</a><span class="tag Hard">Hard</span></li>
+</ul>
+</section>
+
+<section>
+<h2>Binary Search</h2>
+<ul>
+<li><a href="https://leetcode.com/problems/search-in-rotated-sorted-array/" target="_blank" rel="noopener">Search in Rotated Sorted Array</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/" target="_blank" rel="noopener">Find Minimum in Rotated Sorted Array</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/search-a-2d-matrix/" target="_blank" rel="noopener">Search a 2D Matrix</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/koko-eating-bananas/" target="_blank" rel="noopener">Koko Eating Bananas</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/time-based-key-value-store/" target="_blank" rel="noopener">Time Based Key-Value Store</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/magnetic-force-between-two-balls/" target="_blank" rel="noopener">Magnetic Force Between Two Balls <span class="tip">(Aggressive Cows)</span></a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/split-array-largest-sum/" target="_blank" rel="noopener">Split Array Largest Sum <span class="tip">(Book Allocation)</span></a><span class="tag Hard">Hard</span></li>
+<li><a href="https://leetcode.com/problems/median-of-two-sorted-arrays/" target="_blank" rel="noopener">Median of Two Sorted Arrays</a><span class="tag Hard">Hard</span></li>
+</ul>
+</section>
+
+<section>
+<h2>Hashing</h2>
+<ul>
+<li><a href="https://leetcode.com/problems/two-sum/" target="_blank" rel="noopener">Two Sum</a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/valid-anagram/" target="_blank" rel="noopener">Valid Anagram</a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/longest-consecutive-sequence/" target="_blank" rel="noopener">Longest Consecutive Sequence</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/subarray-sum-equals-k/" target="_blank" rel="noopener">Subarray Sum Equals K</a><span class="tag Medium">Medium</span></li>
+</ul>
+</section>
+<section>
+<h2>Stack and Queue</h2>
+<ul>
+<li><a href="https://leetcode.com/problems/valid-parentheses/" target="_blank" rel="noopener">Valid Parentheses</a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/min-stack/" target="_blank" rel="noopener">Min Stack</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/evaluate-reverse-polish-notation/" target="_blank" rel="noopener">Evaluate Reverse Polish Notation</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/next-greater-element-i/" target="_blank" rel="noopener">Next Greater Element I</a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/daily-temperatures/" target="_blank" rel="noopener">Daily Temperatures</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/car-fleet/" target="_blank" rel="noopener">Car Fleet</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/largest-rectangle-in-histogram/" target="_blank" rel="noopener">Largest Rectangle in Histogram</a><span class="tag Hard">Hard</span></li>
+<li><a href="https://leetcode.com/problems/implement-queue-using-stacks/" target="_blank" rel="noopener">Implement Queue Using Stacks</a><span class="tag Easy">Easy</span></li>
+</ul>
+</section>
+<section>
+<h2>Linked List</h2>
+<ul>
+<li><a href="https://leetcode.com/problems/reverse-linked-list/" target="_blank" rel="noopener">Reverse Linked List</a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/linked-list-cycle/" target="_blank" rel="noopener">Linked List Cycle <span class="tip">(Detect Cycle)</span></a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/middle-of-the-linked-list/" target="_blank" rel="noopener">Middle of the Linked List <span class="tip">(Find Middle)</span></a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/merge-two-sorted-lists/" target="_blank" rel="noopener">Merge Two Sorted Lists</a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/palindrome-linked-list/" target="_blank" rel="noopener">Palindrome Linked List</a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/intersection-of-two-linked-lists/" target="_blank" rel="noopener">Intersection of Two Linked Lists</a><span class="tag Easy">Easy</span></li>
+<li><a href="https://leetcode.com/problems/remove-nth-node-from-end-of-list/" target="_blank" rel="noopener">Remove Nth Node From End of List</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/reorder-list/" target="_blank" rel="noopener">Reorder List</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/copy-list-with-random-pointer/" target="_blank" rel="noopener">Copy List With Random Pointer</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/add-two-numbers/" target="_blank" rel="noopener">Add Two Numbers</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/find-the-duplicate-number/" target="_blank" rel="noopener">Find the Duplicate Number</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/lru-cache/" target="_blank" rel="noopener">LRU Cache</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/merge-k-sorted-lists/" target="_blank" rel="noopener">Merge K Sorted Lists</a><span class="tag Hard">Hard</span></li>
+<li><a href="https://leetcode.com/problems/reverse-nodes-in-k-group/" target="_blank" rel="noopener">Reverse Nodes in K-Group</a><span class="tag Hard">Hard</span></li>
+</ul>
+</section>
+<section>
+<h2>Recursion - Stack - Backtracking</h2>
+<ul>
+<li><a href="https://leetcode.com/problems/combination-sum/" target="_blank" rel="noopener">Combination Sum</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/combinations/" target="_blank" rel="noopener">Combinations</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/permutations/" target="_blank" rel="noopener">Permutations</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/permutations-ii/" target="_blank" rel="noopener">Permutations II</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/subsets/" target="_blank" rel="noopener">Subsets</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/combination-sum-ii/" target="_blank" rel="noopener">Combination Sum II</a><span class="tag Medium">Medium</span></li>
+<li><a href="https://leetcode.com/problems/combination-sum-iii/" target="_blank" rel="noopener">Combination Sum III</a><span class="tag Medium">Medium</span></li>
+</ul>
+</section>
+</main>
+<script>
+(function(){var S={'3sum':'3sum-closest:M,4sum:M','remove-duplicates-from-sorted-array':'remove-element:E,remove-duplicates-from-sorted-array-ii:M','trapping-rain-water':'product-of-array-except-self:M,trapping-rain-water-ii:H','container-with-most-water':'two-sum-ii-input-array-is-sorted:M,valid-palindrome:E','longest-substring-without-repeating-characters':'minimum-size-subarray-sum:M,longest-substring-with-at-least-k-repeating-characters:M','fruit-into-baskets':'max-consecutive-ones-iii:M,longest-subarray-of-1s-after-deleting-one-element:M','longest-repeating-character-replacement':'maximum-points-you-can-obtain-from-cards:M,get-equal-substrings-within-budget:M','permutation-in-string':'find-all-anagrams-in-a-string:M,substring-with-concatenation-of-all-words:H','minimum-window-substring':'smallest-range-covering-elements-from-k-lists:H,subarrays-with-k-different-integers:H','sliding-window-maximum':'sliding-window-median:H,shortest-subarray-with-sum-at-least-k:H','search-in-rotated-sorted-array':'search-in-rotated-sorted-array-ii:M,find-peak-element:M','find-minimum-in-rotated-sorted-array':'find-minimum-in-rotated-sorted-array-ii:H,binary-search:E','search-a-2d-matrix':'search-a-2d-matrix-ii:M,kth-smallest-element-in-a-sorted-matrix:M','koko-eating-bananas':'capacity-to-ship-packages-within-d-days:M,minimum-number-of-days-to-make-m-bouquets:M','time-based-key-value-store':'snapshot-array:M,find-first-and-last-position-of-element-in-sorted-array:M','magnetic-force-between-two-balls':'maximum-candies-allocated-to-k-children:M,find-the-smallest-divisor-given-a-threshold:M','split-array-largest-sum':'minimized-maximum-of-products-distributed-to-any-store:M,minimum-time-to-complete-trips:M','median-of-two-sorted-arrays':'find-k-th-smallest-pair-distance:H,sqrtx:E','two-sum':'contains-duplicate:E,two-sum-iv-input-is-a-bst:E','valid-anagram':'group-anagrams:M,ransom-note:E','longest-consecutive-sequence':'missing-number:E,first-missing-positive:H','subarray-sum-equals-k':'continuous-subarray-sum:M,contiguous-array:M','valid-parentheses':'generate-parentheses:M,longest-valid-parentheses:H','min-stack':'design-a-stack-with-increment-operation:M,implement-stack-using-queues:E','evaluate-reverse-polish-notation':'basic-calculator-ii:M,basic-calculator:H','next-greater-element-i':'next-greater-element-ii:M,online-stock-span:M','daily-temperatures':'remove-k-digits:M,132-pattern:M','car-fleet':'car-fleet-ii:H,asteroid-collision:M','largest-rectangle-in-histogram':'maximal-rectangle:H,sum-of-subarray-minimums:M','implement-queue-using-stacks':'design-circular-queue:M,number-of-recent-calls:E','reverse-linked-list':'reverse-linked-list-ii:M,swap-nodes-in-pairs:M','linked-list-cycle':'linked-list-cycle-ii:M,happy-number:E','middle-of-the-linked-list':'delete-the-middle-node-of-a-linked-list:M,maximum-twin-sum-of-a-linked-list:M','merge-two-sorted-lists':'merge-sorted-array:E,sort-list:M','palindrome-linked-list':'palindrome-number:E,odd-even-linked-list:M','intersection-of-two-linked-lists':'remove-linked-list-elements:E,remove-duplicates-from-sorted-list:E','remove-nth-node-from-end-of-list':'remove-duplicates-from-sorted-list-ii:M,rotate-list:M','reorder-list':'partition-list:M,sort-list:M','copy-list-with-random-pointer':'clone-graph:M,flatten-a-multilevel-doubly-linked-list:M','add-two-numbers':'add-two-numbers-ii:M,multiply-strings:M','find-the-duplicate-number':'linked-list-cycle-ii:M,find-all-duplicates-in-an-array:M','lru-cache':'lfu-cache:H,design-linked-list:M','merge-k-sorted-lists':'kth-largest-element-in-an-array:M,find-k-pairs-with-smallest-sums:M','reverse-nodes-in-k-group':'reverse-nodes-in-even-length-groups:M,reverse-linked-list-ii:M','combination-sum':'letter-combinations-of-a-phone-number:M,coin-change:M','combinations':'letter-combinations-of-a-phone-number:M,generate-parentheses:M','permutations':'next-permutation:M,permutation-sequence:H','permutations-ii':'letter-tile-possibilities:M,next-permutation:M','subsets':'subsets-ii:M,letter-case-permutation:M','combination-sum-ii':'combination-sum-iv:M,target-sum:M','combination-sum-iii':'palindrome-partitioning:M,n-queens:H'};
+var D={E:'Easy',M:'Medium',H:'Hard'};
+function nm(s){return s.split('-').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1)}).join(' ').replace(' Iii',' III').replace(' Ii',' II').replace(' Iv',' IV').replace('Bst','BST')}
+function sim(slug){var o='';(S[slug]||'').split(',').forEach(function(p){if(!p)return;var x=p.split(':');o+=`<a href='https://leetcode.com/problems/${x[0]}/' target='_blank' rel='noopener'>${nm(x[0])}</a><span class='tag ${D[x[1]]}'>${D[x[1]]}</span>`});return o}
+var rank={Easy:0,Medium:1,Hard:2};[].slice.call(document.querySelectorAll('section ul')).forEach(function(u){var l=[].slice.call(u.children);l.sort(function(a,b){return rank[a.querySelector('.tag').textContent]-rank[b.querySelector('.tag').textContent]});l.forEach(function(x){u.appendChild(x)})});
+var items=[].slice.call(document.querySelectorAll('section li')),N=items.length,P=[];
+items.forEach(function(li,i){var a=li.querySelector('a'),slug=a.href.split('/problems/')[1].split('/')[0],t=li.querySelector('.tag').textContent;var n=document.createElement('span');n.className='num';n.textContent=i+1;li.insertBefore(n,a);var d=document.createElement('div');d.className='sim';d.innerHTML='Similar: '+sim(slug);li.appendChild(d);P.push({li:li,slug:slug,name:a.firstChild.textContent.trim(),href:a.href,diff:t})});
+var cv=document.getElementById('wheel'),c=cv.getContext('2d'),R=160,s=2*Math.PI/N;
+for(var i=0;i<N;i++){c.beginPath();c.moveTo(R,R);c.arc(R,R,R-2,-Math.PI/2+i*s,-Math.PI/2+(i+1)*s);c.closePath();c.fillStyle=i%2?'#1f6f5c':'#2f8f78';c.fill();c.save();c.translate(R,R);c.rotate(-Math.PI/2+(i+.5)*s);c.fillStyle='#fff';c.font='9px sans-serif';c.textAlign='right';c.fillText(i+1,R-10,3);c.restore()}
+var rot=0,busy=false,left=0,iv=null,clock=document.getElementById('clock'),mins=document.getElementById('mins'),pb=document.getElementById('pause'),panel=document.getElementById('panel');
+function pad(n){return n<10?'0'+n:''+n}
+function draw(){clock.textContent=pad(Math.floor(left/60))+':'+pad(left%60)}
+function tick(){left--;draw();if(left<=0){clearInterval(iv);iv=null;clock.textContent='Time is up'}}
+function start(){clearInterval(iv);left=+mins.value*60;draw();iv=setInterval(tick,1000);pb.textContent='Pause'}
+function show(t){var p=P[t];P.forEach(function(q){q.li.classList.remove('hit')});p.li.classList.add('hit');panel.innerHTML=`<h2>#${t+1} <a href='${p.href}' target='_blank' rel='noopener'>${p.name}</a> <span class='tag ${p.diff}'>${p.diff}</span></h2><a class='go' href='${p.href}' target='_blank' rel='noopener'>Open on LeetCode</a><div class='psim'>Similar: ${sim(p.slug)}</div>`}
+document.getElementById('spin').onclick=function(){if(busy)return;busy=true;clearInterval(iv);iv=null;var t=Math.floor(Math.random()*N),deg=360/N;rot=Math.ceil(rot/360)*360+1800+((360-(t+.5)*deg)%360);cv.style.transform='rotate('+rot+'deg)';cv.dataset.t=t};
+cv.addEventListener('transitionend',function(){if(!busy)return;busy=false;show(+cv.dataset.t);start()});
+pb.onclick=function(){if(iv){clearInterval(iv);iv=null;pb.textContent='Resume'}else if(left>0){iv=setInterval(tick,1000);pb.textContent='Pause'}};
+document.getElementById('reset').onclick=function(){clearInterval(iv);iv=null;left=+mins.value*60;draw();pb.textContent='Pause'};
+mins.onchange=function(){if(!iv){left=+mins.value*60;draw()}};
+document.getElementById('simToggle').onchange=function(){document.body.classList.toggle('show-sim',this.checked)};
+left=1800;draw();})();
+</script>
+</body>
+</html>
