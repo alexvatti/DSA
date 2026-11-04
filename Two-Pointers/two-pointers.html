@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>👉👈 Two Pointers — Visual Playground</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>👉👈 Two Pointers</h1>
+    <p class="subtitle">An interactive, animated playground to <em>see</em> how the pattern works</p>
+  </header>
+
+  <!-- Intro -->
+  <section class="intro card">
+    <h2>🤔 What is the Two Pointers technique?</h2>
+    <p>
+      The two-pointer pattern uses <strong>two variables</strong> (usually called
+      <code>left</code> and <code>right</code>) that move through an array or string from
+      different positions. Instead of checking every possible pair with two nested loops
+      (<code>O(n²)</code>), the pointers move toward each other based on a condition — cutting
+      the time complexity down to <strong>O(n)</strong> with <strong>O(1)</strong> space.
+    </p>
+
+    <div class="info-cards">
+      <div class="info-card when">
+        <h3>✅ When to use it</h3>
+        <ul>
+          <li>The input is <strong>sorted</strong></li>
+          <li>You need to find a <strong>pair or triplet</strong> that meets a condition</li>
+          <li>You're comparing elements from <strong>both ends</strong> of an array</li>
+          <li>You must <strong>modify an array in place</strong> / remove items</li>
+        </ul>
+      </div>
+      <div class="info-card idea">
+        <h3>💡 Key idea</h3>
+        <p>
+          Instead of brute-forcing every pair (<code>O(n²)</code>), two pointers move toward
+          each other based on a rule. If the current state is too small, move one pointer up;
+          too big, move the other down. This steers you to the answer in a single pass.
+        </p>
+      </div>
+      <div class="info-card spot">
+        <h3>🔍 How to spot it</h3>
+        <p>
+          If the problem mentions a <strong>"sorted array"</strong> and asks you to find a
+          <strong>pair</strong> or group of elements — think <strong>two pointers first</strong>.
+          Comparing front vs back? Also two pointers.
+        </p>
+      </div>
+    </div>
+    <div class="style-grid">
+      <div class="style-box">
+        <h3>↔️ Opposite Ends (Converging)</h3>
+        <p>Pointers start at both ends and move toward each other.</p>
+        <div class="mini-demo">
+          <span class="mini-cell">A</span><span class="mini-cell">B</span>
+          <span class="mini-cell">C</span><span class="mini-cell">D</span>
+          <span class="mini-cell">E</span>
+          <div class="mini-arrows">
+            <span class="mini-arrow left">▲ L →</span>
+            <span class="mini-arrow right">← R ▲</span>
+          </div>
+        </div>
+        <p class="use-case">Palindrome · Two Sum · Container · Rain Water</p>
+      </div>
+      <div class="style-box">
+        <h3>➡️ Same Direction (Slow &amp; Fast)</h3>
+        <p>Both start on the left; slow writes, fast scans ahead.</p>
+        <div class="mini-demo">
+          <span class="mini-cell">A</span><span class="mini-cell">A</span>
+          <span class="mini-cell">B</span><span class="mini-cell">C</span>
+          <span class="mini-cell">C</span>
+          <div class="mini-arrows same">
+            <span class="mini-arrow slow">▲ slow</span>
+            <span class="mini-arrow fast">▲ fast →</span>
+          </div>
+        </div>
+        <p class="use-case">Remove Duplicates · In-place edits</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="palindrome">1 · Valid Palindrome</button>
+    <button class="tab" data-tab="twosum">2 · Two Sum (sorted)</button>
+    <button class="tab" data-tab="threesum">3 · 3Sum</button>
+    <button class="tab" data-tab="container">4 · Container Water</button>
+    <button class="tab" data-tab="rain">5 · Trapping Rain</button>
+    <button class="tab" data-tab="dedupe">6 · Remove Duplicates</button>
+  </nav>
+
+  <!-- ============ 1. VALID PALINDROME ============ -->
+  <section class="panel active card" id="panel-palindrome">
+    <h2>1 · Valid Palindrome <span class="badge ends">↔️ Opposite Ends</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/valid-palindrome/" target="_blank" rel="noopener">🔗 LeetCode 125</a>
+      <span class="diff easy">Easy</span>
+    </p>
+    <p class="desc">
+      Compare front vs back. Skip non-alphanumeric characters, lowercase everything,
+      and check that <code>left</code> always matches <code>right</code> while moving inward.
+    </p>
+    <ol class="steps">
+      <li>Put <code>left</code> at the start, <code>right</code> at the end.</li>
+      <li>Skip any character that is <strong>not</strong> a letter/number.</li>
+      <li>Compare <code>left</code> vs <code>right</code> (lowercased). Mismatch → not a palindrome.</li>
+      <li>Move both pointers inward and repeat until they meet.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">is_palindrome</span>(s):
+    left, right = <span class="nm">0</span>, <span class="fn">len</span>(s) - <span class="nm">1</span>
+    <span class="kw">while</span> left &lt; right:
+        <span class="kw">while</span> left &lt; right <span class="kw">and not</span> s[left].isalnum():
+            left += <span class="nm">1</span>
+        <span class="kw">while</span> left &lt; right <span class="kw">and not</span> s[right].isalnum():
+            right -= <span class="nm">1</span>
+        <span class="kw">if</span> s[left].lower() != s[right].lower():
+            <span class="kw">return False</span>
+        left += <span class="nm">1</span>
+        right -= <span class="nm">1</span>
+    <span class="kw">return True</span></code></pre>
+    </details>
+    <div class="controls">
+      <label>Input:
+        <input type="text" id="pal-input" value="A man, a plan, a canal: Panama" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="pal">Load</button>
+      <button class="btn" data-action="prev" data-vis="pal">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="pal">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="pal">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="pal">⟲ Reset</button>
+    </div>
+    <div class="stage" id="pal-stage"></div>
+    <div class="log" id="pal-log"></div>
+  </section>
+
+  <!-- ============ 2. TWO SUM SORTED ============ -->
+  <section class="panel card" id="panel-twosum">
+    <h2>2 · Two Sum II (sorted) <span class="badge ends">↔️ Opposite Ends</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/" target="_blank" rel="noopener">🔗 LeetCode 167</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">
+      Array is sorted, so move <code>left</code> up if the sum is too small, or
+      <code>right</code> down if the sum is too big — steering toward the target.
+    </p>
+    <ol class="steps">
+      <li>Set <code>left=0</code> (smallest), <code>right=end</code> (largest).</li>
+      <li>Compute <code>sum = nums[left] + nums[right]</code>.</li>
+      <li>Sum too <strong>small</strong>? Move <code>left</code> up. Too <strong>big</strong>? Move <code>right</code> down.</li>
+      <li>Sum equals target → return the pair. 🎯</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">two_sum_sorted</span>(numbers, target):
+    left, right = <span class="nm">0</span>, <span class="fn">len</span>(numbers) - <span class="nm">1</span>
+    <span class="kw">while</span> left &lt; right:
+        s = numbers[left] + numbers[right]
+        <span class="kw">if</span> s == target:
+            <span class="kw">return</span> [left + <span class="nm">1</span>, right + <span class="nm">1</span>]
+        <span class="kw">elif</span> s &lt; target:
+            left += <span class="nm">1</span>   <span class="cm"># need a bigger sum</span>
+        <span class="kw">else</span>:
+            right -= <span class="nm">1</span>  <span class="cm"># need a smaller sum</span>
+    <span class="kw">return</span> []</code></pre>
+    </details>
+    <div class="controls">
+      <label>Array:
+        <input type="text" id="ts-input" value="2, 7, 11, 15" />
+      </label>
+      <label>Target:
+        <input type="number" id="ts-target" value="9" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="ts">Load</button>
+      <button class="btn" data-action="prev" data-vis="ts">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="ts">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="ts">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="ts">⟲ Reset</button>
+    </div>
+    <div class="stage" id="ts-stage"></div>
+    <div class="log" id="ts-log"></div>
+  </section>
+
+  <!-- ============ 3. 3SUM ============ -->
+  <section class="panel card" id="panel-threesum">
+    <h2>3 · 3Sum <span class="badge ends">📌 Fix One + ↔️ Opposite Ends</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/3sum/" target="_blank" rel="noopener">🔗 LeetCode 15</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">
+      Sort first, then <strong>fix</strong> <code>nums[i]</code> and run Two-Sum on the rest to find
+      triplets that sum to <code>0</code>. Duplicates are skipped automatically.
+    </p>
+    <ol class="steps">
+      <li><strong>Sort</strong> the array (unlocks pointers + easy dedup).</li>
+      <li>Fix <code>nums[i]</code>, then find two numbers summing to <code>-nums[i]</code>.</li>
+      <li>Use <code>left=i+1</code>, <code>right=end</code>. Sum&lt;0 → left up; Sum&gt;0 → right down.</li>
+      <li>Sum=0 → record triplet, move both inward, and <strong>skip duplicates</strong>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">three_sum</span>(nums):
+    nums.sort()
+    result = []
+    n = <span class="fn">len</span>(nums)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n):
+        <span class="kw">if</span> i &gt; <span class="nm">0</span> <span class="kw">and</span> nums[i] == nums[i - <span class="nm">1</span>]:
+            <span class="kw">continue</span>
+        <span class="kw">if</span> nums[i] &gt; <span class="nm">0</span>:
+            <span class="kw">break</span>
+        left, right = i + <span class="nm">1</span>, n - <span class="nm">1</span>
+        <span class="kw">while</span> left &lt; right:
+            s = nums[i] + nums[left] + nums[right]
+            <span class="kw">if</span> s == <span class="nm">0</span>:
+                result.append([nums[i], nums[left], nums[right]])
+                left += <span class="nm">1</span>; right -= <span class="nm">1</span>
+                <span class="kw">while</span> left &lt; right <span class="kw">and</span> nums[left] == nums[left - <span class="nm">1</span>]:
+                    left += <span class="nm">1</span>
+                <span class="kw">while</span> left &lt; right <span class="kw">and</span> nums[right] == nums[right + <span class="nm">1</span>]:
+                    right -= <span class="nm">1</span>
+            <span class="kw">elif</span> s &lt; <span class="nm">0</span>:
+                left += <span class="nm">1</span>
+            <span class="kw">else</span>:
+                right -= <span class="nm">1</span>
+    <span class="kw">return</span> result</code></pre>
+    </details>
+    <div class="controls">
+      <label>Array:
+        <input type="text" id="th-input" value="-1, 0, 1, 2, -1, -4" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="th">Load</button>
+      <button class="btn" data-action="prev" data-vis="th">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="th">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="th">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="th">⟲ Reset</button>
+    </div>
+    <div class="stage" id="th-stage"></div>
+    <div class="found" id="th-found"></div>
+    <div class="log" id="th-log"></div>
+  </section>
+
+  <!-- ============ 4. CONTAINER WITH MOST WATER ============ -->
+  <section class="panel card" id="panel-container">
+    <h2>4 · Container With Most Water <span class="badge ends">↔️ Opposite Ends</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/container-with-most-water/" target="_blank" rel="noopener">🔗 LeetCode 11</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">
+      Area = <code>width × min(leftHeight, rightHeight)</code>. Always move the pointer on the
+      <strong>shorter</strong> line — it's the only move that could find a bigger area.
+    </p>
+    <ol class="steps">
+      <li>Start as wide as possible: <code>left=0</code>, <code>right=end</code>.</li>
+      <li>Area = <code>(right−left) × min(height[left], height[right])</code>.</li>
+      <li>Track the maximum area seen so far.</li>
+      <li>Move the pointer at the <strong>shorter</strong> line inward, and repeat.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">max_area</span>(height):
+    left, right = <span class="nm">0</span>, <span class="fn">len</span>(height) - <span class="nm">1</span>
+    best = <span class="nm">0</span>
+    <span class="kw">while</span> left &lt; right:
+        width = right - left
+        current = width * <span class="fn">min</span>(height[left], height[right])
+        best = <span class="fn">max</span>(best, current)
+        <span class="kw">if</span> height[left] &lt; height[right]:
+            left += <span class="nm">1</span>
+        <span class="kw">else</span>:
+            right -= <span class="nm">1</span>
+    <span class="kw">return</span> best</code></pre>
+    </details>
+    <div class="controls">
+      <label>Heights:
+        <input type="text" id="cw-input" value="1, 8, 6, 2, 5, 4, 8, 3, 7" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="cw">Load</button>
+      <button class="btn" data-action="prev" data-vis="cw">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="cw">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="cw">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="cw">⟲ Reset</button>
+    </div>
+    <div class="stage bars-stage" id="cw-stage"></div>
+    <div class="log" id="cw-log"></div>
+  </section>
+
+  <!-- ============ 5. TRAPPING RAIN WATER ============ -->
+  <section class="panel card" id="panel-rain">
+    <h2>5 · Trapping Rain Water <span class="badge ends">↔️ Opposite Ends</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/trapping-rain-water/" target="_blank" rel="noopener">🔗 LeetCode 42</a>
+      <span class="diff hard">Hard</span>
+    </p>
+    <p class="desc">
+      Water over a bar = <code>min(leftMax, rightMax) − height</code>. Always process the
+      <strong>shorter</strong> side, keeping two running maxes.
+    </p>
+    <ol class="steps">
+      <li>Start with <code>left=0</code>, <code>right=end</code>, and <code>leftMax=rightMax=0</code>.</li>
+      <li>Look at the <strong>shorter</strong> side — its wall limits the water level.</li>
+      <li>If the current bar is a new max, update the max (no water trapped here).</li>
+      <li>Otherwise add <code>max − height</code> to the total, then step that pointer inward.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">trap</span>(height):
+    <span class="kw">if not</span> height:
+        <span class="kw">return</span> <span class="nm">0</span>
+    left, right = <span class="nm">0</span>, <span class="fn">len</span>(height) - <span class="nm">1</span>
+    left_max = right_max = water = <span class="nm">0</span>
+    <span class="kw">while</span> left &lt; right:
+        <span class="kw">if</span> height[left] &lt; height[right]:
+            <span class="kw">if</span> height[left] &gt;= left_max:
+                left_max = height[left]
+            <span class="kw">else</span>:
+                water += left_max - height[left]
+            left += <span class="nm">1</span>
+        <span class="kw">else</span>:
+            <span class="kw">if</span> height[right] &gt;= right_max:
+                right_max = height[right]
+            <span class="kw">else</span>:
+                water += right_max - height[right]
+            right -= <span class="nm">1</span>
+    <span class="kw">return</span> water</code></pre>
+    </details>
+    <div class="controls">
+      <label>Heights:
+        <input type="text" id="rw-input" value="0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="rw">Load</button>
+      <button class="btn" data-action="prev" data-vis="rw">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="rw">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="rw">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="rw">⟲ Reset</button>
+    </div>
+    <div class="stage bars-stage" id="rw-stage"></div>
+    <div class="log" id="rw-log"></div>
+  </section>
+
+  <!-- ============ 6. REMOVE DUPLICATES ============ -->
+  <section class="panel card" id="panel-dedupe">
+    <h2>6 · Remove Duplicates (sorted) <span class="badge same">➡️ Slow &amp; Fast</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/remove-duplicates-from-sorted-array/" target="_blank" rel="noopener">🔗 LeetCode 26</a>
+      <span class="diff easy">Easy</span>
+    </p>
+    <p class="desc">
+      <code>slow</code> = write position, <code>fast</code> = scanner. When <code>fast</code> finds a
+      value different from <code>slow</code>, advance <code>slow</code> and copy it there.
+    </p>
+    <ol class="steps">
+      <li><code>slow=0</code> (first element is always unique).</li>
+      <li><code>fast</code> scans from index 1 to the end.</li>
+      <li>If <code>nums[fast] ≠ nums[slow]</code> → new value: <code>slow++</code>, copy it over.</li>
+      <li>If equal → duplicate, just let <code>fast</code> move on. Answer length = <code>slow+1</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">remove_duplicates</span>(nums):
+    <span class="kw">if not</span> nums:
+        <span class="kw">return</span> <span class="nm">0</span>
+    slow = <span class="nm">0</span>
+    <span class="kw">for</span> fast <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="fn">len</span>(nums)):
+        <span class="kw">if</span> nums[fast] != nums[slow]:
+            slow += <span class="nm">1</span>
+            nums[slow] = nums[fast]
+    <span class="kw">return</span> slow + <span class="nm">1</span></code></pre>
+    </details>
+    <div class="controls">
+      <label>Sorted Array:
+        <input type="text" id="dd-input" value="0, 0, 1, 1, 1, 2, 2, 3, 3, 4" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="dd">Load</button>
+      <button class="btn" data-action="prev" data-vis="dd">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="dd">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="dd">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="dd">⟲ Reset</button>
+    </div>
+    <div class="stage" id="dd-stage"></div>
+    <div class="log" id="dd-log"></div>
+  </section>
+
+  <footer class="site-footer">
+    <p>Built for <strong>DSA-Python → Two-Pointers</strong>. Use <em>Play</em> to auto-run or step with <em>Next</em>.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
