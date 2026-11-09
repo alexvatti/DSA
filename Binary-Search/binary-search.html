@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔍 Binary Search — Visual Playground</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>🔍 Binary Search</h1>
+    <p class="subtitle">An interactive, animated playground to <em>see</em> how the pattern works</p>
+  </header>
+
+  <!-- Intro -->
+  <section class="intro card">
+    <h2>🤔 What is Binary Search really about?</h2>
+    <p>
+      Binary search is <strong>not</strong> just about searching a sorted array. Its real power is
+      <strong>search space reduction</strong>: every step throws away half of the possibilities, giving
+      <strong>O(log n)</strong> instead of <code>O(n)</code>.
+    </p>
+
+    <div class="info-cards">
+      <div class="info-card when">
+        <h3>✅ When to use it</h3>
+        <ul>
+          <li>The input is <strong>sorted</strong></li>
+          <li>The search space is <strong>monotonic</strong>: a condition flips from false → true exactly once</li>
+          <li>The problem asks for the <strong>minimum / maximum</strong> value that satisfies a condition</li>
+          <li>You want to turn an <code>O(n)</code> scan into <code>O(log n)</code></li>
+        </ul>
+      </div>
+      <div class="info-card idea">
+        <h3>💡 Key idea</h3>
+        <p>
+          Look at the <strong>middle</strong>. That one comparison tells you which half can't contain
+          the answer, so you drop it and repeat on what's left. After about <code>log₂ n</code> steps
+          only one candidate remains.
+        </p>
+      </div>
+      <div class="info-card spot">
+        <h3>🔍 How to spot it</h3>
+        <p>
+          "Sorted" or "rotated sorted" in the statement? Think binary search first. "Smallest speed /
+          capacity such that…" is binary search on the <strong>answer</strong>. "Latest value at or
+          before X" is a <strong>floor</strong> search.
+        </p>
+      </div>
+    </div>
+
+    <div class="style-grid">
+      <div class="style-box">
+        <h3>📚 Search on the Array</h3>
+        <p>The sorted data is the search space. Pointers close in on an index.</p>
+        <div class="mini-demo">
+          <span class="mini-cell">1</span><span class="mini-cell">3</span>
+          <span class="mini-cell">5</span><span class="mini-cell">7</span>
+          <span class="mini-cell">9</span>
+          <div class="mini-arrows">
+            <span class="mini-arrow left">▲ low</span>
+            <span class="mini-arrow mid">▲ mid</span>
+            <span class="mini-arrow right">high ▲</span>
+          </div>
+        </div>
+        <p class="use-case">Binary Search · 2D Matrix · Rotated Array · Time Store · Median</p>
+      </div>
+      <div class="style-box">
+        <h3>🎯 Search on the Answer</h3>
+        <p>The search space is the range of possible answers. A yes/no check flips once.</p>
+        <div class="mini-demo">
+          <span class="mini-cell no">✗</span><span class="mini-cell no">✗</span>
+          <span class="mini-cell yes">✓</span><span class="mini-cell yes">✓</span>
+          <span class="mini-cell yes">✓</span>
+          <div class="mini-arrows">
+            <span class="mini-arrow left">too small</span>
+            <span class="mini-arrow right">first ✓ is the answer</span>
+          </div>
+        </div>
+        <p class="use-case">Koko Eating Bananas · Aggressive Cows · Book Allocation</p>
+      </div>
+    </div>
+
+    <div class="tip-line">
+      <strong>Loop shape:</strong> exact match → <code>while low &lt;= high</code> and move past mid
+      (<code>mid ± 1</code>). Find a boundary / first true → <code>while low &lt; high</code> and use
+      <code>high = mid</code> so the candidate isn't skipped.
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <nav class="tabs" id="tabs"></nav>
+
+  <!-- Problem panels are built from the PROBLEMS list in script.js -->
+  <div id="panels"></div>
+
+  <footer class="site-footer">
+    <p>Built for <strong>DSA-Python → Binary-Search</strong>. Use <em>Play</em> to auto-run or step with <em>Next</em>. Edit the inputs and press <em>Load</em> to try your own.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
