@@ -254,6 +254,143 @@ function stepsWindowMax(a, k) {
   return st;
 }
 
+/* ============================================================
+   0. Contains Duplicate  (hash set, one pass)
+   ============================================================ */
+function stepsContainsDuplicate(a) {
+  const st = [], seen = new Set();
+  const panels = () => [P('seen (set)', [...seen].map(String))];
+
+  st.push(snap({ arr: a, msg: 'Start: an empty set. Walk through each number once.', panels: panels() }));
+
+  for (let i = 0; i < a.length; i++) {
+    if (seen.has(a[i])) {
+      st.push(snap({ arr: a, right: i, marks: { [i]: 'new' }, panels: panels(),
+        msg: `i = ${i}: ${a[i]} is already in the set → duplicate found! ✅`, result: 'True' }));
+      return st;
+    }
+    seen.add(a[i]);
+    st.push(snap({ arr: a, right: i, marks: { [i]: 'add' }, panels: panels(),
+      msg: `i = ${i}: ${a[i]} is new → add it to the set.` }));
+  }
+  st.push(snap({ arr: a, panels: panels(), msg: 'Walked the whole array with no repeat → all unique.', result: 'False' }));
+  return st;
+}
+
+/* ============================================================
+   1. Contains Duplicate II  (fixed window of size k + set)
+   ============================================================ */
+function stepsContainsDuplicateII(a, k) {
+  const st = [], win = new Set();
+  let left = 0;
+  const panels = () => [P('window (last k values)', [...win].map(String)), P('k', [String(k)])];
+
+  st.push(snap({ arr: a, msg: `Start: keep a set of at most k = ${k} recent values.`, panels: panels() }));
+
+  for (let r = 0; r < a.length; r++) {
+    if (win.has(a[r])) {
+      st.push(snap({ arr: a, left, right: r, win: W(left, r), marks: { [r]: 'new' }, panels: panels(),
+        msg: `right = ${r}: ${a[r]} is already inside the window → duplicate within distance k! ✅`, result: 'True' }));
+      return st;
+    }
+    win.add(a[r]);
+    st.push(snap({ arr: a, left, right: r, win: W(left, r), marks: { [r]: 'add' }, panels: panels(),
+      msg: `right = ${r}: ${a[r]} is new → add it to the window.` }));
+    if (win.size > k) {
+      const out = a[r - k];
+      win.delete(out);
+      left = r - k + 1;
+      st.push(snap({ arr: a, left, right: r, win: W(left, r), marks: { [r - k]: 'out' }, panels: panels(),
+        msg: `Window has more than ${k} values → drop ${out} (index ${r - k}) that fell off the left.` }));
+    }
+  }
+  st.push(snap({ arr: a, panels: panels(), msg: 'Reached the end with no nearby duplicate.', result: 'False' }));
+  return st;
+}
+
+/* ============================================================
+   2. Best Time to Buy and Sell Stock  (buy = left, sell = right)
+   ============================================================ */
+function stepsBuySell(a) {
+  const st = [];
+  let left = 0, best = 0, bestWin = null;
+  const panels = () => [P('buy price (left)', [String(a[left])]), P('max profit', [String(best)])];
+
+  st.push(snap({ arr: a, left: 0, right: 0, marks: { 0: 'add' }, panels: panels(),
+    msg: `Start: buy on day 0 at price ${a[0]}. max profit = 0.` }));
+
+  for (let r = 1; r < a.length; r++) {
+    if (a[r] < a[left]) {
+      left = r;
+      st.push(snap({ arr: a, left, right: r, win: W(left, r), best: bestWin, marks: { [r]: 'new' }, panels: panels(),
+        msg: `day ${r}: price ${a[r]} is a new low → move the buy day here (left = ${r}).` }));
+    } else {
+      const profit = a[r] - a[left];
+      const improved = profit > best;
+      if (improved) { best = profit; bestWin = [left, r]; }
+      st.push(snap({ arr: a, left, right: r, win: W(left, r), best: bestWin, marks: { [r]: 'add' }, panels: panels(),
+        msg: `day ${r}: sell at ${a[r]}, bought at ${a[left]} → profit ${profit}.${improved ? ' New best! 🎉' : ''}` }));
+    }
+  }
+  st.push(snap({ arr: a, best: bestWin, panels: panels(), msg: `Done → maximum profit = ${best}.`, result: String(best) }));
+  return st;
+}
+
+/* ============================================================
+   3. Majority Element  (Boyer–Moore voting)
+   ============================================================ */
+function stepsMajority(a) {
+  const st = [];
+  let candidate = null, count = 0;
+  const panels = () => [P('candidate', [candidate === null ? '—' : String(candidate)]), P('count', [String(count)])];
+
+  st.push(snap({ arr: a, msg: 'Start: no candidate yet, count = 0.', panels: panels() }));
+
+  for (let i = 0; i < a.length; i++) {
+    let note = '';
+    if (count === 0) {
+      candidate = a[i];
+      note = `count was 0 → adopt ${a[i]} as the new candidate. `;
+    }
+    if (a[i] === candidate) { count++; note += `${a[i]} matches candidate → count = ${count}.`; }
+    else { count--; note += `${a[i]} differs → count = ${count}.`; }
+    st.push(snap({ arr: a, right: i, marks: { [i]: a[i] === candidate ? 'add' : 'dup' }, panels: panels(),
+      msg: `i = ${i}: ${note}` }));
+  }
+  st.push(snap({ arr: a, panels: panels(), msg: `Done → the surviving candidate ${candidate} is the majority element.`, result: String(candidate) }));
+  return st;
+}
+
+/* ============================================================
+   4. Most Frequent Even Element  (frequency map + tie-break)
+   ============================================================ */
+function stepsMostFrequentEven(a) {
+  const st = [], count = new Map();
+  let bestVal = -1, bestCount = 0;
+  const panels = () => [P('even counts (value×count)', mapItems(count)),
+    P('best so far', [bestVal === -1 ? 'none' : `${bestVal} (×${bestCount})`])];
+
+  st.push(snap({ arr: a, msg: 'Start: count only the even numbers.', panels: panels() }));
+
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] % 2 === 0) {
+      count.set(a[i], (count.get(a[i]) || 0) + 1);
+      const cnt = count.get(a[i]);
+      const better = cnt > bestCount || (cnt === bestCount && a[i] < bestVal);
+      if (better) { bestVal = a[i]; bestCount = cnt; }
+      st.push(snap({ arr: a, right: i, marks: { [i]: 'add' }, panels: panels(),
+        msg: `i = ${i}: ${a[i]} is even → count = ${cnt}.${better ? ` New best (highest count, smallest value) → ${a[i]}.` : ''}` }));
+    } else {
+      st.push(snap({ arr: a, right: i, marks: { [i]: 'dup' }, panels: panels(),
+        msg: `i = ${i}: ${a[i]} is odd → skip it.` }));
+    }
+  }
+  st.push(snap({ arr: a, panels: panels(),
+    msg: bestVal === -1 ? 'No even numbers found → answer is -1.' : `Done → most frequent even element = ${bestVal}.`,
+    result: String(bestVal) }));
+  return st;
+}
+
 /* ---------- input readers (validate + build steps) ---------- */
 const $ = (id) => document.getElementById(id);
 
@@ -275,6 +412,16 @@ function parseText(str, name, lowerOnly) {
 }
 
 const READERS = {
+  cd: () => stepsContainsDuplicate(parseNums($('cd-input').value)),
+  cd2: () => {
+    const nums = parseNums($('cd2-input').value);
+    const k = parseInt($('cd2-k').value, 10);
+    if (!(k >= 0)) throw new Error('k must be 0 or more.');
+    return stepsContainsDuplicateII(nums, k);
+  },
+  bs: () => stepsBuySell(parseNums($('bs-input').value)),
+  mj: () => stepsMajority(parseNums($('mj-input').value)),
+  fe: () => stepsMostFrequentEven(parseNums($('fe-input').value)),
   ls: () => stepsLongestSubstring(parseText($('ls-input').value, 'String')),
   fb: () => stepsFruits(parseNums($('fb-input').value)),
   cr: () => {
@@ -400,5 +547,6 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = { stepsLongestSubstring, stepsFruits, stepsReplacement, stepsPermutation, stepsMinWindow, stepsWindowMax };
+  module.exports = { stepsContainsDuplicate, stepsContainsDuplicateII, stepsBuySell, stepsMajority, stepsMostFrequentEven,
+    stepsLongestSubstring, stepsFruits, stepsReplacement, stepsPermutation, stepsMinWindow, stepsWindowMax };
 }

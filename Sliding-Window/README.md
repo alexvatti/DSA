@@ -1,6 +1,7 @@
 # 🪟 Sliding Window — Pattern Guide
 
-This folder teaches the **Sliding Window** technique through 6 classic problems.
+This folder teaches the **Sliding Window** technique through a set of classic problems,
+starting from easy warm-ups (hashing / counting) and building up to hard window problems.
 Each file explains the **approach**, **tips to remember**, and a clean **solution** with comments.
 
 ---
@@ -81,6 +82,11 @@ for i in range(len(arr)):
 
 | # | Problem | Difficulty | Window type | Tracks | Notes (MD) | Code |
 |---|---------|-----------|-------------|--------|------------|------|
+| 0 | Contains Duplicate | Easy | None (hash set) | set | [notes](0_contains_duplicate.md) | [`0_contains_duplicate.py`](0_contains_duplicate.py) |
+| 1 | Contains Duplicate II | Easy | Fixed (size k) | set of last k | [notes](1_contains_duplicate_ii.md) | [`1_contains_duplicate_ii.py`](1_contains_duplicate_ii.py) |
+| 2 | Best Time to Buy and Sell Stock | Easy | Variable (buy=left) | min so far | [notes](2_best_time_buy_sell_stock.md) | [`2_best_time_buy_sell_stock.py`](2_best_time_buy_sell_stock.py) |
+| 3 | Majority Element | Easy | None (count / vote) | dict / Boyer-Moore | [notes](3_majority_element.md) | [`3_majority_element.py`](3_majority_element.py) |
+| 4 | Most Frequent Even Element | Easy | None (frequency map) | dict of counts | [notes](4_most_frequent_even_element.md) | [`4_most_frequent_even_element.py`](4_most_frequent_even_element.py) |
 | 5 | Longest Substring Without Repeating Characters | Medium | Variable (longest) | set | [notes](5_longest_substring_no_repeat.md) | [`5_longest_substring_no_repeat.py`](5_longest_substring_no_repeat.py) |
 | 6 | Fruits Into Baskets | Medium | Variable (longest) | dict of counts | [notes](6_fruits_into_baskets.md) | [`6_fruits_into_baskets.py`](6_fruits_into_baskets.py) |
 | 7 | Longest Repeating Character Replacement | Medium | Variable (longest) | dict + max freq | [notes](7_longest_repeating_char_replacement.md) | [`7_longest_repeating_char_replacement.py`](7_longest_repeating_char_replacement.py) |

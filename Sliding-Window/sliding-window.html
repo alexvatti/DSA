@@ -62,7 +62,7 @@
           <span class="mini-cell">E</span>
           <span class="mini-note">K = 3 always, the window just slides →</span>
         </div>
-        <p class="use-case">Permutation in String · Sliding Window Maximum</p>
+        <p class="use-case">Contains Duplicate II · Permutation in String · Sliding Window Maximum</p>
       </div>
       <div class="style-box">
         <h3>↔️ Variable Window</h3>
@@ -73,14 +73,19 @@
           <span class="mini-cell in">E</span>
           <span class="mini-note">grows when valid, shrinks when not</span>
         </div>
-        <p class="use-case">Longest Substring · Fruits · Char Replacement · Min Window</p>
+        <p class="use-case">Buy &amp; Sell Stock · Longest Substring · Fruits · Char Replacement · Min Window</p>
       </div>
     </div>
   </section>
 
   <!-- Tabs -->
   <nav class="tabs" id="tabs">
-    <button class="tab active" data-tab="longest">5 · Longest Substring</button>
+    <button class="tab active" data-tab="dup">0 · Contains Duplicate</button>
+    <button class="tab" data-tab="dup2">1 · Contains Duplicate II</button>
+    <button class="tab" data-tab="buysell">2 · Buy &amp; Sell Stock</button>
+    <button class="tab" data-tab="majority">3 · Majority Element</button>
+    <button class="tab" data-tab="freqeven">4 · Most Frequent Even</button>
+    <button class="tab" data-tab="longest">5 · Longest Substring</button>
     <button class="tab" data-tab="fruits">6 · Fruits Into Baskets</button>
     <button class="tab" data-tab="replace">7 · Char Replacement</button>
     <button class="tab" data-tab="perm">8 · Permutation in String</button>
@@ -88,8 +93,247 @@
     <button class="tab" data-tab="winmax">10 · Window Maximum</button>
   </nav>
 
+  <!-- ============ 0. CONTAINS DUPLICATE ============ -->
+  <section class="panel active card" id="panel-dup">
+    <h2>0 · Contains Duplicate <span class="badge">🔎 Hash Set</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/contains-duplicate/" target="_blank" rel="noopener">🔗 LeetCode 217</a>
+      <span class="diff easy">Easy</span>
+    </p>
+    <p class="desc">
+      The gateway skill for sliding windows: ask <em>"have I seen this value before?"</em> in
+      <code>O(1)</code> using a set. One pass is all it takes.
+    </p>
+    <ol class="steps">
+      <li>Walk through each number once.</li>
+      <li>If the number is <strong>already in the set</strong> → duplicate → return <code>True</code>.</li>
+      <li>Otherwise add it to the set.</li>
+      <li>Finished with no clash → return <code>False</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">contains_duplicate</span>(nums: list[int]) -&gt; bool:
+    seen = <span class="fn">set</span>()
+
+    <span class="kw">for</span> num <span class="kw">in</span> nums:
+        <span class="cm"># Already inside the set -&gt; we found a repeat</span>
+        <span class="kw">if</span> num <span class="kw">in</span> seen:
+            <span class="kw">return</span> <span class="kw">True</span>
+        seen.<span class="fn">add</span>(num)
+
+    <span class="kw">return</span> <span class="kw">False</span></code></pre>
+    </details>
+    <div class="controls">
+      <label>Array:
+        <input type="text" id="cd-input" value="1, 2, 3, 1" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="cd">Load</button>
+      <button class="btn" data-action="prev" data-vis="cd">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="cd">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="cd">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="cd">⟲ Reset</button>
+    </div>
+    <div class="stage" id="cd-stage"></div>
+    <div class="log" id="cd-log"></div>
+  </section>
+
+  <!-- ============ 1. CONTAINS DUPLICATE II ============ -->
+  <section class="panel card" id="panel-dup2">
+    <h2>1 · Contains Duplicate II <span class="badge fixed">📏 Fixed Window</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/contains-duplicate-ii/" target="_blank" rel="noopener">🔗 LeetCode 219</a>
+      <span class="diff easy">Easy</span>
+    </p>
+    <p class="desc">
+      Keep a set of the <strong>last k values</strong>. If the new value is already inside that window,
+      a duplicate exists within distance <code>k</code>.
+    </p>
+    <ol class="steps">
+      <li>Move <code>right</code> forward through the array.</li>
+      <li>If <code>nums[right]</code> is already in the window → duplicate within <code>k</code> → <code>True</code>.</li>
+      <li>Add <code>nums[right]</code> to the window.</li>
+      <li>If the window holds more than <code>k</code> values, drop <code>nums[right − k]</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">contains_nearby_duplicate</span>(nums: list[int], k: int) -&gt; bool:
+    window = <span class="fn">set</span>()
+
+    <span class="kw">for</span> right <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(nums)):
+        <span class="cm"># A match inside the window means distance &lt;= k</span>
+        <span class="kw">if</span> nums[right] <span class="kw">in</span> window:
+            <span class="kw">return</span> <span class="kw">True</span>
+
+        window.<span class="fn">add</span>(nums[right])
+
+        <span class="cm"># Keep the window to at most k elements</span>
+        <span class="kw">if</span> <span class="fn">len</span>(window) &gt; k:
+            window.<span class="fn">remove</span>(nums[right - k])
+
+    <span class="kw">return</span> <span class="kw">False</span></code></pre>
+    </details>
+    <div class="controls">
+      <label>Array:
+        <input type="text" id="cd2-input" value="1, 2, 3, 1" />
+      </label>
+      <label>k:
+        <input type="number" id="cd2-k" value="3" min="0" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="cd2">Load</button>
+      <button class="btn" data-action="prev" data-vis="cd2">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="cd2">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="cd2">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="cd2">⟲ Reset</button>
+    </div>
+    <div class="stage" id="cd2-stage"></div>
+    <div class="log" id="cd2-log"></div>
+  </section>
+
+  <!-- ============ 2. BEST TIME TO BUY AND SELL STOCK ============ -->
+  <section class="panel card" id="panel-buysell">
+    <h2>2 · Best Time to Buy and Sell Stock <span class="badge var">↔️ Variable Window</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/" target="_blank" rel="noopener">🔗 LeetCode 121</a>
+      <span class="diff easy">Easy</span>
+    </p>
+    <p class="desc">
+      Treat <code>left</code> as the <strong>buy day</strong> (cheapest price so far) and <code>right</code>
+      as the <strong>sell day</strong>. Slide <code>right</code> forward and track the best profit.
+    </p>
+    <ol class="steps">
+      <li>Start <code>left = 0</code> (buy on day 0), <code>best = 0</code>.</li>
+      <li>Move <code>right</code> forward.</li>
+      <li>If <code>prices[right] &lt; prices[left]</code> → found a cheaper buy day, slide <code>left</code> here.</li>
+      <li>Otherwise profit = <code>prices[right] − prices[left]</code> → update <code>best</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">max_profit</span>(prices: list[int]) -&gt; int:
+    left = <span class="nm">0</span>            <span class="cm"># buy day (cheapest so far)</span>
+    best = <span class="nm">0</span>
+
+    <span class="kw">for</span> right <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="fn">len</span>(prices)):
+        <span class="kw">if</span> prices[right] &lt; prices[left]:
+            <span class="cm"># Found a cheaper day to buy -&gt; slide the window start</span>
+            left = right
+        <span class="kw">else</span>:
+            <span class="cm"># Sell today against the cheapest buy day</span>
+            best = <span class="fn">max</span>(best, prices[right] - prices[left])
+
+    <span class="kw">return</span> best</code></pre>
+    </details>
+    <div class="controls">
+      <label>Prices:
+        <input type="text" id="bs-input" value="7, 1, 5, 3, 6, 4" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="bs">Load</button>
+      <button class="btn" data-action="prev" data-vis="bs">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="bs">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="bs">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="bs">⟲ Reset</button>
+    </div>
+    <div class="stage" id="bs-stage"></div>
+    <div class="log" id="bs-log"></div>
+  </section>
+
+  <!-- ============ 3. MAJORITY ELEMENT ============ -->
+  <section class="panel card" id="panel-majority">
+    <h2>3 · Majority Element <span class="badge">🗳️ Boyer–Moore Voting</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/majority-element/" target="_blank" rel="noopener">🔗 LeetCode 169</a>
+      <span class="diff easy">Easy</span>
+    </p>
+    <p class="desc">
+      Keep a <code>candidate</code> and a <code>count</code>. Matching votes raise the count, different
+      votes cancel it out. The majority element always survives.
+    </p>
+    <ol class="steps">
+      <li>When <code>count == 0</code> → adopt the current number as the candidate.</li>
+      <li>Same as candidate → <code>count += 1</code>.</li>
+      <li>Different → <code>count −= 1</code>.</li>
+      <li>The final candidate is the majority element.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">majority_element</span>(nums: list[int]) -&gt; int:
+    candidate = <span class="kw">None</span>
+    count = <span class="nm">0</span>
+
+    <span class="kw">for</span> num <span class="kw">in</span> nums:
+        <span class="kw">if</span> count == <span class="nm">0</span>:
+            candidate = num          <span class="cm"># adopt a fresh candidate</span>
+        count += <span class="nm">1</span> <span class="kw">if</span> num == candidate <span class="kw">else</span> -<span class="nm">1</span>
+
+    <span class="kw">return</span> candidate</code></pre>
+    </details>
+    <div class="controls">
+      <label>Array:
+        <input type="text" id="mj-input" value="2, 2, 1, 1, 1, 2, 2" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="mj">Load</button>
+      <button class="btn" data-action="prev" data-vis="mj">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="mj">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="mj">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="mj">⟲ Reset</button>
+    </div>
+    <div class="stage" id="mj-stage"></div>
+    <div class="log" id="mj-log"></div>
+  </section>
+
+  <!-- ============ 4. MOST FREQUENT EVEN ELEMENT ============ -->
+  <section class="panel card" id="panel-freqeven">
+    <h2>4 · Most Frequent Even Element <span class="badge">📊 Frequency Map</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/most-frequent-even-element/" target="_blank" rel="noopener">🔗 LeetCode 2404</a>
+      <span class="diff easy">Easy</span>
+    </p>
+    <p class="desc">
+      Count only the <strong>even</strong> numbers in a dict, then pick the winner by highest count —
+      and on a tie, the <strong>smallest value</strong>.
+    </p>
+    <ol class="steps">
+      <li>Walk through <code>nums</code>; if a number is even, increment its count.</li>
+      <li>Track the best element: higher count wins.</li>
+      <li>On a tie, the <strong>smaller value</strong> wins.</li>
+      <li>No even numbers → return <code>-1</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">most_frequent_even</span>(nums: list[int]) -&gt; int:
+    count = {}
+    <span class="kw">for</span> num <span class="kw">in</span> nums:
+        <span class="kw">if</span> num % <span class="nm">2</span> == <span class="nm">0</span>:                       <span class="cm"># only even numbers</span>
+            count[num] = count.<span class="fn">get</span>(num, <span class="nm">0</span>) + <span class="nm">1</span>
+
+    <span class="kw">if</span> <span class="kw">not</span> count:                             <span class="cm"># no even element</span>
+        <span class="kw">return</span> -<span class="nm">1</span>
+
+    best_val = -<span class="nm">1</span>
+    best_count = <span class="nm">0</span>
+    <span class="kw">for</span> val, cnt <span class="kw">in</span> count.<span class="fn">items</span>():
+        <span class="cm"># higher count wins; on a tie pick the smaller value</span>
+        <span class="kw">if</span> cnt &gt; best_count <span class="kw">or</span> (cnt == best_count <span class="kw">and</span> val &lt; best_val):
+            best_val = val
+            best_count = cnt
+
+    <span class="kw">return</span> best_val</code></pre>
+    </details>
+    <div class="controls">
+      <label>Array:
+        <input type="text" id="fe-input" value="0, 1, 2, 2, 4, 4, 1" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="fe">Load</button>
+      <button class="btn" data-action="prev" data-vis="fe">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="fe">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="fe">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="fe">⟲ Reset</button>
+    </div>
+    <div class="stage" id="fe-stage"></div>
+    <div class="log" id="fe-log"></div>
+  </section>
+
   <!-- ============ 5. LONGEST SUBSTRING ============ -->
-  <section class="panel active card" id="panel-longest">
+  <section class="panel card" id="panel-longest">
     <h2>5 · Longest Substring Without Repeating Characters <span class="badge var">↔️ Variable Window</span></h2>
     <p class="meta">
       <a class="lc-link" href="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank" rel="noopener">🔗 LeetCode 3</a>
