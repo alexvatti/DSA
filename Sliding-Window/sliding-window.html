@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🪟 Sliding Window — Visual Playground</title>
+  <link rel="stylesheet" href="sliding-window.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>🪟 Sliding Window</h1>
+    <p class="subtitle">An interactive, animated playground to <em>see</em> how the pattern works</p>
+  </header>
+
+  <!-- Intro -->
+  <section class="intro card">
+    <h2>🤔 What is the Sliding Window technique?</h2>
+    <p>
+      Sliding window is one of the most frequently asked interview patterns. It works on problems
+      where you need to find something (<strong>maximum, minimum, count</strong>) within a
+      <strong>contiguous subarray or substring</strong>. Instead of re-checking every subarray from
+      scratch (<code>O(n²)</code>), you keep a <strong>window</strong> between two pointers
+      (<code>left</code> and <code>right</code>) and slide it forward: <strong>add</strong> the new element
+      entering on the right, <strong>remove</strong> the old one leaving on the left. Nothing is recomputed,
+      so the time drops to <strong>O(n)</strong>.
+    </p>
+
+    <div class="info-cards">
+      <div class="info-card when">
+        <h3>✅ When to use it</h3>
+        <ul>
+          <li>The problem involves a <strong>subarray</strong> or <strong>substring</strong></li>
+          <li>You need to <strong>optimize a brute-force</strong> approach</li>
+          <li>You want the <strong>longest, shortest, max, min or count</strong> of a contiguous range</li>
+          <li>Keywords: <em>at most K</em>, <em>permutation</em>, <em>every window</em></li>
+        </ul>
+      </div>
+      <div class="info-card idea">
+        <h3>💡 Key idea</h3>
+        <p>
+          Maintain a window (two pointers) and <strong>expand or shrink</strong> it based on a condition.
+          As the window slides forward you add new elements and remove old ones, avoiding recomputation.
+        </p>
+      </div>
+      <div class="info-card spot">
+        <h3>🔍 How to spot it</h3>
+        <p>
+          A <strong>contiguous</strong> subarray/substring plus a "longest / shortest / max / count" goal?
+          Think <strong>sliding window first</strong>. Is the size <code>K</code> given? Fixed window.
+          Otherwise it is a variable window.
+        </p>
+      </div>
+    </div>
+
+    <div class="style-grid">
+      <div class="style-box">
+        <h3>📏 Fixed Window</h3>
+        <p>The size is <strong>given</strong> (e.g. size K). Add one on the right, remove one on the left.</p>
+        <div class="mini-demo">
+          <span class="mini-cell out">A</span><span class="mini-cell in">B</span>
+          <span class="mini-cell in">C</span><span class="mini-cell in">D</span>
+          <span class="mini-cell">E</span>
+          <span class="mini-note">K = 3 always, the window just slides →</span>
+        </div>
+        <p class="use-case">Permutation in String · Sliding Window Maximum</p>
+      </div>
+      <div class="style-box">
+        <h3>↔️ Variable Window</h3>
+        <p>Find the <strong>smallest / largest</strong> window that satisfies a condition. Expand right, shrink left.</p>
+        <div class="mini-demo">
+          <span class="mini-cell out">A</span><span class="mini-cell out">B</span>
+          <span class="mini-cell in">C</span><span class="mini-cell in">D</span>
+          <span class="mini-cell in">E</span>
+          <span class="mini-note">grows when valid, shrinks when not</span>
+        </div>
+        <p class="use-case">Longest Substring · Fruits · Char Replacement · Min Window</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="longest">5 · Longest Substring</button>
+    <button class="tab" data-tab="fruits">6 · Fruits Into Baskets</button>
+    <button class="tab" data-tab="replace">7 · Char Replacement</button>
+    <button class="tab" data-tab="perm">8 · Permutation in String</button>
+    <button class="tab" data-tab="minwin">9 · Min Window</button>
+    <button class="tab" data-tab="winmax">10 · Window Maximum</button>
+  </nav>
+
+  <!-- ============ 5. LONGEST SUBSTRING ============ -->
+  <section class="panel active card" id="panel-longest">
+    <h2>5 · Longest Substring Without Repeating Characters <span class="badge var">↔️ Variable Window</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank" rel="noopener">🔗 LeetCode 3</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">
+      Keep a window of <strong>unique</strong> characters. When the new character is already inside,
+      shrink from the left just enough to remove the duplicate.
+    </p>
+    <ol class="steps">
+      <li>Move <code>right</code> forward one character at a time.</li>
+      <li><strong>While</strong> <code>s[right]</code> is already in the set → remove <code>s[left]</code>, move <code>left</code> up.</li>
+      <li>Add <code>s[right]</code> to the set. The window is valid again.</li>
+      <li>Update the best length with <code>right − left + 1</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">length_of_longest_substring</span>(s: str) -&gt; int:
+    seen = <span class="fn">set</span>()
+    left = <span class="nm">0</span>
+    best = <span class="nm">0</span>
+
+    <span class="kw">for</span> right <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(s)):
+        <span class="cm"># Shrink the window until the duplicate is gone</span>
+        <span class="kw">while</span> s[right] <span class="kw">in</span> seen:
+            seen.<span class="fn">remove</span>(s[left])
+            left += <span class="nm">1</span>
+
+        <span class="cm"># Expand: add the new character</span>
+        seen.<span class="fn">add</span>(s[right])
+
+        <span class="cm"># Window is valid -&gt; update the answer</span>
+        best = <span class="fn">max</span>(best, right - left + <span class="nm">1</span>)
+
+    <span class="kw">return</span> best</code></pre>
+    </details>
+    <div class="controls">
+      <label>String:
+        <input type="text" id="ls-input" value="abcabcbb" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="ls">Load</button>
+      <button class="btn" data-action="prev" data-vis="ls">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="ls">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="ls">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="ls">⟲ Reset</button>
+    </div>
+    <div class="stage" id="ls-stage"></div>
+    <div class="log" id="ls-log"></div>
+  </section>
+
+  <!-- ============ 6. FRUITS INTO BASKETS ============ -->
+  <section class="panel card" id="panel-fruits">
+    <h2>6 · Fruits Into Baskets <span class="badge var">↔️ Variable Window</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/fruit-into-baskets/" target="_blank" rel="noopener">🔗 LeetCode 904</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">
+      Two baskets means <strong>at most 2 distinct fruit types</strong>. Find the longest subarray
+      that stays within that limit, using a dict of counts.
+    </p>
+    <ol class="steps">
+      <li>Add <code>fruits[right]</code> to the <code>count</code> dict.</li>
+      <li><strong>While</strong> <code>len(count) &gt; 2</code> → decrease <code>count[fruits[left]]</code>, delete the key at 0, move <code>left</code> up.</li>
+      <li>The window is valid again: update the best length.</li>
+      <li>Remember: delete a key when its count hits 0, or <code>len()</code> lies.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">total_fruit</span>(fruits: list[int]) -&gt; int:
+    count = {}
+    left = <span class="nm">0</span>
+    best = <span class="nm">0</span>
+
+    <span class="kw">for</span> right <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(fruits)):
+        <span class="cm"># Expand: take the fruit at `right`</span>
+        count[fruits[right]] = count.<span class="fn">get</span>(fruits[right], <span class="nm">0</span>) + <span class="nm">1</span>
+
+        <span class="cm"># Shrink while we hold more than 2 types</span>
+        <span class="kw">while</span> <span class="fn">len</span>(count) &gt; <span class="nm">2</span>:
+            count[fruits[left]] -= <span class="nm">1</span>
+            <span class="kw">if</span> count[fruits[left]] == <span class="nm">0</span>:
+                <span class="kw">del</span> count[fruits[left]]
+            left += <span class="nm">1</span>
+
+        best = <span class="fn">max</span>(best, right - left + <span class="nm">1</span>)
+
+    <span class="kw">return</span> best</code></pre>
+    </details>
+    <div class="controls">
+      <label>Fruits:
+        <input type="text" id="fb-input" value="1, 2, 3, 2, 2" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="fb">Load</button>
+      <button class="btn" data-action="prev" data-vis="fb">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="fb">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="fb">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="fb">⟲ Reset</button>
+    </div>
+    <div class="stage" id="fb-stage"></div>
+    <div class="log" id="fb-log"></div>
+  </section>
+
+  <!-- ============ 7. CHARACTER REPLACEMENT ============ -->
+  <section class="panel card" id="panel-replace">
+    <h2>7 · Longest Repeating Character Replacement <span class="badge var">↔️ Variable Window</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/longest-repeating-character-replacement/" target="_blank" rel="noopener">🔗 LeetCode 424</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">
+      Replacements needed = <code>window length − count of the most frequent letter</code>.
+      The window is valid while that number is <code>≤ k</code>.
+    </p>
+    <ol class="steps">
+      <li>Add <code>s[right]</code> to the letter counts.</li>
+      <li>Compute <code>(window length) − max(count.values())</code>.</li>
+      <li><strong>While</strong> it is greater than <code>k</code> → remove <code>s[left]</code>, move <code>left</code> up.</li>
+      <li>Window valid: update the best length.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">character_replacement</span>(s: str, k: int) -&gt; int:
+    count = {}
+    left = <span class="nm">0</span>
+    best = <span class="nm">0</span>
+
+    <span class="kw">for</span> right <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(s)):
+        <span class="cm"># Expand</span>
+        count[s[right]] = count.<span class="fn">get</span>(s[right], <span class="nm">0</span>) + <span class="nm">1</span>
+
+        <span class="cm"># Shrink while we need more than k replacements</span>
+        <span class="kw">while</span> (right - left + <span class="nm">1</span>) - <span class="fn">max</span>(count.<span class="fn">values</span>()) &gt; k:
+            count[s[left]] -= <span class="nm">1</span>
+            left += <span class="nm">1</span>
+
+        best = <span class="fn">max</span>(best, right - left + <span class="nm">1</span>)
+
+    <span class="kw">return</span> best</code></pre>
+    </details>
+    <div class="controls">
+      <label>String:
+        <input type="text" id="cr-input" value="AABABBA" />
+      </label>
+      <label>k:
+        <input type="number" id="cr-k" value="1" min="0" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="cr">Load</button>
+      <button class="btn" data-action="prev" data-vis="cr">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="cr">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="cr">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="cr">⟲ Reset</button>
+    </div>
+    <div class="stage" id="cr-stage"></div>
+    <div class="log" id="cr-log"></div>
+  </section>
+
+  <!-- ============ 8. PERMUTATION IN STRING ============ -->
+  <section class="panel card" id="panel-perm">
+    <h2>8 · Permutation in String <span class="badge fixed">📏 Fixed Window</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/permutation-in-string/" target="_blank" rel="noopener">🔗 LeetCode 567</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">
+      A permutation of <code>s1</code> has the same length and the same letter counts, so slide a
+      window of <strong>fixed size</strong> <code>len(s1)</code> across <code>s2</code> and compare counts.
+    </p>
+    <ol class="steps">
+      <li>Count the letters of <code>s1</code> into <code>need</code>.</li>
+      <li>For each <code>i</code> in <code>s2</code>: add <code>s2[i]</code> to the window counts.</li>
+      <li>If <code>i ≥ k</code>, remove <code>s2[i − k]</code> (it just left the window).</li>
+      <li>When the window is full, <code>window == need</code> → permutation found.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">check_inclusion</span>(s1: str, s2: str) -&gt; bool:
+    k = <span class="fn">len</span>(s1)
+    <span class="kw">if</span> k &gt; <span class="fn">len</span>(s2):
+        <span class="kw">return</span> <span class="kw">False</span>
+
+    need = [<span class="nm">0</span>] * <span class="nm">26</span>
+    window = [<span class="nm">0</span>] * <span class="nm">26</span>
+
+    <span class="kw">for</span> ch <span class="kw">in</span> s1:
+        need[<span class="fn">ord</span>(ch) - <span class="fn">ord</span>(<span class="st">"a"</span>)] += <span class="nm">1</span>
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(s2)):
+        <span class="cm"># Add the new character on the right</span>
+        window[<span class="fn">ord</span>(s2[i]) - <span class="fn">ord</span>(<span class="st">"a"</span>)] += <span class="nm">1</span>
+
+        <span class="cm"># Remove the character that fell out on the left</span>
+        <span class="kw">if</span> i &gt;= k:
+            window[<span class="fn">ord</span>(s2[i - k]) - <span class="fn">ord</span>(<span class="st">"a"</span>)] -= <span class="nm">1</span>
+
+        <span class="cm"># Window is full-size -&gt; compare counts</span>
+        <span class="kw">if</span> i &gt;= k - <span class="nm">1</span> <span class="kw">and</span> window == need:
+            <span class="kw">return</span> <span class="kw">True</span>
+
+    <span class="kw">return</span> <span class="kw">False</span></code></pre>
+    </details>
+    <div class="controls">
+      <label>s1 (pattern):
+        <input type="text" id="pm-s1" value="ab" />
+      </label>
+      <label>s2 (text):
+        <input type="text" id="pm-s2" value="eidbaooo" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="pm">Load</button>
+      <button class="btn" data-action="prev" data-vis="pm">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="pm">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="pm">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="pm">⟲ Reset</button>
+    </div>
+    <div class="stage" id="pm-stage"></div>
+    <div class="log" id="pm-log"></div>
+  </section>
+
+  <!-- ============ 9. MINIMUM WINDOW SUBSTRING ============ -->
+  <section class="panel card" id="panel-minwin">
+    <h2>9 · Minimum Window Substring <span class="badge var">↔️ Variable Window (smallest)</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/minimum-window-substring/" target="_blank" rel="noopener">🔗 LeetCode 76</a>
+      <span class="diff hard">Hard</span>
+    </p>
+    <p class="desc">
+      Expand until the window contains everything in <code>t</code>, then <strong>shrink</strong> as far as
+      possible while it stays valid. Track <code>have</code> vs <code>required</code> to check validity in O(1).
+    </p>
+    <ol class="steps">
+      <li>Count the characters of <code>t</code> into <code>need</code>; <code>required = len(need)</code>.</li>
+      <li>Expand <code>right</code>. When a character's count reaches its need, <code>have += 1</code>.</li>
+      <li><strong>While</strong> <code>have == required</code> → record the window if it is smaller, then remove <code>s[left]</code>.</li>
+      <li>If removing breaks a requirement, <code>have −= 1</code>. Move <code>left</code> up.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">min_window</span>(s: str, t: str) -&gt; str:
+    <span class="kw">if</span> <span class="kw">not</span> t or <span class="fn">len</span>(t) &gt; <span class="fn">len</span>(s):
+        <span class="kw">return</span> <span class="st">""</span>
+
+    need = {}
+    <span class="kw">for</span> ch <span class="kw">in</span> t:
+        need[ch] = need.<span class="fn">get</span>(ch, <span class="nm">0</span>) + <span class="nm">1</span>
+
+    window = {}
+    have = <span class="nm">0</span>
+    required = <span class="fn">len</span>(need)
+
+    best_len = <span class="fn">float</span>(<span class="st">"inf"</span>)
+    best_start = <span class="nm">0</span>
+    left = <span class="nm">0</span>
+
+    <span class="kw">for</span> right <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(s)):
+        <span class="cm"># Expand: add the new character</span>
+        ch = s[right]
+        window[ch] = window.<span class="fn">get</span>(ch, <span class="nm">0</span>) + <span class="nm">1</span>
+        <span class="kw">if</span> ch <span class="kw">in</span> need <span class="kw">and</span> window[ch] == need[ch]:
+            have += <span class="nm">1</span>
+
+        <span class="cm"># Shrink while the window is valid</span>
+        <span class="kw">while</span> have == required:
+            <span class="kw">if</span> right - left + <span class="nm">1</span> &lt; best_len:
+                best_len = right - left + <span class="nm">1</span>
+                best_start = left
+
+            out = s[left]
+            window[out] -= <span class="nm">1</span>
+            <span class="kw">if</span> out <span class="kw">in</span> need <span class="kw">and</span> window[out] &lt; need[out]:
+                have -= <span class="nm">1</span>
+            left += <span class="nm">1</span>
+
+    <span class="kw">return</span> <span class="st">""</span> <span class="kw">if</span> best_len == <span class="fn">float</span>(<span class="st">"inf"</span>) <span class="kw">else</span> s[best_start:best_start + best_len]</code></pre>
+    </details>
+    <div class="controls">
+      <label>s:
+        <input type="text" id="mw-s" value="ADOBECODEBANC" />
+      </label>
+      <label>t:
+        <input type="text" id="mw-t" value="ABC" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="mw">Load</button>
+      <button class="btn" data-action="prev" data-vis="mw">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="mw">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="mw">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="mw">⟲ Reset</button>
+    </div>
+    <div class="stage" id="mw-stage"></div>
+    <div class="log" id="mw-log"></div>
+  </section>
+
+  <!-- ============ 10. SLIDING WINDOW MAXIMUM ============ -->
+  <section class="panel card" id="panel-winmax">
+    <h2>10 · Sliding Window Maximum <span class="badge fixed">📏 Fixed Window + Deque</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/sliding-window-maximum/" target="_blank" rel="noopener">🔗 LeetCode 239</a>
+      <span class="diff hard">Hard</span>
+    </p>
+    <p class="desc">
+      Keep a <strong>deque of indices</strong> whose values are in decreasing order. The front is always the
+      maximum of the current window; smaller values behind a bigger one are useless, so they get popped.
+    </p>
+    <ol class="steps">
+      <li>If the front index is outside the window (<code>≤ i − k</code>) → pop it from the front.</li>
+      <li><strong>While</strong> the back value is smaller than <code>nums[i]</code> → pop it from the back.</li>
+      <li>Push index <code>i</code>.</li>
+      <li>Once the first window is full (<code>i ≥ k − 1</code>), the answer is <code>nums[deque[0]]</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">from</span> collections <span class="kw">import</span> deque
+
+
+<span class="kw">def</span> <span class="fn">max_sliding_window</span>(nums: list[int], k: int) -&gt; list[int]:
+    dq = <span class="fn">deque</span>()   <span class="cm"># indices, values decreasing</span>
+    result = []
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(nums)):
+        <span class="cm"># 1. Drop the front if it slid out of the window</span>
+        <span class="kw">if</span> dq <span class="kw">and</span> dq[<span class="nm">0</span>] &lt;= i - k:
+            dq.<span class="fn">popleft</span>()
+
+        <span class="cm"># 2. Drop smaller values from the back</span>
+        <span class="kw">while</span> dq <span class="kw">and</span> nums[dq[-<span class="nm">1</span>]] &lt; nums[i]:
+            dq.<span class="fn">pop</span>()
+
+        <span class="cm"># 3. Add the current index</span>
+        dq.<span class="fn">append</span>(i)
+
+        <span class="cm"># 4. Window is full -&gt; front is the maximum</span>
+        <span class="kw">if</span> i &gt;= k - <span class="nm">1</span>:
+            result.<span class="fn">append</span>(nums[dq[<span class="nm">0</span>]])
+
+    <span class="kw">return</span> result</code></pre>
+    </details>
+    <div class="controls">
+      <label>Array:
+        <input type="text" id="sm-input" value="1, 3, -1, -3, 5, 3, 6, 7" />
+      </label>
+      <label>k:
+        <input type="number" id="sm-k" value="3" min="1" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="sm">Load</button>
+      <button class="btn" data-action="prev" data-vis="sm">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="sm">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="sm">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="sm">⟲ Reset</button>
+    </div>
+    <div class="stage" id="sm-stage"></div>
+    <div class="log" id="sm-log"></div>
+  </section>
+
+  <footer class="site-footer">
+    <p>Built for <strong>DSA-Python → Sliding-Window</strong>. Use <em>Play</em> to auto-run or step with <em>Next</em>.</p>
+  </footer>
+
+  <script src="sliding-window.js"></script>
+</body>
+</html>
