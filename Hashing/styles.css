@@ -1,0 +1,526 @@
+/* ============================================================
+   Hashing — Visual Playground  (styles.css)
+   ============================================================ */
+
+:root {
+  --bg: #f1f5f9;         /* page background (light gray) */
+  --bg-soft: #e2e8f0;    /* soft panel surface */
+  --card: #ffffff;       /* card background (white) */
+  --card-border: #d4dde8;
+  --panel-dark: #f8fafc; /* inner stage / inputs (near-white) */
+  --text: #1e293b;
+  --text-dim: #64748b;
+  --accent: #0ea5e9;
+  --accent-2: #6366f1;
+  --left: #db2777;   /* left / slow pointer */
+  --right: #059669;  /* right / fast pointer */
+  --good: #16a34a;
+  --bad: #dc2626;
+  --warn: #d97706;
+  --water: #2563eb;
+  --bar: #94a3b8;
+  --radius: 14px;
+  --shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: radial-gradient(1200px 600px at 50% -10%, #ffffff, var(--bg));
+  color: var(--text);
+  line-height: 1.55;
+  padding-bottom: 48px;
+}
+
+code {
+  background: var(--bg-soft);
+  color: var(--accent-2);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-family: "Fira Code", monospace;
+  font-size: 0.9em;
+}
+
+/* ---------------- Header ---------------- */
+.site-header {
+  text-align: center;
+  padding: 40px 20px 24px;
+}
+.site-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--left));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.subtitle { color: var(--text-dim); margin-top: 6px; }
+
+/* ---------------- Cards ---------------- */
+.card {
+  max-width: 980px;
+  margin: 0 auto 24px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  box-shadow: var(--shadow);
+}
+.card h2 { margin-top: 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.desc { color: var(--text-dim); margin-top: -4px; }
+
+/* ---------------- Info cards (intro) ---------------- */
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+.info-card {
+  background: var(--panel-dark);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.info-card h3 { margin: 0 0 8px; font-size: 1rem; }
+.info-card.when { border-top: 3px solid var(--good); }
+.info-card.idea { border-top: 3px solid var(--warn); }
+.info-card.spot { border-top: 3px solid var(--accent); }
+.info-card ul { margin: 0; padding-left: 18px; }
+.info-card li { margin-bottom: 4px; color: var(--text-dim); }
+.info-card p { margin: 0; color: var(--text-dim); font-size: 0.92rem; }
+
+/* ---------------- Problem meta (LeetCode link + difficulty) ---------------- */
+.meta { display: flex; align-items: center; gap: 10px; margin: -2px 0 10px; }
+.lc-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid var(--card-border);
+  padding: 4px 12px;
+  border-radius: 999px;
+  transition: all 0.15s;
+}
+.lc-link:hover { border-color: var(--accent); background: rgba(56,189,248,0.1); }
+.diff {
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.diff.easy { background: rgba(34,197,94,0.18); color: var(--good); }
+.diff.medium { background: rgba(251,191,36,0.18); color: var(--warn); }
+.diff.hard { background: rgba(239,68,68,0.18); color: var(--bad); }
+
+/* ---------------- Step-by-step guide ---------------- */
+.steps {
+  margin: 0 0 6px;
+  padding: 14px 16px 14px 36px;
+  background: var(--panel-dark);
+  border: 1px solid var(--card-border);
+  border-left: 4px solid var(--accent-2);
+  border-radius: 10px;
+  counter-reset: step;
+}
+.steps li { margin-bottom: 6px; color: var(--text); }
+.steps li:last-child { margin-bottom: 0; }
+
+/* ---------------- Code block (Python solution) ---------------- */
+.code-block {
+  margin: 14px 0 6px;
+  background: #0f172a;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.code-block summary {
+  cursor: pointer;
+  padding: 10px 16px;
+  font-weight: 700;
+  color: var(--accent);
+  background: #111c33;
+  user-select: none;
+  list-style: none;
+}
+.code-block summary::-webkit-details-marker { display: none; }
+.code-block summary::before { content: "▶ "; font-size: 0.8em; }
+.code-block[open] summary::before { content: "▼ "; }
+.code-block summary:hover { color: #fff; }
+.code-block pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+}
+.code-block code {
+  background: none;
+  color: #e2e8f0;
+  padding: 0;
+  font-family: "Fira Code", monospace;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  white-space: pre;
+}
+.code-block .kw { color: #c792ea; }
+.code-block .fn { color: #82aaff; }
+.code-block .cm { color: #637777; font-style: italic; }
+.code-block .st { color: #c3e88d; }
+.code-block .nm { color: #f78c6c; }
+
+/* ---------------- Intro ---------------- */
+.style-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+.style-box {
+  background: var(--panel-dark);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.style-box h3 { margin: 0 0 6px; color: var(--accent); }
+.mini-demo { position: relative; margin: 18px 0 30px; text-align: center; }
+.mini-cell {
+  display: inline-block;
+  width: 34px; height: 34px; line-height: 34px;
+  margin: 2px;
+  background: var(--bg-soft);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  font-weight: 700;
+}
+.mini-arrows { position: absolute; width: 100%; bottom: -22px; left: 0; font-size: 0.8rem; font-weight: 700; }
+.mini-arrow.left { color: var(--left); float: left; }
+.mini-arrow.right { color: var(--right); float: right; }
+.mini-arrows.same .slow { color: var(--left); margin-right: 20px; }
+.mini-arrows.same .fast { color: var(--right); }
+.mini-arrows.same { text-align: left; padding-left: 8px; }
+.use-case { color: var(--warn); font-size: 0.85rem; margin-bottom: 0; }
+
+/* ---------------- Tabs ---------------- */
+.tabs {
+  max-width: 980px;
+  margin: 0 auto 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.tab {
+  background: var(--bg-soft);
+  color: var(--text-dim);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.tab:hover { color: var(--text); border-color: var(--accent); }
+.tab.active {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #0b1220;
+  border-color: transparent;
+}
+
+/* ---------------- Panels ---------------- */
+.panel { display: none; }
+.panel.active { display: block; animation: fade 0.3s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.badge {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.badge.ends { background: rgba(56, 189, 248, 0.18); color: var(--accent); }
+.badge.same { background: rgba(129, 140, 248, 0.18); color: var(--accent-2); }
+
+/* ---------------- Controls ---------------- */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 18px 0;
+}
+.controls label { color: var(--text-dim); font-size: 0.88rem; display: flex; align-items: center; gap: 6px; }
+.controls input {
+  background: var(--panel-dark);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: "Fira Code", monospace;
+}
+.controls input[type="text"] { min-width: 220px; }
+.controls input[type="number"] { width: 80px; }
+
+.btn {
+  background: var(--bg-soft);
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn.primary { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: #0b1220; border: none; }
+
+/* ---------------- Stage (cells) ---------------- */
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 44px 10px 54px;
+  background: var(--panel-dark);
+  border-radius: 12px;
+  min-height: 90px;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.cell {
+  position: relative;
+  min-width: 42px;
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
+  background: var(--bg-soft);
+  border: 2px solid var(--card-border);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition: all 0.25s ease;
+  padding: 0 6px;
+}
+.cell .idx {
+  position: absolute;
+  top: -20px;
+  left: 0; right: 0;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  line-height: 1;
+}
+.cell .ptr {
+  position: absolute;
+  bottom: -26px;
+  left: 0; right: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Pointer highlight states */
+.cell.left  { border-color: var(--left);  box-shadow: 0 0 0 3px rgba(244,114,182,0.25); }
+.cell.right { border-color: var(--right); box-shadow: 0 0 0 3px rgba(52,211,153,0.25); }
+.cell.fixed { border-color: var(--warn);  box-shadow: 0 0 0 3px rgba(251,191,36,0.25); background: rgba(251,191,36,0.08); }
+.cell.slow  { border-color: var(--left);  box-shadow: 0 0 0 3px rgba(244,114,182,0.25); }
+.cell.fast  { border-color: var(--right); box-shadow: 0 0 0 3px rgba(52,211,153,0.25); }
+.cell.match { background: rgba(34,197,94,0.18); border-color: var(--good); }
+.cell.mismatch { background: rgba(239,68,68,0.18); border-color: var(--bad); }
+.cell.skip { opacity: 0.4; }
+.cell.unique { background: rgba(34,197,94,0.14); border-color: var(--good); }
+.cell.dropped { opacity: 0.3; text-decoration: line-through; }
+.cell.dim { opacity: 0.35; }
+
+.ptr.l { color: var(--left); }
+.ptr.r { color: var(--right); }
+.ptr.s { color: var(--left); }
+.ptr.f { color: var(--right); }
+.ptr.i { color: var(--warn); }
+
+/* ---------------- Bars (container / rain) ---------------- */
+.bars-stage {
+  align-items: flex-end;
+  gap: 4px;
+  padding: 30px 10px 54px;
+  height: 320px;
+}
+.bar-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 46px;
+}
+.bar {
+  width: 32px;
+  background: linear-gradient(180deg, #94a3b8, var(--bar));
+  border-radius: 6px 6px 0 0;
+  transition: all 0.25s ease;
+  position: relative;
+}
+.bar.left  { background: linear-gradient(180deg, #f9a8d4, var(--left)); }
+.bar.right { background: linear-gradient(180deg, #6ee7b7, var(--right)); }
+.water-fill {
+  width: 32px;
+  background: repeating-linear-gradient(45deg, rgba(59,130,246,0.75), rgba(59,130,246,0.75) 6px, rgba(96,165,250,0.75) 6px, rgba(96,165,250,0.75) 12px);
+  border-radius: 4px 4px 0 0;
+  transition: all 0.25s ease;
+}
+.water-fill.active { box-shadow: 0 0 0 2px rgba(59,130,246,0.5); }
+.bar-label {
+  position: absolute;
+  bottom: -22px;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+.bar-ptr {
+  position: absolute;
+  top: -22px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.bar-val {
+  position: absolute;
+  top: -40px;
+  font-size: 0.72rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Area overlay for container */
+.area-overlay {
+  position: absolute;
+  background: rgba(59,130,246,0.18);
+  border: 2px dashed var(--water);
+  border-radius: 6px;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  z-index: 0;
+}
+
+/* ---------------- Log + results ---------------- */
+.log {
+  margin-top: 26px;
+  background: var(--panel-dark);
+  border: 1px solid var(--card-border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-family: "Fira Code", monospace;
+  font-size: 0.9rem;
+  min-height: 48px;
+  color: var(--text);
+}
+.log .done { color: var(--good); font-weight: 700; }
+.log .num { color: var(--warn); font-weight: 700; }
+.log .lp { color: var(--left); font-weight: 700; }
+.log .rp { color: var(--right); font-weight: 700; }
+
+.found {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.triplet {
+  background: rgba(34,197,94,0.15);
+  border: 1px solid var(--good);
+  color: var(--good);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-family: "Fira Code", monospace;
+  font-weight: 700;
+  animation: fade 0.3s ease;
+}
+
+/* ---------------- Footer ---------------- */
+.site-footer {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin-top: 30px;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 680px) {
+  .style-grid { grid-template-columns: 1fr; }
+  .info-cards { grid-template-columns: 1fr; }
+  .card { padding: 18px; margin: 0 12px 20px; }
+  .tabs { padding: 0 12px; }
+  .controls input[type="text"] { min-width: 150px; }
+}
+
+/* ============================================================
+   Hashing additions
+   ============================================================ */
+.badge.hash { background: rgba(217, 119, 6, 0.16); color: var(--warn); }
+.badge.set  { background: rgba(5, 150, 105, 0.16); color: var(--right); }
+
+/* multi-row stage (e.g. anagram: s row + t row) */
+.stage.multi { flex-direction: column; align-items: center; gap: 0; padding: 14px 10px 10px; }
+.cell-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 30px 0 34px; }
+.row-label {
+  width: 100%; text-align: center; font-size: 0.75rem; font-weight: 800;
+  color: var(--text-dim); letter-spacing: 0.5px; text-transform: uppercase; padding-top: 6px;
+}
+.cell.cur { border-color: var(--warn); box-shadow: 0 0 0 3px rgba(251,191,36,0.25); background: rgba(251,191,36,0.08); }
+.cell .ptr.c { color: var(--warn); }
+
+/* hash map / set display */
+.maps { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; }
+.map-box {
+  flex: 1 1 260px;
+  background: var(--panel-dark);
+  border: 1px solid var(--card-border);
+  border-top: 3px solid var(--warn);
+  border-radius: 12px;
+  padding: 10px 14px 14px;
+  min-height: 74px;
+}
+.map-title { font-size: 0.78rem; font-weight: 800; color: var(--text-dim); margin-bottom: 8px; font-family: "Fira Code", monospace; }
+.map-entries { display: flex; flex-wrap: wrap; gap: 8px; }
+.map-empty { color: var(--text-dim); font-size: 0.85rem; font-style: italic; }
+.entry {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg-soft); border: 2px solid var(--card-border);
+  border-radius: 8px; padding: 3px 10px;
+  font-family: "Fira Code", monospace; font-weight: 700; font-size: 0.88rem;
+  transition: all 0.25s ease;
+}
+.entry .arrow { color: var(--text-dim); font-weight: 500; }
+.entry .val { color: var(--accent-2); }
+.entry.new  { border-color: var(--warn); background: rgba(251,191,36,0.12); }
+.entry.hit  { border-color: var(--good); background: rgba(34,197,94,0.16); }
+.entry.miss { border-color: var(--bad);  background: rgba(239,68,68,0.14); }
+
+/* sudoku */
+.sudoku {
+  display: grid; grid-template-columns: repeat(9, 1fr);
+  width: min(100%, 396px); margin: 0 auto;
+  border: 3px solid var(--text);
+  border-radius: 6px; overflow: hidden;
+  background: var(--card-border); gap: 1px;
+}
+.sd-cell {
+  aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center;
+  background: var(--card); font-weight: 700; font-size: 1.1rem;
+  transition: background 0.2s ease;
+}
+.sd-cell.bx-r { border-right: 2px solid var(--text); }
+.sd-cell.bx-b { border-bottom: 2px solid var(--text); }
+.sd-cell.peer { background: rgba(14,165,233,0.12); }
+.sd-cell.done { color: var(--good); }
+.sd-cell.cur  { background: rgba(251,191,36,0.40); outline: 2px solid var(--warn); outline-offset: -2px; }
+.sd-cell.clash { background: rgba(239,68,68,0.30); color: var(--bad); }
+
+@media (max-width: 680px) {
+  .sd-cell { font-size: 0.9rem; }
+}
