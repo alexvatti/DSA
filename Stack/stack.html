@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🥞 Stack — Visual Playground</title>
+  <link rel="stylesheet" href="stack.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>🥞 Stack</h1>
+    <p class="subtitle">An interactive, animated playground to <em>see</em> how the pattern works</p>
+  </header>
+
+  <!-- Intro -->
+  <section class="intro card">
+    <h2>🤔 What is the Stack technique?</h2>
+    <p>
+      A stack is <strong>Last-In-First-Out (LIFO)</strong>: you only ever touch the <strong>top</strong>.
+      That makes it perfect whenever the <strong>most recent unfinished thing</strong> must be handled first —
+      matching brackets, undoing work, or finding the <strong>next greater / smaller</strong> element.
+      Instead of re-scanning the array for every element (<code>O(n²)</code>), each element is
+      <strong>pushed once and popped once</strong>, so the time drops to <strong>O(n)</strong>.
+    </p>
+
+    <div class="info-cards">
+      <div class="info-card when">
+        <h3>✅ When to use it</h3>
+        <ul>
+          <li>Things must be <strong>matched or closed in reverse order</strong></li>
+          <li>You need the <strong>next greater / smaller</strong> element for each position</li>
+          <li>You must track an <strong>aggregate after every undo</strong> (min, max)</li>
+          <li>Keywords: <em>valid, nested, next warmer, largest rectangle, undo</em></li>
+        </ul>
+      </div>
+      <div class="info-card idea">
+        <h3>💡 Key idea</h3>
+        <p>
+          Push items that are <strong>still waiting</strong> for something. When the thing they wait for arrives,
+          <strong>pop</strong> and resolve them. For monotonic stacks, keep the stack <strong>sorted</strong>
+          so only the top ever needs checking.
+        </p>
+      </div>
+      <div class="info-card spot">
+        <h3>🔍 How to spot it</h3>
+        <p>
+          "<strong>Next</strong> greater / smaller / warmer"? Monotonic stack. Brackets or nesting? Plain stack.
+          Need <code>O(1)</code> min/max after pops? Store the extra value <strong>next to each element</strong>.
+        </p>
+      </div>
+    </div>
+
+    <div class="style-grid">
+      <div class="style-box">
+        <h3>🥞 Plain Stack</h3>
+        <p>Push, then pop the <strong>most recent</strong> item when it is matched or undone.</p>
+        <div class="mini-demo">
+          <span class="mini-cell out">(</span><span class="mini-cell in">[</span>
+          <span class="mini-cell in">{</span><span class="mini-cell">}</span>
+          <span class="mini-note">the top <code>{</code> is closed first</span>
+        </div>
+        <p class="use-case">Valid Parentheses · Min Stack</p>
+      </div>
+      <div class="style-box">
+        <h3>📉 Monotonic Stack</h3>
+        <p>Keep the stack <strong>sorted</strong>. A new element pops everything it beats, resolving them.</p>
+        <div class="mini-demo">
+          <span class="mini-cell in">9</span><span class="mini-cell in">6</span>
+          <span class="mini-cell in">4</span><span class="mini-cell out">7</span>
+          <span class="mini-note">7 pops 4 and 6, then stops at 9</span>
+        </div>
+        <p class="use-case">Daily Temperatures · Car Fleet · Largest Rectangle</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="valid">1 · Valid Parentheses</button>
+    <button class="tab" data-tab="minstack">2 · Min Stack</button>
+    <button class="tab" data-tab="daily">3 · Daily Temperatures</button>
+    <button class="tab" data-tab="fleet">4 · Car Fleet</button>
+    <button class="tab" data-tab="hist">5 · Largest Rectangle</button>
+  </nav>
+
+  <!-- ============ 1. VALID PARENTHESES ============ -->
+  <section class="panel active card" id="panel-valid">
+    <h2>1 · Valid Parentheses <span class="badge fixed">🥞 Plain Stack</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/valid-parentheses/" target="_blank" rel="noopener">🔗 LeetCode 20</a>
+      <span class="diff easy">Easy</span>
+    </p>
+    <p class="desc">The <strong>last opener we saw must be the first one closed</strong> — that is exactly Last-In-First-Out.</p>
+    <ol class="steps">
+      <li>Walk through each character.</li>
+      <li><strong>Opener</strong> <code>( [ {</code> → push it.</li>
+      <li><strong>Closer</strong> → the stack must be non-empty and its <strong>top</strong> must be the matching opener, then pop it. Otherwise → <code>False</code>.</li>
+      <li>At the end the stack must be <strong>empty</strong> (no unmatched opener left).</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">is_valid</span>(s: str) -&gt; bool:
+    pairs = {<span class="st">")"</span>: <span class="st">"("</span>, <span class="st">"]"</span>: <span class="st">"["</span>, <span class="st">"}"</span>: <span class="st">"{"</span>}
+    stack = []
+
+    <span class="kw">for</span> ch <span class="kw">in</span> s:
+        <span class="kw">if</span> ch <span class="kw">in</span> pairs:
+            <span class="cm"># Closer -&gt; top must be its matching opener</span>
+            <span class="kw">if</span> <span class="kw">not</span> stack <span class="kw">or</span> stack[-<span class="nm">1</span>] != pairs[ch]:
+                <span class="kw">return</span> <span class="kw">False</span>
+            stack.pop()
+        <span class="kw">else</span>:
+            <span class="cm"># Opener -&gt; wait for its closer</span>
+            stack.append(ch)
+
+    <span class="cm"># Every opener must have been matched</span>
+    <span class="kw">return</span> <span class="kw">not</span> stack</code></pre>
+    </details>
+    <div class="controls">
+      <label>String:
+        <input type="text" id="vp-input" value="{[()]}" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="vp">Load</button>
+      <button class="btn" data-action="prev" data-vis="vp">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="vp">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="vp">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="vp">⟲ Reset</button>
+    </div>
+    <div class="stage" id="vp-stage"></div>
+    <div class="log" id="vp-log"></div>
+  </section>
+
+  <!-- ============ 2. MIN STACK ============ -->
+  <section class="panel card" id="panel-minstack">
+    <h2>2 · Min Stack <span class="badge fixed">🥞 Stack + Extra State</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/min-stack/" target="_blank" rel="noopener">🔗 LeetCode 155</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">Every time we push, we also remember <strong>the minimum of everything at or below this element</strong>. The min never needs recomputing — it sits right next to the element.</p>
+    <ol class="steps">
+      <li><code>push(x)</code>: new min = <code>x</code> if the stack is empty, else <code>min(x, current min)</code>. Push <code>(x, new_min)</code>.</li>
+      <li><code>pop()</code>: remove the top pair — the min of what remains is already stored below it.</li>
+      <li><code>top()</code>: return the <strong>value</strong> of the top pair.</li>
+      <li><code>getMin()</code>: return the <strong>min</strong> of the top pair.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">class</span> <span class="fn">MinStack</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.stack = []  <span class="cm"># each entry: (value, min so far)</span>
+
+    <span class="kw">def</span> <span class="fn">push</span>(self, val: int) -&gt; <span class="kw">None</span>:
+        <span class="cm"># min of everything below, or the value itself if the stack is empty</span>
+        current_min = <span class="fn">min</span>(val, self.stack[-<span class="nm">1</span>][<span class="nm">1</span>]) <span class="kw">if</span> self.stack <span class="kw">else</span> val
+        self.stack.append((val, current_min))
+
+    <span class="kw">def</span> <span class="fn">pop</span>(self) -&gt; <span class="kw">None</span>:
+        self.stack.pop()
+
+    <span class="kw">def</span> <span class="fn">top</span>(self) -&gt; int:
+        <span class="kw">return</span> self.stack[-<span class="nm">1</span>][<span class="nm">0</span>]
+
+    <span class="kw">def</span> <span class="fn">get_min</span>(self) -&gt; int:
+        <span class="kw">return</span> self.stack[-<span class="nm">1</span>][<span class="nm">1</span>]</code></pre>
+    </details>
+    <div class="controls">
+      <label>Operations:
+        <input type="text" id="ms-input" class="wide" value="push -2, push 0, push -3, getMin, pop, top, getMin" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="ms">Load</button>
+      <button class="btn" data-action="prev" data-vis="ms">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="ms">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="ms">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="ms">⟲ Reset</button>
+    </div>
+    <div class="stage" id="ms-stage"></div>
+    <div class="log" id="ms-log"></div>
+  </section>
+
+  <!-- ============ 3. DAILY TEMPERATURES ============ -->
+  <section class="panel card" id="panel-daily">
+    <h2>3 · Daily Temperatures <span class="badge var">📉 Monotonic Stack</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/daily-temperatures/" target="_blank" rel="noopener">🔗 LeetCode 739</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">Keep a stack of <strong>indices of days still waiting</strong> for a warmer day. Their temperatures are always in <strong>decreasing</strong> order (that is why it is called monotonic). When today is warmer than the top, that day's wait is over.</p>
+    <ol class="steps">
+      <li>For each day <code>i</code> with temperature <code>t</code>.</li>
+      <li><strong>While</strong> the stack is non-empty and <code>t</code> is <strong>warmer</strong> than the day on top: pop <code>j</code> and set <code>answer[j] = i - j</code>.</li>
+      <li>Push <code>i</code> (it now waits for its own warmer day).</li>
+      <li>Days left on the stack never found one → they stay <code>0</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">daily_temperatures</span>(temperatures: list[int]) -&gt; list[int]:
+    answer = [<span class="nm">0</span>] * <span class="fn">len</span>(temperatures)
+    stack = []  <span class="cm"># indices of days waiting for a warmer day</span>
+
+    <span class="kw">for</span> i, temp <span class="kw">in</span> <span class="fn">enumerate</span>(temperatures):
+        <span class="cm"># Today is warmer than the waiting days on top -&gt; resolve them</span>
+        <span class="kw">while</span> stack <span class="kw">and</span> temp &gt; temperatures[stack[-<span class="nm">1</span>]]:
+            j = stack.pop()
+            answer[j] = i - j
+        stack.append(i)
+
+    <span class="kw">return</span> answer</code></pre>
+    </details>
+    <div class="controls">
+      <label>Temperatures:
+        <input type="text" id="dt-input" value="73, 74, 75, 71, 69, 72, 76, 73" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="dt">Load</button>
+      <button class="btn" data-action="prev" data-vis="dt">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="dt">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="dt">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="dt">⟲ Reset</button>
+    </div>
+    <div class="stage" id="dt-stage"></div>
+    <div class="log" id="dt-log"></div>
+  </section>
+
+  <!-- ============ 4. CAR FLEET ============ -->
+  <section class="panel card" id="panel-fleet">
+    <h2>4 · Car Fleet <span class="badge var">📉 Sort + Stack</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/car-fleet/" target="_blank" rel="noopener">🔗 LeetCode 853</a>
+      <span class="diff medium">Medium</span>
+    </p>
+    <p class="desc">Process cars from <strong>closest to the target to farthest</strong>. A car's solo arrival time is <code>(target - position) / speed</code>. If it would arrive <strong>no later</strong> than the fleet right ahead, it catches up and merges; if it arrives <strong>later</strong>, it forms a new fleet.</p>
+    <ol class="steps">
+      <li>Sort cars by position, <strong>largest first</strong>.</li>
+      <li>For each car compute <code>time = (target - pos) / speed</code>.</li>
+      <li>If the stack is empty or <code>time</code> is <strong>greater</strong> than the top → push (a <strong>new fleet</strong>).</li>
+      <li>Otherwise (<code>time ≤ top</code>) it merges into the fleet ahead → do nothing.</li>
+      <li>Answer = <code>len(stack)</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">car_fleet</span>(target: int, position: list[int], speed: list[int]) -&gt; int:
+    <span class="cm"># Closest to the target first</span>
+    cars = <span class="fn">sorted</span>(<span class="fn">zip</span>(position, speed), reverse=<span class="kw">True</span>)
+    stack = []  <span class="cm"># arrival time of each fleet</span>
+
+    <span class="kw">for</span> pos, spd <span class="kw">in</span> cars:
+        time = (target - pos) / spd
+        <span class="cm"># Arrives later than the fleet ahead -&gt; cannot catch it -&gt; new fleet</span>
+        <span class="kw">if</span> <span class="kw">not</span> stack <span class="kw">or</span> time &gt; stack[-<span class="nm">1</span>]:
+            stack.append(time)
+        <span class="cm"># else: catches up and merges, nothing to push</span>
+
+    <span class="kw">return</span> <span class="fn">len</span>(stack)</code></pre>
+    </details>
+    <div class="controls">
+      <label>Target:
+        <input type="number" id="cf-target" value="12" min="1" />
+      </label>
+      <label>Positions:
+        <input type="text" id="cf-pos" value="10, 8, 0, 5, 3" />
+      </label>
+      <label>Speeds:
+        <input type="text" id="cf-spd" value="2, 4, 1, 1, 3" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="cf">Load</button>
+      <button class="btn" data-action="prev" data-vis="cf">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="cf">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="cf">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="cf">⟲ Reset</button>
+    </div>
+    <div class="stage" id="cf-stage"></div>
+    <div class="log" id="cf-log"></div>
+  </section>
+
+  <!-- ============ 5. LARGEST RECTANGLE IN HISTOGRAM ============ -->
+  <section class="panel card" id="panel-hist">
+    <h2>5 · Largest Rectangle in Histogram <span class="badge var">📈 Monotonic Stack</span></h2>
+    <p class="meta">
+      <a class="lc-link" href="https://leetcode.com/problems/largest-rectangle-in-histogram/" target="_blank" rel="noopener">🔗 LeetCode 84</a>
+      <span class="diff hard">Hard</span>
+    </p>
+    <p class="desc">Keep bars in <strong>increasing</strong> height order. A bar can keep extending right until a <strong>shorter</strong> bar appears — then its rectangle is finished. The shorter bar <strong>inherits the start</strong> of everything it popped, because it can stretch back that far.</p>
+    <ol class="steps">
+      <li>For each bar <code>i</code> with height <code>h</code>, set <code>start = i</code>.</li>
+      <li><strong>While</strong> the top is <strong>taller</strong> than <code>h</code>: pop <code>(idx, height)</code>, area = <code>height * (i - idx)</code>, update the best, and set <code>start = idx</code>.</li>
+      <li>Push <code>(start, h)</code>.</li>
+      <li>After the loop, every bar left can extend to the <strong>end</strong>: area = <code>height * (n - idx)</code>.</li>
+    </ol>
+    <details class="code-block">
+      <summary>Python solution</summary>
+<pre><code><span class="kw">def</span> <span class="fn">largest_rectangle_area</span>(heights: list[int]) -&gt; int:
+    stack = []  <span class="cm"># (start index, height), heights increasing</span>
+    best = <span class="nm">0</span>
+
+    <span class="kw">for</span> i, h <span class="kw">in</span> <span class="fn">enumerate</span>(heights):
+        start = i
+        <span class="cm"># A shorter bar ends every taller bar on top of the stack</span>
+        <span class="kw">while</span> stack <span class="kw">and</span> stack[-<span class="nm">1</span>][<span class="nm">1</span>] &gt; h:
+            idx, height = stack.pop()
+            best = <span class="fn">max</span>(best, height * (i - idx))
+            start = idx          <span class="cm"># the new bar can stretch back to here</span>
+        stack.append((start, h))
+
+    <span class="cm"># Bars left on the stack extend all the way to the end</span>
+    <span class="kw">while</span> stack:
+        idx, height = stack.pop()
+        best = <span class="fn">max</span>(best, height * (<span class="fn">len</span>(heights) - idx))
+
+    <span class="kw">return</span> best</code></pre>
+    </details>
+    <div class="controls">
+      <label>Heights:
+        <input type="text" id="lr-input" value="2, 1, 5, 6, 2, 3" />
+      </label>
+      <button class="btn primary" data-action="load" data-vis="lr">Load</button>
+      <button class="btn" data-action="prev" data-vis="lr">◀ Prev</button>
+      <button class="btn" data-action="play" data-vis="lr">▶ Play</button>
+      <button class="btn" data-action="next" data-vis="lr">Next ▶</button>
+      <button class="btn" data-action="reset" data-vis="lr">⟲ Reset</button>
+    </div>
+    <div class="stage" id="lr-stage"></div>
+    <div class="log" id="lr-log"></div>
+  </section>
+
+  <footer class="site-footer">
+    <p>Built for <strong>DSA-Python → Stack</strong>. Use <em>Play</em> to auto-run or step with <em>Next</em>.</p>
+  </footer>
+
+  <script src="stack.js"></script>
+</body>
+</html>

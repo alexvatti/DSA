@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🥞 Stack Varieties — Complexity &amp; Live Demo</title>
+<style>
+:root{--bg:#eef2f6;--card:#fff;--ink:#1b2733;--muted:#5d6b7a;--line:#d3dbe5;--primary:#3849c4;--pink:#fff;--good:#2f9e5b;--good-bg:#d9f2e3;--bad:#c2413b;--bad-bg:#fbe0de;--warn:#d9731a;--code:#14202c;--code-ink:#e6edf5;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0f161e;--card:#18222d;--ink:#e5ecf3;--muted:#93a2b2;--line:#2b3947;--primary:#7b8cff;--pink:#0f161e;--good:#5fd08e;--good-bg:#17402a;--bad:#ff8a83;--bad-bg:#4a2220;--warn:#f0974a;--code:#0b1218}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;padding:0 16px 48px}
+h1,h2,h3{line-height:1.25;margin:0 0 8px}
+code{font-family:var(--mono);font-size:.92em;background:color-mix(in srgb,var(--ink) 8%,transparent);padding:1px 6px;border-radius:5px}
+header,.card,.tabs,footer{max-width:980px;margin:0 auto}
+header{padding:36px 0 18px}header h1{font-size:clamp(1.8rem,4vw,2.5rem)}header p{margin:0;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tab{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px}
+.tab.active{background:var(--primary);color:var(--pink);border-color:var(--primary);font-weight:600}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.panel{display:none}.panel.active{display:block}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.93rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+.o1{color:var(--good);font-weight:700;font-family:var(--mono)}.on{color:var(--bad);font-weight:700;font-family:var(--mono)}.oa{color:var(--warn);font-weight:700;font-family:var(--mono)}
+.note{background:color-mix(in srgb,var(--primary) 10%,transparent);border-left:4px solid var(--primary);padding:10px 14px;border-radius:8px;margin:12px 0;font-size:.95rem}
+details{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0}
+summary{cursor:pointer;padding:10px 14px;font-weight:600;background:color-mix(in srgb,var(--ink) 5%,transparent)}
+pre{margin:0;padding:14px 16px;background:var(--code);color:var(--code-ink);overflow-x:auto;font-family:var(--mono);font-size:.85rem;line-height:1.6}
+.controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;margin:14px 0}
+.controls label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
+input,select{font:inherit;font-family:var(--mono);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+input[type=number]{width:90px}input.wide{width:260px;max-width:100%}
+.btn{font:inherit;cursor:pointer;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.btn:hover{border-color:var(--primary)}.btn.primary{background:var(--primary);color:var(--pink);border-color:var(--primary);font-weight:600}
+.demo{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.stack-col{display:flex;flex-direction:column;gap:4px;width:190px;max-width:100%}
+.head{font-size:.75rem;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.sitem{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:6px 12px;border:2px solid var(--line);border-radius:8px;background:var(--card);font-family:var(--mono);transition:background .3s}
+.sitem small{color:var(--muted);font-size:.78rem}
+.sitem.top{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,transparent)}
+.sitem.hot{animation:flash .7s}@keyframes flash{from{background:var(--good-bg)}}
+.sitem.ghost{border-style:dashed;border-color:var(--bad);background:var(--bad-bg)}.sitem.ghost b{text-decoration:line-through}
+.sempty{padding:6px 12px;color:var(--muted);font-style:italic;border:2px dashed var(--line);border-radius:8px}
+.base{height:6px;border-radius:3px;background:var(--ink);opacity:.5}
+.side{flex:1;min-width:260px}
+.log{max-height:230px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:6px;font-size:.9rem;min-height:44px}
+.log:empty::before{content:"Operations will appear here";color:var(--muted);padding:4px 8px;display:block}
+.log-line{padding:4px 8px;border-radius:6px}.log-line:first-child{background:color-mix(in srgb,var(--primary) 12%,transparent)}
+.cost{font-family:var(--mono);font-size:.8rem;color:var(--good);font-weight:700;margin-left:6px}
+.cells{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.cw{display:flex;flex-direction:column;align-items:center;width:48px}
+.cell{width:48px;height:46px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;border:2px solid var(--line);border-radius:8px;background:var(--card)}
+.cell.new{border-color:var(--warn);border-width:3px}.cell.match{background:var(--good-bg);border-color:var(--good)}.cell.add{border-color:var(--primary);border-width:3px}
+.idx{font-size:.72rem;color:var(--muted);font-family:var(--mono);margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.chip{font-family:var(--mono);font-size:.88rem;padding:2px 10px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+.chip.k{border-color:var(--good);background:var(--good-bg)}
+.lab{font-size:.85rem;color:var(--muted);min-width:120px}
+.err{color:var(--bad);margin:6px 0;min-height:1.2em}
+footer{color:var(--muted);text-align:center;font-size:.9rem}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🥞 Stack Varieties</h1>
+  <p>Time complexity · Min Stack · Max Stack · Monotonic Stack — with a live demo for each</p>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-p="p0">1 · Normal Stack</button>
+  <button class="tab" data-p="p1">2 · Min Stack</button>
+  <button class="tab" data-p="p2">3 · Max Stack</button>
+  <button class="tab" data-p="p3">4 · Monotonic Stack</button>
+</nav>
+
+<!-- ================= 1. NORMAL ================= -->
+<section class="panel active card" id="p0" data-mode="normal">
+  <h2>🥞 Normal Stack <small style="font-weight:400;color:var(--muted)">LIFO — Last In, First Out</small></h2>
+  <p>You may only touch the <strong>top</strong>. That is why every core operation is constant time.</p>
+  <table>
+    <tr><th>Operation</th><th>What it does</th><th>Time</th></tr>
+    <tr><td><code>push(x)</code></td><td>Put <code>x</code> on top</td><td class="o1">O(1)</td></tr>
+    <tr><td><code>pop()</code></td><td>Remove and return the top</td><td class="o1">O(1)</td></tr>
+    <tr><td><code>peek() / top()</code></td><td>Read the top without removing</td><td class="o1">O(1)</td></tr>
+    <tr><td><code>is_empty()</code> / <code>size()</code></td><td>Check emptiness / count</td><td class="o1">O(1)</td></tr>
+    <tr><td>search for a value</td><td>Must dig through items below the top</td><td class="on">O(n)</td></tr>
+    <tr><td>Space</td><td>One slot per element</td><td class="on">O(n)</td></tr>
+  </table>
+  <div class="note">With a Python <code>list</code>, <code>append</code> is <strong>amortized</strong> O(1): occasionally the list resizes (O(n)), but averaged over many pushes it is constant.</div>
+  <details><summary>Python</summary><pre>stack = []
+stack.append(4)     # push   O(1)
+stack.append(7)
+top = stack[-1]     # peek   O(1)
+stack.pop()         # pop    O(1)
+not stack           # is_empty O(1)</pre></details>
+  <div class="controls">
+    <label>Value <input type="number" class="val" value="5" /></label>
+    <button class="btn primary" data-op="push">Push</button>
+    <button class="btn" data-op="pop">Pop</button>
+    <button class="btn" data-op="peek">Peek</button>
+    <button class="btn" data-op="empty">Is empty?</button>
+    <button class="btn" data-op="clear">Clear</button>
+    <button class="btn" data-op="auto">▶ Auto demo</button>
+  </div>
+  <div class="demo"><div class="stack-col"></div><div class="side"><div class="log"></div></div></div>
+</section>
+
+<!-- ================= 2. MIN ================= -->
+<section class="panel card" id="p1" data-mode="min">
+  <h2>⬇️ Min Stack <small style="font-weight:400;color:var(--muted)">LeetCode 155</small></h2>
+  <p>Store <code>(value, min so far)</code> in every entry. The minimum is always sitting in the top pair, so it is never recomputed.</p>
+  <table>
+    <tr><th>Operation</th><th>Min Stack</th><th>Plain stack (scan for min)</th></tr>
+    <tr><td><code>push(x)</code></td><td class="o1">O(1)</td><td class="o1">O(1)</td></tr>
+    <tr><td><code>pop()</code></td><td class="o1">O(1)</td><td class="o1">O(1)</td></tr>
+    <tr><td><code>top()</code></td><td class="o1">O(1)</td><td class="o1">O(1)</td></tr>
+    <tr><td><code>get_min()</code></td><td class="o1">O(1)</td><td class="on">O(n)</td></tr>
+    <tr><td>Extra space</td><td class="on">O(n)</td><td class="o1">O(1)</td></tr>
+  </table>
+  <div class="note">Trade-off: you pay <strong>O(n) extra memory</strong> to make <code>get_min</code> O(1). A second stack that only holds mins works the same way.</div>
+  <details><summary>Python</summary><pre>class MinStack:
+    def __init__(self):
+        self.stack = []                      # (value, min so far)
+
+    def push(self, val):
+        m = min(val, self.stack[-1][1]) if self.stack else val
+        self.stack.append((val, m))          # O(1)
+
+    def pop(self):      self.stack.pop()     # O(1)
+    def top(self):      return self.stack[-1][0]
+    def get_min(self):  return self.stack[-1][1]   # O(1)</pre></details>
+  <div class="controls">
+    <label>Value <input type="number" class="val" value="5" /></label>
+    <button class="btn primary" data-op="push">Push</button>
+    <button class="btn" data-op="pop">Pop</button>
+    <button class="btn" data-op="peek">Top</button>
+    <button class="btn" data-op="agg">Get min</button>
+    <button class="btn" data-op="clear">Clear</button>
+    <button class="btn" data-op="auto">▶ Auto demo</button>
+  </div>
+  <div class="demo"><div class="stack-col"></div><div class="side"><div class="chips"><span class="lab">current min</span><span class="chip k cur">—</span></div><div class="log"></div></div></div>
+</section>
+
+<!-- ================= 3. MAX ================= -->
+<section class="panel card" id="p2" data-mode="max">
+  <h2>⬆️ Max Stack <small style="font-weight:400;color:var(--muted)">LeetCode 716</small></h2>
+  <p>Mirror image of Min Stack: store <code>(value, max so far)</code>. <code>peek_max</code> reads the top pair.</p>
+  <table>
+    <tr><th>Operation</th><th>Time</th><th>Note</th></tr>
+    <tr><td><code>push(x)</code></td><td class="o1">O(1)</td><td>Store <code>max(x, previous max)</code></td></tr>
+    <tr><td><code>pop()</code>, <code>top()</code></td><td class="o1">O(1)</td><td>Same as a plain stack</td></tr>
+    <tr><td><code>peek_max()</code></td><td class="o1">O(1)</td><td>Read the max in the top pair</td></tr>
+    <tr><td><code>pop_max()</code></td><td class="oa">O(n)</td><td>Must find and remove the max from the <em>middle</em>: pop until you reach it, then push the rest back using a helper stack. Needs an ordered structure to go faster (about O(log n)).</td></tr>
+    <tr><td>Extra space</td><td class="on">O(n)</td><td>One extra number per entry</td></tr>
+  </table>
+  <div class="note"><code>push / pop / top / peek_max</code> are O(1) with the pair trick. Removing the max from the middle (<code>pop_max</code>) is what makes the full "Max Stack" problem harder.</div>
+  <details><summary>Python</summary><pre>class MaxStack:
+    def __init__(self):
+        self.stack = []                      # (value, max so far)
+
+    def push(self, val):
+        m = max(val, self.stack[-1][1]) if self.stack else val
+        self.stack.append((val, m))          # O(1)
+
+    def pop(self):       return self.stack.pop()[0]
+    def top(self):       return self.stack[-1][0]
+    def peek_max(self):  return self.stack[-1][1]   # O(1)</pre></details>
+  <div class="controls">
+    <label>Value <input type="number" class="val" value="5" /></label>
+    <button class="btn primary" data-op="push">Push</button>
+    <button class="btn" data-op="pop">Pop</button>
+    <button class="btn" data-op="peek">Top</button>
+    <button class="btn" data-op="agg">Peek max</button>
+    <button class="btn" data-op="clear">Clear</button>
+    <button class="btn" data-op="auto">▶ Auto demo</button>
+  </div>
+  <div class="demo"><div class="stack-col"></div><div class="side"><div class="chips"><span class="lab">current max</span><span class="chip k cur">—</span></div><div class="log"></div></div></div>
+</section>
+
+<!-- ================= 4. MONOTONIC ================= -->
+<section class="panel card" id="p3">
+  <h2>📉 Monotonic Stack <small style="font-weight:400;color:var(--muted)">kept sorted — four varieties</small></h2>
+  <p>Keep the stack <strong>sorted</strong>. A new element <strong>pops everything it beats</strong>, and each popped element is resolved at that moment. Every element is pushed once and popped once.</p>
+  <table>
+    <tr><th>Variety</th><th>Stack (bottom → top)</th><th>Pop while</th><th>Answer comes from</th><th>Classic use</th></tr>
+    <tr><td><strong>Next Greater</strong></td><td>decreasing</td><td><code>top &lt; x</code></td><td>the new <code>x</code>, for each popped item</td><td>Daily Temperatures</td></tr>
+    <tr><td><strong>Next Smaller</strong></td><td>increasing</td><td><code>top &gt; x</code></td><td>the new <code>x</code>, for each popped item</td><td>Histogram (right edge)</td></tr>
+    <tr><td><strong>Previous Greater</strong></td><td>decreasing</td><td><code>top ≤ x</code></td><td>the top left after popping, for <code>x</code></td><td>Stock Span</td></tr>
+    <tr><td><strong>Previous Smaller</strong></td><td>increasing</td><td><code>top ≥ x</code></td><td>the top left after popping, for <code>x</code></td><td>Histogram (left edge)</td></tr>
+  </table>
+  <table>
+    <tr><th>Cost</th><th>Time</th></tr>
+    <tr><td>One <code>push</code> (can pop many)</td><td class="oa">O(k) worst case, <strong>amortized O(1)</strong></td></tr>
+    <tr><td>Whole pass over <code>n</code> elements</td><td class="o1">O(n)</td></tr>
+    <tr><td>Space</td><td class="on">O(n)</td></tr>
+  </table>
+  <div class="note">The <code>while</code> inside the <code>for</code> does <strong>not</strong> make it O(n²): total pops can never exceed total pushes (n).</div>
+  <details><summary>Python template (next greater)</summary><pre>stack, ans = [], [-1] * len(a)       # stack holds indices
+for i, x in enumerate(a):
+    while stack and a[stack[-1]] &lt; x:   # change the test for other varieties
+        ans[stack.pop()] = x            # popped item is resolved by x
+    stack.append(i)</pre></details>
+  <div class="controls">
+    <label>Variety
+      <select id="m-kind">
+        <option value="nge">Next Greater (decreasing)</option>
+        <option value="nse">Next Smaller (increasing)</option>
+        <option value="pge">Previous Greater (decreasing)</option>
+        <option value="pse">Previous Smaller (increasing)</option>
+      </select></label>
+    <label>Array <input type="text" id="m-in" class="wide" value="4, 5, 2, 10, 8, 3, 12" /></label>
+    <button class="btn primary" id="m-load">Load</button>
+    <button class="btn" id="m-prev">◀ Prev</button>
+    <button class="btn" id="m-play">▶ Play</button>
+    <button class="btn" id="m-next">Next ▶</button>
+    <button class="btn" id="m-reset">⟲ Reset</button>
+  </div>
+  <div class="err" id="m-err"></div>
+  <div id="m-cells" class="cells"></div>
+  <div class="demo"><div class="stack-col" id="m-stack"></div>
+    <div class="side"><div class="chips"><span class="lab" id="m-anslab">answer</span><span id="m-ans" class="chips" style="margin:0"></span></div><div class="log" id="m-log"></div></div></div>
+</section>
+
+<footer><p>Built for <strong>DSA-Python → Stack</strong>. Try the buttons — every log line shows the cost of that operation.</p></footer>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (x) => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/* ---------- tabs ---------- */
+$('#tabs').addEventListener('click', (e) => {
+  const t = e.target.closest('.tab'); if (!t) return;
+  document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('active', x === t));
+  document.querySelectorAll('.panel').forEach((p) => p.classList.toggle('active', p.id === t.dataset.p));
+});
+
+/* ---------- panels 1-3: normal / min / max stack ---------- */
+const AUTO = {
+  normal: [['push', 4], ['push', 7], ['push', 2], ['peek'], ['pop'], ['empty'], ['pop'], ['pop'], ['empty']],
+  min: [['push', 5], ['push', 3], ['push', 7], ['push', 3], ['push', 8], ['agg'], ['pop'], ['pop'], ['agg'], ['pop'], ['agg']],
+  max: [['push', 2], ['push', 9], ['push', 4], ['push', 9], ['push', 1], ['agg'], ['pop'], ['pop'], ['agg'], ['pop'], ['agg']],
+};
+function initStack(root) {
+  const mode = root.dataset.mode, st = [];
+  const col = $('.stack-col', root), logEl = $('.log', root), cur = $('.cur', root);
+  let hot = -1, ghost = null, timer = null;
+  const word = mode === 'min' ? 'min' : 'max';
+  const aggOf = (v) => {
+    if (mode === 'normal') return null;
+    if (!st.length) return v;
+    const t = st[st.length - 1].a;
+    return mode === 'min' ? Math.min(v, t) : Math.max(v, t);
+  };
+  const log = (op, msg, cost = 'O(1)') => {
+    const d = document.createElement('div');
+    d.className = 'log-line';
+    d.innerHTML = `<b>${esc(op)}</b> ${msg}${cost ? `<span class="cost">${cost}</span>` : ''}`;
+    logEl.prepend(d);
+  };
+  const draw = () => {
+    let h = '<div class="head">▼ TOP</div>';
+    if (ghost) h += `<div class="sitem ghost"><b>${ghost.v}</b><small>${mode === 'normal' ? 'popped' : word + ' ' + ghost.a + ' · popped'}</small></div>`;
+    if (!st.length) h += '<div class="sempty">empty</div>';
+    for (let k = st.length - 1; k >= 0; k--) {
+      const x = st[k];
+      h += `<div class="sitem${k === st.length - 1 ? ' top' : ''}${k === hot ? ' hot' : ''}"><b>${x.v}</b>${mode === 'normal' ? '' : `<small>${word} ${x.a}</small>`}</div>`;
+    }
+    col.innerHTML = h + '<div class="base"></div>';
+    if (cur) cur.textContent = st.length ? st[st.length - 1].a : '—';
+  };
+  const ops = {
+    push(v) {
+      if (!Number.isFinite(v)) return log('push', 'enter a number first', '');
+      const a = aggOf(v); st.push({ v, a }); hot = st.length - 1; ghost = null;
+      log(`push(${v})`, mode === 'normal' ? 'placed on top.' : `stored pair (${v}, ${word} ${a}) — ${word} = ${mode === 'min' ? 'min' : 'max'}(${v}, ${st.length > 1 ? st[st.length - 2].a : '—'}).`);
+    },
+    pop() {
+      if (!st.length) return log('pop()', 'stack is empty → underflow! Check before popping.', '');
+      ghost = st.pop(); hot = -1;
+      log('pop()', `removed ${ghost.v}.${mode === 'normal' ? '' : ` The ${word} below (${st.length ? st[st.length - 1].a : '—'}) was already stored — nothing to recompute.`}`);
+    },
+    peek() {
+      if (!st.length) return log('top()', 'stack is empty.', '');
+      ghost = null; hot = st.length - 1; log('top()', `→ ${st[st.length - 1].v} (just read the top, nothing removed).`);
+    },
+    agg() {
+      if (!st.length) return log(`get_${word}()`, 'stack is empty.', '');
+      ghost = null; hot = st.length - 1;
+      log(`get_${word}()`, `→ ${st[st.length - 1].a}. Read from the top pair. A plain stack would scan ${st.length} item(s):`, 'O(1)');
+      const d = logEl.firstChild; d.innerHTML += `<span class="cost" style="color:var(--bad)">vs O(n)</span>`;
+    },
+    empty() { ghost = null; hot = -1; log('is_empty()', `→ ${st.length === 0} (size = ${st.length}).`); },
+    clear() { st.length = 0; ghost = null; hot = -1; logEl.innerHTML = ''; },
+  };
+  const run = (op, v) => { ops[op](v); draw(); };
+  root.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-op]'); if (!b) return;
+    const op = b.dataset.op;
+    if (op === 'auto') {
+      if (timer) { clearTimeout(timer); timer = null; b.textContent = '▶ Auto demo'; return; }
+      run('clear'); b.textContent = '⏸ Stop';
+      let i = 0;
+      const tick = () => {
+        if (i >= AUTO[mode].length) { timer = null; b.textContent = '▶ Auto demo'; return; }
+        const [o, v] = AUTO[mode][i++]; run(o, v); timer = setTimeout(tick, 900);
+      };
+      timer = setTimeout(tick, 200);
+      return;
+    }
+    run(op, Number($('.val', root) ? $('.val', root).value : NaN));
+  });
+  draw();
+}
+document.querySelectorAll('[data-mode]').forEach(initStack);
+
+/* ---------- panel 4: monotonic stack varieties ---------- */
+const KINDS = {
+  nge: { pop: (t, x) => t < x, sym: '<', prev: false, name: 'next greater' },
+  nse: { pop: (t, x) => t > x, sym: '>', prev: false, name: 'next smaller' },
+  pge: { pop: (t, x) => t <= x, sym: '≤', prev: true, name: 'previous greater' },
+  pse: { pop: (t, x) => t >= x, sym: '≥', prev: true, name: 'previous smaller' },
+};
+function monoSteps(kind, a) {
+  const c = KINDS[kind], stack = [], ans = a.map(() => null), out = [];
+  const view = () => stack.map((j) => ({ t: a[j], s: 'idx ' + j }));
+  const snap = (o) => out.push(Object.assign({ i: null, mark: {}, ghost: null, stack: view(), ans: ans.slice(), msg: '' }, o));
+  snap({ msg: `Start: empty stack. Looking for the ${c.name} element of each number.` });
+  for (let i = 0; i < a.length; i++) {
+    while (stack.length && c.pop(a[stack[stack.length - 1]], a[i])) {
+      const j = stack.pop();
+      if (!c.prev) ans[j] = a[i];
+      snap({ i, mark: { [j]: 'match', [i]: 'new' }, ghost: { t: a[j], s: 'idx ' + j },
+        msg: `Test: top ${a[j]} ${c.sym} ${a[i]} is true → pop idx ${j}.${c.prev ? '' : ` Its ${c.name} is ${a[i]}.`}` });
+    }
+    if (c.prev) ans[i] = stack.length ? a[stack[stack.length - 1]] : -1;
+    stack.push(i);
+    snap({ i, mark: { [i]: 'add' },
+      msg: c.prev
+        ? `Stack top is now ${ans[i] === -1 ? 'nothing' : ans[i]} → ${c.name} of ${a[i]} is ${ans[i]}. Push idx ${i}.`
+        : `Push idx ${i} (${a[i]}). It waits for its ${c.name} element.` });
+  }
+  if (!c.prev) stack.forEach((j) => { ans[j] = -1; });
+  snap({ msg: c.prev ? 'Done. Every element got its answer when it arrived.' : `Done. Items still on the stack have no ${c.name} element → -1.` });
+  return out;
+}
+const M = { steps: [], idx: 0, timer: null, arr: [] };
+function mStop() { if (M.timer) { clearInterval(M.timer); M.timer = null; } $('#m-play').textContent = '▶ Play'; }
+function mRender() {
+  const s = M.steps[M.idx];
+  $('#m-cells').innerHTML = M.arr.map((v, i) =>
+    `<div class="cw"><div class="cell${s.mark[i] ? ' ' + s.mark[i] : ''}">${v}</div><div class="idx">${i}${s.i === i ? ' ◀ i' : ''}</div></div>`).join('');
+  let h = '<div class="head">▼ TOP</div>';
+  if (s.ghost) h += `<div class="sitem ghost"><b>${s.ghost.t}</b><small>${s.ghost.s} · popped</small></div>`;
+  if (!s.stack.length) h += '<div class="sempty">empty</div>';
+  for (let k = s.stack.length - 1; k >= 0; k--)
+    h += `<div class="sitem${k === s.stack.length - 1 ? ' top' : ''}"><b>${s.stack[k].t}</b><small>${s.stack[k].s}</small></div>`;
+  $('#m-stack').innerHTML = h + '<div class="base"></div>';
+  $('#m-ans').innerHTML = s.ans.map((x) => `<span class="chip${x !== null ? ' k' : ''}">${x === null ? '?' : x}</span>`).join('');
+  $('#m-log').innerHTML = M.steps.slice(0, M.idx + 1).map((x, i) => `<div class="log-line">${i}. ${esc(x.msg)}</div>`).reverse().join('');
+}
+function mLoad() {
+  mStop();
+  const parts = $('#m-in').value.split(',').map((x) => x.trim()).filter(Boolean), nums = parts.map(Number);
+  const err = $('#m-err');
+  if (!parts.length || nums.some((n) => !Number.isFinite(n))) { err.textContent = '⚠️ Use numbers separated by commas.'; return; }
+  if (nums.length > 14) { err.textContent = '⚠️ Use 14 numbers or fewer.'; return; }
+  err.textContent = '';
+  M.arr = nums; M.steps = monoSteps($('#m-kind').value, nums); M.idx = 0; mRender();
+}
+$('#m-load').onclick = mLoad;
+$('#m-kind').onchange = mLoad;
+$('#m-in').addEventListener('keydown', (e) => { if (e.key === 'Enter') mLoad(); });
+$('#m-next').onclick = () => { mStop(); if (M.idx < M.steps.length - 1) M.idx++; mRender(); };
+$('#m-prev').onclick = () => { mStop(); if (M.idx > 0) M.idx--; mRender(); };
+$('#m-reset').onclick = () => { mStop(); M.idx = 0; mRender(); };
+$('#m-play').onclick = () => {
+  if (M.timer) return mStop();
+  if (M.idx >= M.steps.length - 1) M.idx = 0;
+  $('#m-play').textContent = '⏸ Pause';
+  M.timer = setInterval(() => { if (M.idx < M.steps.length - 1) { M.idx++; mRender(); } else mStop(); }, 900);
+};
+mLoad();
+</script>
+</body>
+</html>
