@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🔗 Linked List (Easy) — Visual Playground</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--fg:#1d2433;--mut:#667085;--ac:#4f46e5;--bd:#e3e6ef;--ok:#d1fae5;--okb:#10b981;--bad:#fee2e2;--badb:#ef4444;--sh:#fef3c7;--shb:#f59e0b;--code:#0f172a;--codefg:#e2e8f0}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1220;--card:#181c2e;--fg:#e6e9f5;--mut:#9aa3b8;--ac:#8b86ff;--bd:#2a3050;--ok:#064e3b;--bad:#7f1d1d;--sh:#78350f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:0 16px 40px}
+.wrap{max-width:980px;margin:0 auto}
+header{text-align:center;padding:28px 0 8px}
+header h1{margin:0;font-size:2rem}
+.sub{color:var(--mut);margin:.3rem 0 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;margin:16px 0}
+h2{margin:0 0 6px;font-size:1.3rem}
+h3{margin:0 0 6px;font-size:1rem}
+code{background:rgba(127,127,160,.15);padding:1px 6px;border-radius:5px;font-size:.92em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:12px}
+.box{border:1px solid var(--bd);border-radius:10px;padding:12px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0}
+.tab{white-space:nowrap;border:1px solid var(--bd);background:var(--card);color:var(--fg);padding:9px 14px;border-radius:10px;cursor:pointer;font:inherit}
+.tab.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.panel{display:none}.panel.active{display:block}
+.meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 10px}
+.meta a{color:var(--ac);text-decoration:none}
+.diff{background:var(--ok);color:var(--fg);border-radius:20px;padding:1px 10px;font-size:.85rem}
+.badge{font-size:.78rem;background:rgba(79,70,229,.12);color:var(--ac);border-radius:20px;padding:2px 10px;vertical-align:middle;margin-left:6px}
+ol.steps li,ul.tips li{margin:4px 0}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600}
+pre{background:var(--code);color:var(--codefg);padding:14px;border-radius:10px;overflow-x:auto;font-size:.88rem;line-height:1.5;margin:8px 0 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:14px 0}
+.controls label{display:flex;flex-direction:column;font-size:.85rem;color:var(--mut)}
+.controls input{padding:7px 9px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;min-width:150px}
+.btn{padding:8px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--fg);cursor:pointer;font:inherit}
+.btn.primary{background:var(--ac);color:#fff;border-color:var(--ac)}
+.stage{border:1px dashed var(--bd);border-radius:12px;padding:14px;overflow-x:auto;min-height:120px}
+.rt{font-size:.85rem;color:var(--mut);margin:8px 0 4px}.rt:first-child{margin-top:0}
+.line{display:flex;align-items:flex-start;min-width:max-content}
+.cell{display:flex;flex-direction:column;align-items:center}
+.n{min-width:46px;height:42px;display:flex;align-items:center;justify-content:center;border:2px solid var(--ac);border-radius:10px;font-weight:700;padding:0 8px;background:var(--card)}
+.n.none{border-style:dotted;border-color:var(--mut);color:var(--mut);font-weight:400;font-size:.85rem}
+.n.done{background:var(--ok);border-color:var(--okb)}
+.n.bad{background:var(--bad);border-color:var(--badb)}
+.n.shared{background:var(--sh);border-color:var(--shb)}
+.n.entry{outline:2px dashed var(--shb);outline-offset:2px}
+.ptr{font-size:.75rem;color:var(--ac);font-weight:700;text-align:center;min-height:2.4em;margin-top:2px;line-height:1.2}
+.ar{width:30px;text-align:center;line-height:42px;color:var(--mut);font-size:1.1rem}
+.loop{font-size:.82rem;color:var(--shb);margin-top:4px}
+.log{margin-top:10px;max-height:190px;overflow-y:auto;font-size:.9rem;border-left:3px solid var(--bd);padding-left:12px}
+.log div{padding:2px 0;color:var(--mut)}.log .cur{color:var(--fg);font-weight:600}
+footer{text-align:center;color:var(--mut);font-size:.9rem;margin-top:24px}
+.info-cards,.style-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
+.info-card,.style-box{border:1px solid var(--bd);border-radius:10px;padding:12px}
+.info-card ul{margin:0;padding-left:18px}.info-card.when{border-left:4px solid var(--okb)}.info-card.idea{border-left:4px solid var(--ac)}.info-card.spot{border-left:4px solid var(--shb)}
+.mini-demo{display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin:8px 0}
+.mini-cell{border:2px solid var(--ac);border-radius:8px;padding:1px 9px;font-weight:700;font-size:.9rem}.mini-cell.dim{border-style:dashed;color:var(--mut);border-color:var(--mut)}
+.mini-ar{color:var(--mut);padding:0 3px}.mini-note{font-size:.78rem;color:var(--mut);margin-left:8px}.use-case{font-size:.85rem;color:var(--ac);margin:4px 0 0}
+.when{border-left:4px solid var(--okb);background:rgba(16,185,129,.07);border-radius:8px;padding:8px 14px;margin:12px 0}.when ul{margin:0;padding-left:18px}
+.kw{color:#c4b5fd}.fn{color:#7dd3fc}.st{color:#86efac}.cm{color:#94a3b8;font-style:italic}.nm{color:#fcd34d}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>🔗 Linked List — Part 1: Easy</h1>
+  <p class="sub">Step through each easy problem and <em>see</em> the pointers move</p>
+</header>
+
+<section class="card">
+  <h2>🤔 What is the Linked List technique?</h2>
+  <p>A linked list is a chain of <strong>nodes</strong>. Each node holds a <code>val</code> and a <code>next</code> pointer; the last <code>next</code> is <code>None</code>. You cannot jump to index <code>i</code> — you must <strong>walk</strong> from the head. So nearly every problem is solved by moving <strong>one or two pointers</strong> along the chain and re-linking <code>next</code> arrows, in a single <strong>O(n)</strong> pass with <strong>O(1)</strong> extra space.</p>
+<pre>class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next</pre>
+  <div class="info-cards">
+    <div class="info-card when"><h3>✅ When to use it</h3><ul>
+      <li>You need the <strong>middle</strong>, a <strong>cycle</strong>, or a node <strong>from the end</strong></li>
+      <li>You must <strong>reverse</strong> or re-link nodes <strong>in place</strong></li>
+      <li>You <strong>merge</strong> or compare two chains</li>
+      <li>Extra memory (array / set) is <strong>not allowed</strong></li></ul></div>
+    <div class="info-card idea"><h3>💡 Key idea</h3><p>Never lose the rest of the list: <strong>save <code>next</code> before you change it</strong>. Use <code>prev / curr</code> to flip arrows, <code>slow / fast</code> to find the middle or a loop, and a <code>dummy</code> head so the result never needs a special case.</p></div>
+    <div class="info-card spot"><h3>🔍 How to spot it</h3><p>The input is a <strong>ListNode</strong> and the words are <em>reverse, middle, cycle, merge, palindrome, intersection</em>. Need the middle or a loop? <strong>Slow &amp; fast</strong>. Need to re-link? <strong>Prev / curr</strong>.</p></div>
+  </div>
+  <div class="style-grid">
+    <div class="style-box"><h3>🔄 Prev / Curr</h3><p>Flip arrows one node at a time.</p>
+      <div class="mini-demo"><span class="mini-cell">1</span><span class="mini-ar">←</span><span class="mini-cell">2</span><span class="mini-ar">←</span><span class="mini-cell">3</span></div>
+      <p class="use-case">Reverse List</p></div>
+    <div class="style-box"><h3>🐢🐇 Slow &amp; Fast</h3><p>Slow moves 1, fast moves 2.</p>
+      <div class="mini-demo"><span class="mini-cell">1</span><span class="mini-ar">→</span><span class="mini-cell">2</span><span class="mini-ar">→</span><span class="mini-cell">3</span><span class="mini-note">slow = 2 when fast ends</span></div>
+      <p class="use-case">Cycle · Middle · Palindrome</p></div>
+    <div class="style-box"><h3>🧱 Dummy node</h3><p>A fake head so building a list is simple.</p>
+      <div class="mini-demo"><span class="mini-cell dim">dummy</span><span class="mini-ar">→</span><span class="mini-cell">1</span><span class="mini-ar">→</span><span class="mini-cell">2</span></div>
+      <p class="use-case">Merge Two Sorted Lists</p></div>
+    <div class="style-box"><h3>🔁 Switch heads</h3><p>Walk A then B, and B then A: equal distance.</p>
+      <div class="mini-demo"><span class="mini-cell">a</span><span class="mini-ar">→</span><span class="mini-cell">c</span><span class="mini-note">both meet at c</span></div>
+      <p class="use-case">Intersection</p></div>
+  </div>
+  <p style="margin-bottom:0"><strong>Roadmap:</strong> Part 1 Easy (31–36, this page) → Part 2 Medium (37–42) → Part 3 Hard (43–44).</p>
+</section>
+
+<nav class="tabs" id="tabs"></nav>
+<div id="panels"></div>
+
+<footer>Use <em>Play</em> to auto-run or step with <em>Next</em>. Edit the inputs and press <em>Load</em>.</footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const nums = s => s.split(',').map(x => x.trim()).filter(x => x !== '').map(Number).filter(x => !isNaN(x)).slice(0, 9);
+const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, isNaN(x) ? lo : x));
+
+/* ---------- frame helpers ----------
+   row(title, vals, opts): one linked list drawn as boxes.
+   next[i] = index node i points to (used to draw flipped arrows).
+   at(row, index, name): put a pointer label under a node (index == length -> the None box). */
+const row = (title, vals, o = {}) => ({ title, vals, next: null, ptrs: {}, cls: {}, none: true, loop: -1, ...o });
+const at = (r, i, name) => {
+  if (i >= 0 && (i < r.vals.length || (i === r.vals.length && r.none))) (r.ptrs[i] = r.ptrs[i] || []).push(name);
+};
+
+/* ---------- one generator per problem: returns a list of frames {rows, note} ---------- */
+const GEN = {
+  // 31 Reverse Linked List
+  rev([s]) {
+    const v = nums(s), n = v.length, nx = v.map((_, i) => i + 1), F = [];
+    let p = -1, c = 0;
+    const snap = (note, nxt = -1) => {
+      const r = row('List', v, { next: [...nx] });
+      at(r, p, 'prev'); at(r, c, 'curr'); at(r, nxt, 'nxt');
+      F.push({ rows: [r], note });
+    };
+    snap('Start: prev = None, curr = head');
+    while (c < n) {
+      const nxt = c + 1;
+      snap(`Save nxt = curr.next (${nxt < n ? v[nxt] : 'None'})`, nxt);
+      nx[c] = p;
+      snap(`Flip the arrow: curr.next = prev (${p < 0 ? 'None' : v[p]})`, nxt);
+      p = c; c = nxt;
+      snap('Move forward: prev = curr, curr = nxt');
+    }
+    snap('curr is None → stop. prev is the new head');
+    return F;
+  },
+  // 32 Linked List Cycle
+  cyc([s, q]) {
+    const v = nums(s), n = v.length;
+    let pos = parseInt(q); pos = isNaN(pos) || pos < 0 ? -1 : Math.min(pos, n - 1);
+    const nx = v.map((_, i) => i + 1); if (pos >= 0) nx[n - 1] = pos;
+    const F = []; let sl = 0, f = 0;
+    const snap = (note, hl) => {
+      const r = row('List', v, { next: nx, none: pos < 0, loop: pos });
+      if (pos >= 0) r.cls[pos] = 'entry';
+      at(r, sl, 'slow'); at(r, f, 'fast'); if (hl) r.cls[sl] = hl;
+      F.push({ rows: [r], note });
+    };
+    snap('Both pointers start at the head');
+    let guard = 0;
+    while (f < n && nx[f] < n && guard++ < 60) {
+      sl = nx[sl]; f = nx[nx[f]];
+      if (sl === f) { snap('slow moved 1, fast moved 2 → they meet! Cycle exists → True', 'done'); return F; }
+      snap('slow moves 1, fast moves 2');
+    }
+    snap('fast reached None → no cycle → False');
+    return F;
+  },
+  // 33 Middle of the Linked List
+  mid([s]) {
+    const v = nums(s), n = v.length, F = []; let sl = 0, f = 0;
+    const snap = (note, hl) => {
+      const r = row('List', v); at(r, sl, 'slow'); at(r, f, 'fast'); if (hl) r.cls[sl] = hl;
+      F.push({ rows: [r], note });
+    };
+    snap('Both pointers start at the head');
+    while (f < n && f + 1 < n) { sl++; f += 2; snap('slow moves 1, fast moves 2'); }
+    snap(`fast cannot move 2 more → slow is the middle (${v[sl]})`, 'done');
+    return F;
+  },
+  // 34 Merge Two Sorted Lists
+  mrg([a, b]) {
+    const A = nums(a), B = nums(b), res = [], F = []; let i = 0, j = 0;
+    const snap = note => {
+      const r1 = row('l1', A), r2 = row('l2', B), r3 = row('merged (dummy → ...)', res.slice());
+      A.forEach((_, k) => { if (k < i) r1.cls[k] = 'done'; });
+      B.forEach((_, k) => { if (k < j) r2.cls[k] = 'done'; });
+      at(r1, i, 'l1'); at(r2, j, 'l2'); at(r3, res.length - 1, 'tail');
+      F.push({ rows: [r1, r2, r3], note });
+    };
+    snap('Start: dummy node, tail = dummy. Compare the heads of l1 and l2');
+    while (i < A.length && j < B.length) {
+      const t = A[i] <= B[j];
+      const note = `${A[i]} vs ${B[j]} → take ${t ? A[i] : B[j]} from ${t ? 'l1' : 'l2'}, tail moves forward`;
+      t ? res.push(A[i++]) : res.push(B[j++]);
+      snap(note);
+    }
+    while (i < A.length) res.push(A[i++]);
+    while (j < B.length) res.push(B[j++]);
+    snap('One list is finished → tail.next = the rest of the other list. Return dummy.next');
+    return F;
+  },
+  // 35 Palindrome Linked List
+  pal([s]) {
+    const v = nums(s), n = v.length, F = []; let sl = 0, f = 0;
+    const s1 = note => { const r = row('List', v); at(r, sl, 'slow'); at(r, f, 'fast'); F.push({ rows: [r], note }); };
+    s1('Step 1: find the middle with slow / fast');
+    while (f < n && f + 1 < n) { sl++; f += 2; s1('slow moves 1, fast moves 2'); }
+    const rv = v.slice(sl).reverse();
+    F.push({ rows: [row('First half (from head)', v), row('Second half, reversed', rv)],
+      note: `Step 2: slow is at ${v[sl]} → reverse everything from there` });
+    const cmp = (k, note, cl) => {
+      const r1 = row('First half (from head)', v), r2 = row('Second half, reversed', rv);
+      at(r1, k, 'left'); at(r2, k, 'right'); r1.cls[k] = cl; r2.cls[k] = cl;
+      F.push({ rows: [r1, r2], note });
+    };
+    for (let k = 0; k < rv.length; k++) {
+      if (v[k] !== rv[k]) { cmp(k, `Step 3: ${v[k]} ≠ ${rv[k]} → not a palindrome → False`, 'bad'); return F; }
+      cmp(k, `Step 3: ${v[k]} = ${rv[k]} ✓ match, move both pointers`, 'done');
+    }
+    F[F.length - 1].note += ' — right is None, all pairs matched → True';
+    return F;
+  },
+  // 36 Intersection of Two Linked Lists
+  ixn([a, b, c]) {
+    const na = clamp(parseInt(a), 0, 5), nb = clamp(parseInt(b), 0, 5), ns = clamp(parseInt(c), 0, 5);
+    const mk = (p, k) => [...Array(k)].map((_, i) => p + (i + 1));
+    const LA = [...mk('a', na), ...mk('c', ns)], LB = [...mk('b', nb), ...mk('c', ns)];
+    const walk = (t, l1) => t <= l1 ? [0, t] : [1, t - l1 - 1];   // [which list, index]; index == length means None
+    const F = [];
+    for (let t = 0; t <= LA.length + LB.length + 1; t++) {
+      const [sa, ia] = walk(t, LA.length), [sb, ib] = walk(t, LB.length);
+      const ida = (sa ? LB : LA)[ia] ?? null, idb = (sb ? LA : LB)[ib] ?? null;
+      const rA = row('List A', LA), rB = row('List B', LB);
+      LA.forEach((x, k) => { if (x[0] === 'c') rA.cls[k] = 'shared'; });
+      LB.forEach((x, k) => { if (x[0] === 'c') rB.cls[k] = 'shared'; });
+      const ra = sa ? rB : rA, rb = sb ? rA : rB;
+      at(ra, ia, 'a'); at(rb, ib, 'b');
+      let note;
+      if (ida === idb) {
+        if (ida) { ra.cls[ia] = 'done'; rb.cls[ib] = 'done'; }
+        note = ida ? `a and b are the SAME node (${ida}) → intersection found!` : 'a and b are both None → no intersection → return None';
+        F.push({ rows: [rA, rB], note }); break;
+      }
+      note = `a = ${ida ?? 'None'}, b = ${idb ?? 'None'} → different, move both` +
+        (ida === null ? ' (a fell off list A → next it jumps to head of B)' : '') +
+        (idb === null ? ' (b fell off list B → next it jumps to head of A)' : '');
+      F.push({ rows: [rA, rB], note });
+    }
+    return F;
+  }
+};
+
+/* ---------- problem content ---------- */
+const P = [
+  { key: 'rev', title: 'Reverse Linked List', lc: 206, slug: 'reverse-linked-list', n: 31, badge: '🔄 Prev / Curr',
+    desc: 'Flip every <code>next</code> arrow so it points backwards. Walk the list once, remembering the previous node.',
+    steps: ['<code>prev = None</code>, <code>curr = head</code>.', 'Save <code>nxt = curr.next</code> (or you lose the rest of the list!).', 'Flip the arrow: <code>curr.next = prev</code>.', 'Move both forward: <code>prev = curr</code>, <code>curr = nxt</code>.', 'When <code>curr</code> is <code>None</code>, <code>prev</code> is the new head.'],
+    tips: ['Always save <code>next</code> <strong>before</strong> you overwrite it.', 'Return <code>prev</code>, not <code>curr</code>.', 'Time <strong>O(n)</strong> • Space <strong>O(1)</strong>.'],
+    code: `def reverse_list(head):
+    prev = None
+    curr = head
+
+    while curr:
+        nxt = curr.next     # 1. remember the next node
+        curr.next = prev    # 2. flip the arrow
+        prev = curr         # 3. move prev forward
+        curr = nxt          # 4. move curr forward
+
+    return prev             # prev is the new head`,
+    inputs: [['List', '1, 2, 3, 4, 5']] },
+  { key: 'cyc', title: 'Linked List Cycle (Detect Cycle)', lc: 141, slug: 'linked-list-cycle', n: 32, badge: '🐢🐇 Slow & Fast',
+    desc: 'If there is a loop, a fast runner will eventually <strong>lap</strong> the slow runner — they must meet. If there is no loop, fast falls off the end.',
+    steps: ['Start <code>slow</code> and <code>fast</code> at the head.', 'Each round: <code>slow</code> moves 1 step, <code>fast</code> moves 2 steps.', 'If <code>slow is fast</code> → cycle → <code>True</code>.', 'If <code>fast</code> (or <code>fast.next</code>) becomes <code>None</code> → <code>False</code>.'],
+    tips: ['Check <code>fast and fast.next</code> before moving 2 steps.', 'Compare nodes with <code>is</code>, not by value.', 'Time <strong>O(n)</strong> • Space <strong>O(1)</strong> (a set would be O(n) space).'],
+    code: `def has_cycle(head):
+    slow = fast = head
+
+    while fast and fast.next:
+        slow = slow.next          # 1 step
+        fast = fast.next.next     # 2 steps
+        if slow is fast:          # they met -> loop exists
+            return True
+
+    return False                  # fast reached the end`,
+    inputs: [['List', '3, 2, 0, -4'], ['Tail connects to index (-1 = none)', '1']] },
+  { key: 'mid', title: 'Middle of the Linked List (Find Middle)', lc: 876, slug: 'middle-of-the-linked-list', n: 33, badge: '🐢🐇 Slow & Fast',
+    desc: 'Fast moves twice as quickly, so when fast reaches the end, slow is exactly halfway.',
+    steps: ['Start <code>slow</code> and <code>fast</code> at the head.', 'While <code>fast</code> and <code>fast.next</code> exist: <code>slow</code> +1, <code>fast</code> +2.', 'Return <code>slow</code>.'],
+    tips: ['Even length → returns the <strong>second</strong> of the two middle nodes (what LeetCode asks).', 'This same trick is the first step of Palindrome List.', 'Time <strong>O(n)</strong> • Space <strong>O(1)</strong>.'],
+    code: `def middle_node(head):
+    slow = fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    return slow`,
+    inputs: [['List', '1, 2, 3, 4, 5, 6']] },
+  { key: 'mrg', title: 'Merge Two Sorted Lists', lc: 21, slug: 'merge-two-sorted-lists', n: 34, badge: '🧱 Dummy Node',
+    desc: 'Like the merge step of merge sort: always take the <strong>smaller</strong> front node. A <strong>dummy</strong> node gives <code>tail</code> a place to start.',
+    steps: ['Make <code>dummy</code> and set <code>tail = dummy</code>.', 'While both lists have nodes: attach the smaller head to <code>tail.next</code> and advance that list.', 'Move <code>tail</code> forward.', 'Attach whatever is left: <code>tail.next = l1 or l2</code>.', 'Return <code>dummy.next</code>.'],
+    tips: ['The dummy node removes the "which node is the head?" headache.', 'No new nodes are created — we just re-link existing ones.', 'Time <strong>O(n + m)</strong> • Space <strong>O(1)</strong>.'],
+    code: `def merge_two_lists(l1, l2):
+    dummy = ListNode()          # fake head
+    tail = dummy
+
+    while l1 and l2:
+        if l1.val <= l2.val:
+            tail.next = l1      # take from l1
+            l1 = l1.next
+        else:
+            tail.next = l2      # take from l2
+            l2 = l2.next
+        tail = tail.next
+
+    tail.next = l1 or l2        # attach the leftover list
+    return dummy.next`,
+    inputs: [['List 1 (sorted)', '1, 2, 4'], ['List 2 (sorted)', '1, 3, 4, 6']] },
+  { key: 'pal', title: 'Palindrome Linked List', lc: 234, slug: 'palindrome-linked-list', n: 35, badge: '🐢🐇 + 🔄 Combo',
+    desc: 'Combine two earlier tricks: find the <strong>middle</strong>, <strong>reverse</strong> the second half, then compare both halves from the outside in.',
+    steps: ['Find the middle with slow / fast.', 'Reverse the list starting from <code>slow</code>.', 'Walk <code>left</code> from the head and <code>right</code> from the reversed half together.', 'Any mismatch → <code>False</code>. If <code>right</code> runs out → <code>True</code>.'],
+    tips: ['For odd length the middle node is compared with itself — harmless.', 'Reversing in place keeps space at <strong>O(1)</strong>.', 'Time <strong>O(n)</strong> • Space <strong>O(1)</strong>.'],
+    code: `def is_palindrome(head):
+    # 1. find the middle
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    # 2. reverse the second half
+    prev = None
+    while slow:
+        nxt = slow.next
+        slow.next = prev
+        prev = slow
+        slow = nxt
+
+    # 3. compare both halves
+    left, right = head, prev
+    while right:
+        if left.val != right.val:
+            return False
+        left = left.next
+        right = right.next
+
+    return True`,
+    inputs: [['List', '1, 2, 3, 2, 1']] },
+  { key: 'ixn', title: 'Intersection of Two Linked Lists', lc: 160, slug: 'intersection-of-two-linked-lists', n: 36, badge: '🔁 Two Pointers',
+    desc: 'Two lists may <strong>merge into a shared tail</strong> (amber nodes). Lengths differ, so walk pointer <code>a</code> along A then B, and pointer <code>b</code> along B then A. Both travel the same total distance, so they meet at the intersection.',
+    steps: ['<code>a = headA</code>, <code>b = headB</code>.', 'Move both one step at a time.', 'When a pointer reaches the end, send it to the <strong>head of the other list</strong>.', 'Stop when <code>a is b</code> — that node is the intersection, or both are <code>None</code> (no intersection).'],
+    tips: ['The shared tail means the <strong>same node object</strong>, not just equal values.', 'After switching, both pointers have walked <code>lenA + lenB</code>, so they line up.', 'Time <strong>O(n + m)</strong> • Space <strong>O(1)</strong>.'],
+    code: `def get_intersection_node(headA, headB):
+    a, b = headA, headB
+
+    while a is not b:
+        a = a.next if a else headB    # fell off A -> jump to B
+        b = b.next if b else headA    # fell off B -> jump to A
+
+    return a    # intersection node, or None`,
+    inputs: [['Nodes only in A', '2'], ['Nodes only in B', '3'], ['Shared nodes', '3']] }
+];
+
+const WHEN = {
+  rev: ['You must <strong>change the direction</strong> of the links, or read the list backwards', 'Only <code>next</code> pointers may change (no extra array)', '🔍 Keywords: <em>reverse, backwards, flip, in-place</em>'],
+  cyc: ['You must detect a <strong>loop</strong> in a chain using no extra memory', 'A plain walk might <strong>never end</strong>', '🔍 Keywords: <em>cycle, loop, repeats, never terminates</em>'],
+  mid: ['You need the <strong>middle</strong> in one pass and the length is unknown', 'First step of Palindrome / Reorder List', '🔍 Keywords: <em>middle, half, split in two</em>'],
+  mrg: ['You combine <strong>two sorted</strong> lists into one', 'You build a <strong>new list</strong> piece by piece and the head is unknown', '🔍 Keywords: <em>merge, combine, sorted, smallest first</em>'],
+  pal: ['You must compare the list <strong>front vs back</strong> but can only move forward', 'Only <strong>O(1)</strong> extra space is allowed', '🔍 Keywords: <em>palindrome, symmetric, same forwards and backwards</em>'],
+  ixn: ['Two lists may <strong>join into the same tail</strong>', 'Lengths differ and you want <strong>O(1)</strong> space', '🔍 Keywords: <em>intersection, merge point, shared node</em>']
+};
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const hl = src => esc(src).replace(/(#.*$)|("[^"]*")|\b(def|class|while|if|else|return|is|not|and|or|None|True|False|for|in|self)\b|\b(\d+)\b|(?<=def )(\w+)/gm,
+  (m, c, s, k, n, f) => c ? `<span class="cm">${c}</span>` : s ? `<span class="st">${s}</span>` : k ? `<span class="kw">${k}</span>` : n ? `<span class="nm">${n}</span>` : `<span class="fn">${f}</span>`);
+
+/* ---------- build the page ---------- */
+const tabs = $('#tabs'), panels = $('#panels');
+P.forEach((p, idx) => {
+  const b = document.createElement('button');
+  b.className = 'tab' + (idx ? '' : ' active'); b.textContent = `${p.n} · ${p.title.split(' (')[0]}`;
+  b.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(t => t.classList.remove('active'));
+    b.classList.add('active'); $('#panel-' + p.key).classList.add('active');
+  };
+  tabs.appendChild(b);
+
+  const sec = document.createElement('section');
+  sec.className = 'card panel' + (idx ? '' : ' active'); sec.id = 'panel-' + p.key;
+  sec.innerHTML = `
+    <h2>${p.n} · ${p.title} <span class="badge">${p.badge}</span></h2>
+    <p class="meta"><a href="https://leetcode.com/problems/${p.slug}/" target="_blank" rel="noopener">🔗 LeetCode ${p.lc}</a><span class="diff">Easy</span></p>
+    <p>${p.desc}</p>
+    <div class="when"><h3>✅ When to use it</h3><ul>${WHEN[p.key].map(x => `<li>${x}</li>`).join('')}</ul></div>
+    <h3>Steps</h3><ol class="steps">${p.steps.map(x => `<li>${x}</li>`).join('')}</ol>
+    <h3>💡 Tips to remember</h3><ul class="tips">${p.tips.map(x => `<li>${x}</li>`).join('')}</ul>
+    <details open><summary>Python solution</summary><pre><code></code></pre></details>
+    <div class="controls">
+      ${p.inputs.map((inp, j) => `<label>${inp[0]}<input type="text" id="${p.key}-${j}" value="${inp[1]}"></label>`).join('')}
+      <button class="btn primary" data-a="load">Load</button>
+      <button class="btn" data-a="prev">◀ Prev</button>
+      <button class="btn" data-a="play">▶ Play</button>
+      <button class="btn" data-a="next">Next ▶</button>
+      <button class="btn" data-a="reset">⟲ Reset</button>
+    </div>
+    <div class="stage" id="${p.key}-stage"></div>
+    <div class="log" id="${p.key}-log"></div>`;
+  sec.querySelector('pre code').innerHTML = hl(p.code);
+  panels.appendChild(sec);
+  sec.querySelectorAll('[data-a]').forEach(btn => btn.onclick = () => act(p.key, btn.dataset.a, btn));
+});
+
+/* ---------- player ---------- */
+const S = {};
+function draw(k) {
+  const s = S[k], f = s.F[s.i];
+  $('#' + k + '-stage').innerHTML = f.rows.map(r => {
+    const n = r.vals.length; let h = `<div class="rt">${r.title}</div><div class="line">`;
+    const cell = (i, label, extra) => `<div class="cell"><div class="n ${extra}">${label}</div><div class="ptr">${(r.ptrs[i] || []).join('<br>')}</div></div>`;
+    for (let i = 0; i < n; i++) {
+      h += cell(i, r.vals[i], r.cls[i] || '');
+      const nx = r.next;
+      const arrow = !nx ? (i < n - 1 || r.none ? '→' : '') : nx[i] === i + 1 ? '→' : nx[i + 1] === i ? '←' : '';
+      if (i < n - 1 || r.none) h += `<div class="ar">${arrow || '&nbsp;'}</div>`;
+    }
+    if (r.none) h += cell(n, 'None', 'none');
+    h += '</div>';
+    if (r.loop >= 0) h += `<div class="loop">⤺ the last node points back to <b>${r.vals[r.loop]}</b> (index ${r.loop})</div>`;
+    return h;
+  }).join('');
+  const log = $('#' + k + '-log');
+  log.innerHTML = s.F.slice(0, s.i + 1).map((x, j) => `<div class="${j === s.i ? 'cur' : ''}">${j + 1}. ${x.note}</div>`).join('');
+  log.scrollTop = log.scrollHeight;
+}
+function stop(k) { if (S[k] && S[k].t) { clearInterval(S[k].t); S[k].t = null; } }
+function load(k) {
+  stop(k);
+  const p = P.find(x => x.key === k);
+  const vals = p.inputs.map((_, j) => $('#' + k + '-' + j).value);
+  let F = [];
+  try { F = GEN[k](vals); } catch (e) { F = []; }
+  if (!F.length) { $('#' + k + '-stage').textContent = 'Please enter a valid list of numbers, e.g. 1, 2, 3'; $('#' + k + '-log').innerHTML = ''; S[k] = null; return; }
+  S[k] = { F, i: 0, t: null }; draw(k);
+}
+function act(k, a, btn) {
+  if (a === 'load') return load(k);
+  if (!S[k]) load(k); const s = S[k]; if (!s) return;
+  if (a === 'next') { stop(k); if (s.i < s.F.length - 1) s.i++; }
+  if (a === 'prev') { stop(k); if (s.i > 0) s.i--; }
+  if (a === 'reset') { stop(k); s.i = 0; }
+  if (a === 'play') {
+    if (s.t) { stop(k); return; }
+    if (s.i >= s.F.length - 1) s.i = 0;
+    s.t = setInterval(() => { if (s.i < s.F.length - 1) { s.i++; draw(k); } else stop(k); }, 1000);
+  }
+  draw(k);
+}
+P.forEach(p => load(p.key));
+</script>
+</body>
+</html>
