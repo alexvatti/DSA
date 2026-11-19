@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Monotonic Stack — 4 Variations</title>
+<style>
+:root{--bg:#eef2f6;--card:#fff;--ink:#1b2733;--muted:#5d6b7a;--line:#d3dbe5;--primary:#3849c4;--onp:#fff;--good:#2f9e5b;--good-bg:#d9f2e3;--bad:#c2413b;--bad-bg:#fbe0de;--warn:#d9731a;--code:#14202c;--code-ink:#e6edf5;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f161e;--card:#18222d;--ink:#e5ecf3;--muted:#93a2b2;--line:#2b3947;--primary:#7b8cff;--onp:#0f161e;--good:#5fd08e;--good-bg:#17402a;--bad:#ff8a83;--bad-bg:#4a2220;--warn:#f0974a;--code:#0b1218}}
+:root[data-theme="dark"]{--bg:#0f161e;--card:#18222d;--ink:#e5ecf3;--muted:#93a2b2;--line:#2b3947;--primary:#7b8cff;--onp:#0f161e;--good:#5fd08e;--good-bg:#17402a;--bad:#ff8a83;--bad-bg:#4a2220;--warn:#f0974a;--code:#0b1218}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;padding:0 16px 48px}
+h1,h2,h3{line-height:1.25;margin:0 0 8px}
+code{font-family:var(--mono);font-size:.92em;background:color-mix(in srgb,var(--ink) 8%,transparent);padding:1px 6px;border-radius:5px}
+header,.card,.tabs{max-width:980px;margin:0 auto}
+header{padding:30px 0 14px}header p{margin:0;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:16px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tab{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px}
+.tab.active{background:var(--primary);color:var(--onp);border-color:var(--primary);font-weight:600}
+.panel{display:none}.panel.active{display:block}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.note{background:color-mix(in srgb,var(--primary) 10%,transparent);border-left:4px solid var(--primary);padding:10px 14px;border-radius:8px;margin:12px 0}
+pre{margin:8px 0;padding:14px 16px;background:var(--code);color:var(--code-ink);overflow-x:auto;font-family:var(--mono);font-size:.85rem;line-height:1.6;border-radius:10px}
+.controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;margin:12px 0}
+.controls label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
+input{font:inherit;font-family:var(--mono);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:280px;max-width:100%}
+.btn{font:inherit;cursor:pointer;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.btn:hover{border-color:var(--primary)}.btn.primary{background:var(--primary);color:var(--onp);border-color:var(--primary);font-weight:600}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.demo{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.stack-col{display:flex;flex-direction:column;gap:4px;width:200px;max-width:100%}
+.head{font-size:.75rem;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.sitem{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:6px 12px;border:2px solid var(--line);border-radius:8px;background:var(--card);font-family:var(--mono)}
+.sitem small{color:var(--muted);font-size:.78rem}
+.sitem.top{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,transparent)}
+.sitem.ghost{border-style:dashed;border-color:var(--bad);background:var(--bad-bg)}.sitem.ghost b{text-decoration:line-through}
+.sempty{padding:6px 12px;color:var(--muted);font-style:italic;border:2px dashed var(--line);border-radius:8px}
+.base{height:6px;border-radius:3px;background:var(--ink);opacity:.5}
+.side{flex:1;min-width:260px}
+.cells{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.cw{display:flex;flex-direction:column;align-items:center;width:48px}
+.cell{width:48px;height:46px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;border:2px solid var(--line);border-radius:8px;background:var(--card)}
+.cell.new{border-color:var(--warn);border-width:3px}.cell.match{background:var(--good-bg);border-color:var(--good)}.cell.add{border-color:var(--primary);border-width:3px}
+.idx{font-size:.72rem;color:var(--muted);font-family:var(--mono);margin-top:4px}
+.chip{display:inline-block;font-family:var(--mono);font-size:.88rem;padding:2px 10px;border-radius:999px;background:var(--card);border:1px solid var(--line);margin:2px}
+.chip.k{border-color:var(--good);background:var(--good-bg)}
+.lab{font-size:.85rem;color:var(--muted);margin:8px 0 2px}
+.log{max-height:230px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:6px;font-size:.9rem;margin-top:10px}
+.log-line{padding:4px 8px;border-radius:6px}.log-line:first-child{background:color-mix(in srgb,var(--primary) 12%,transparent)}
+.err{color:var(--bad);min-height:1.2em;margin:4px 0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🥞 Monotonic Stack: 4 Variations</h1>
+  <p>Next greater · Next smaller · Previous greater · Previous smaller. One problem, code and live demo per tab.</p>
+</header>
+
+<section class="card">
+  <h2>Cheat sheet</h2>
+  <div class="wrap"><table>
+    <tr><th>Variation</th><th>Looks</th><th>Pop while (top vs new x)</th><th>Answer is ready</th><th>Stack, bottom to top</th></tr>
+    <tr><td>Next greater</td><td>right</td><td><code>top &lt; x</code></td><td>when popped</td><td>decreasing</td></tr>
+    <tr><td>Next smaller</td><td>right</td><td><code>top ≥ x</code></td><td>when popped</td><td>increasing</td></tr>
+    <tr><td>Previous greater</td><td>left</td><td><code>top ≤ x</code></td><td>after popping, top is the answer</td><td>decreasing</td></tr>
+    <tr><td>Previous smaller</td><td>left</td><td><code>top ≥ x</code></td><td>after popping, top is the answer</td><td>increasing</td></tr>
+  </table></div>
+  <div class="note">Equal values: whether <code>≤</code> or <code>&lt;</code> is used depends on what the problem says. The problems below show each case.</div>
+</section>
+
+<nav class="tabs" id="tabs"></nav>
+<div id="panels"></div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const K = {
+  nge: {
+    tab: '1 · Next Greater', prev: false, lbl: 'Days to wait',
+    title: 'LeetCode 739 · Daily Temperatures',
+    problem: 'Given daily temperatures, for each day find <strong>how many days you must wait</strong> for a warmer temperature. If none, answer <code>0</code>.',
+    ex: ['[73, 74, 75, 71, 69, 72, 76, 73]', '[1, 1, 4, 2, 1, 1, 0, 0]', '75 waits 4 days for 76. 71 waits 2 days for 72.'],
+    idea: 'Items on the stack are <strong>waiting for a warmer day</strong>. A new temperature <code>t</code> pops every top that is colder than <code>t</code>. Each popped day’s answer is <code>i − j</code>.',
+    def: '73, 74, 75, 71, 69, 72, 76, 73',
+    code: `def dailyTemperatures(temps):
+    ans = [0] * len(temps)
+    stack = []                       # indices waiting for a warmer day
+    for i, t in enumerate(temps):
+        while stack and temps[stack[-1]] < t:
+            j = stack.pop()
+            ans[j] = i - j           # t is j's next greater
+        stack.append(i)
+    return ans                       # leftovers stay 0`,
+    pop: (t, x) => t < x, val: (a, i, j) => i - j, left: () => 0,
+    popMsg: (a, i, j, r) => `Temp ${a[i]} arrives. Top ${a[j]} < ${a[i]}, so pop idx ${j}. It waited ${i} − ${j} = ${r} day(s).`,
+    pushMsg: (a, i) => `Push idx ${i} (${a[i]}). It waits for a warmer day.`,
+    end: 'Done. Items left on the stack never saw a warmer day, so their answer is 0.'
+  },
+  nse: {
+    tab: '2 · Next Smaller', prev: false, lbl: 'Final price',
+    title: 'LeetCode 1475 · Final Prices With a Special Discount',
+    problem: 'Buying item <code>i</code> gives a discount equal to the <strong>first price to its right that is the same or less</strong>. If none, no discount. Return the final price of every item.',
+    ex: ['[8, 4, 6, 2, 3]', '[4, 2, 4, 2, 3]', '8 gets discount 4, 4 gets 2, 6 gets 2, and 2 and 3 get none.'],
+    idea: 'Items on the stack are <strong>waiting for a discount</strong>. A new price <code>p</code> pops every top that is <code>≥ p</code>, and <code>p</code> is that item’s discount.',
+    def: '8, 4, 6, 2, 3',
+    code: `def finalPrices(prices):
+    ans = prices[:]                  # default: no discount
+    stack = []                       # indices waiting for a discount
+    for i, p in enumerate(prices):
+        while stack and prices[stack[-1]] >= p:
+            j = stack.pop()
+            ans[j] = prices[j] - p   # p is j's next smaller-or-equal
+        stack.append(i)
+    return ans                       # leftovers pay full price
+
+# plain "next smaller element" (strict, -1 if none):
+#   pop while nums[top] > x, then ans[popped] = x`,
+    pop: (t, x) => t >= x, val: (a, i, j) => a[j] - a[i], left: (a, j) => a[j],
+    popMsg: (a, i, j, r) => `Price ${a[i]} arrives. Top ${a[j]} ≥ ${a[i]}, so pop idx ${j}. Discount ${a[i]}, final price ${a[j]} − ${a[i]} = ${r}.`,
+    pushMsg: (a, i) => `Push idx ${i} (${a[i]}). It waits for a discount.`,
+    end: 'Done. Items left on the stack found no smaller-or-equal price, so they pay full price.'
+  },
+  pge: {
+    tab: '3 · Previous Greater', prev: true, lbl: 'Span',
+    title: 'LeetCode 901 · Online Stock Span',
+    problem: 'For each day, the <strong>span</strong> is how many consecutive days (including today) the price was <strong>less than or equal</strong> to today’s price. That equals <code>i − (index of the previous strictly greater price)</code>.',
+    ex: ['[100, 80, 60, 70, 60, 75, 85]', '[1, 1, 1, 2, 1, 4, 6]', '75 covers 60, 70, 60 and itself, so the span is 4. 85 covers back to 100, so the span is 6.'],
+    idea: 'Keep only prices that could still <strong>block</strong> a future price. A new <code>x</code> pops every top <code>≤ x</code>, since they can never block anything again. Whatever is left on top is the previous greater.',
+    def: '100, 80, 60, 70, 60, 75, 85',
+    code: `def spans(prices):
+    ans, stack = [], []              # stack holds indices
+    for i, p in enumerate(prices):
+        while stack and prices[stack[-1]] <= p:
+            stack.pop()              # can't block p or anything later
+        prev = stack[-1] if stack else -1   # previous greater index
+        ans.append(i - prev)
+        stack.append(i)
+    return ans
+
+# LeetCode 901 gives one price at a time (class StockSpanner.next):
+# keep self.stack and self.day, run the same loop body once per call.`,
+    pop: (t, x) => t <= x, val: (a, i, top) => i - top,
+    popMsg: (a, i, j) => `Top ${a[j]} ≤ ${a[i]}, so it can never block ${a[i]} or later days. Pop idx ${j}.`,
+    pushMsg: (a, i, top, r) => `Previous greater: ${top < 0 ? 'none' : `idx ${top} (${a[top]})`}. Span = ${i} − ${top} = ${r}. Push idx ${i}.`,
+    end: 'Done. Every answer was ready the moment its number arrived.'
+  },
+  pse: {
+    tab: '4 · Previous Smaller', prev: true, lbl: 'Previous smaller',
+    title: 'Created problem · Last Cheaper Day',
+    problem: 'Given daily prices, for each day find the price on the <strong>most recent earlier day that was strictly cheaper</strong>. If there is none, answer <code>-1</code>. (LeetCode has no plain version of this, so it is a custom problem.)',
+    ex: ['[3, 7, 8, 4, 2, 5, 1]', '[-1, 3, 7, 3, -1, 2, -1]', '8 looks left and finds 7. 4 skips 8 and 7 and finds 3. 2 finds nothing cheaper, so -1.'],
+    idea: 'Keep only candidates that could still be the answer. A new <code>x</code> pops every top <code>≥ x</code>: <code>x</code> is closer and at least as small, so those tops are useless from now on. The top left over is the previous smaller.',
+    def: '3, 7, 8, 4, 2, 5, 1',
+    code: `def previousSmaller(nums):
+    ans, stack = [], []              # stack holds indices
+    for i, x in enumerate(nums):
+        while stack and nums[stack[-1]] >= x:
+            stack.pop()              # not smaller, and x is closer
+        ans.append(nums[stack[-1]] if stack else -1)
+        stack.append(i)
+    return ans`,
+    pop: (t, x) => t >= x, val: (a, i, top) => (top < 0 ? -1 : a[top]),
+    popMsg: (a, i, j) => `Top ${a[j]} ≥ ${a[i]}, so it is not smaller. ${a[i]} is closer and at least as small, so ${a[j]} is useless now. Pop idx ${j}.`,
+    pushMsg: (a, i, top, r) => `Top of stack is ${top < 0 ? 'empty' : a[top]}, so the previous smaller of ${a[i]} is ${r}. Push idx ${i}.`,
+    end: 'Done. Every answer was ready the moment its number arrived.'
+  }
+};
+
+function build(k, a) {
+  const C = K[k], st = [], ans = a.map(() => null), out = [];
+  const snap = (o) => out.push(Object.assign({ i: null, mark: {}, ghost: null, stack: st.slice(), ans: ans.slice(), msg: '' }, o));
+  snap({ msg: 'Start with an empty stack.' });
+  for (let i = 0; i < a.length; i++) {
+    while (st.length && C.pop(a[st[st.length - 1]], a[i])) {
+      const j = st.pop();
+      if (!C.prev) ans[j] = C.val(a, i, j);
+      snap({ i, mark: { [j]: 'match', [i]: 'new' }, ghost: j, msg: C.popMsg(a, i, j, ans[j]) });
+    }
+    const top = st.length ? st[st.length - 1] : -1;
+    if (C.prev) ans[i] = C.val(a, i, top);
+    st.push(i);
+    snap({ i, mark: { [i]: 'add' }, msg: C.pushMsg(a, i, top, ans[i]) });
+  }
+  if (!C.prev) st.forEach((j) => { ans[j] = C.left(a, j); });
+  snap({ mark: Object.fromEntries(st.map((j) => [j, 'add'])), msg: C.end });
+  return out;
+}
+
+function mount(k, root) {
+  const C = K[k], S = { steps: [], idx: 0, timer: null, arr: [] };
+  root.innerHTML = `
+    <h2>${C.title}</h2>
+    <p>${C.problem}</p>
+    <div class="wrap"><table><tr><th>Input</th><th>Output</th><th>Why</th></tr>
+      <tr><td><code>${C.ex[0]}</code></td><td><code>${C.ex[1]}</code></td><td>${C.ex[2]}</td></tr></table></div>
+    <div class="note">${C.idea}</div>
+    <pre class="src"></pre>
+    <p><strong>Time O(n)</strong>: each index is pushed once and popped once. <strong>Space O(n)</strong>.</p>
+    <h3>Live demo</h3>
+    <div class="controls">
+      <label>Numbers (comma separated, up to 12) <input class="in" value="${C.def}" /></label>
+      <button class="btn primary" data-a="load">Load</button>
+      <button class="btn" data-a="prev">◀ Prev</button>
+      <button class="btn" data-a="next">Next ▶</button>
+      <button class="btn play" data-a="play">▶ Play</button>
+      <button class="btn" data-a="reset">Reset</button>
+    </div>
+    <div class="err"></div>
+    <div class="lab">Orange = current number · green = popped</div>
+    <div class="cells"></div>
+    <div class="demo">
+      <div class="stack-col"></div>
+      <div class="side"><div class="lab">${C.lbl} (? = not decided yet)</div><div class="ans"></div><div class="log"></div></div>
+    </div>`;
+  $('.src', root).textContent = C.code;
+  const q = (s) => $(s, root);
+  const stop = () => { if (S.timer) { clearInterval(S.timer); S.timer = null; } q('.play').textContent = '▶ Play'; };
+  const render = () => {
+    const s = S.steps[S.idx];
+    q('.cells').innerHTML = S.arr.map((v, i) =>
+      `<div class="cw"><div class="cell${s.mark[i] ? ' ' + s.mark[i] : ''}">${v}</div><div class="idx">${i}${s.i === i ? ' ◀ i' : ''}</div></div>`).join('');
+    let h = '<div class="head">▼ TOP</div>';
+    if (s.ghost !== null) h += `<div class="sitem ghost"><b>${S.arr[s.ghost]}</b><small>idx ${s.ghost} · popped</small></div>`;
+    if (!s.stack.length) h += '<div class="sempty">empty</div>';
+    for (let n = s.stack.length - 1; n >= 0; n--)
+      h += `<div class="sitem${n === s.stack.length - 1 ? ' top' : ''}"><b>${S.arr[s.stack[n]]}</b><small>idx ${s.stack[n]}</small></div>`;
+    q('.stack-col').innerHTML = h + '<div class="base"></div>';
+    q('.ans').innerHTML = s.ans.map((x) => `<span class="chip${x !== null ? ' k' : ''}">${x === null ? '?' : x}</span>`).join('');
+    q('.log').innerHTML = S.steps.slice(0, S.idx + 1).map((x, i) => `<div class="log-line">${i}. ${x.msg}</div>`).reverse().join('');
+  };
+  const load = () => {
+    stop();
+    const parts = q('.in').value.split(',').map((x) => x.trim()).filter(Boolean), nums = parts.map(Number);
+    if (!parts.length || nums.some((n) => !Number.isFinite(n))) { q('.err').textContent = '⚠️ Use numbers separated by commas.'; return; }
+    if (nums.length > 12) { q('.err').textContent = '⚠️ Use 12 numbers or fewer.'; return; }
+    q('.err').textContent = '';
+    S.arr = nums; S.steps = build(k, nums); S.idx = 0; render();
+  };
+  root.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-a]'); if (!b) return;
+    const a = b.dataset.a;
+    if (a === 'load') return load();
+    if (a === 'play') {
+      if (S.timer) return stop();
+      if (S.idx >= S.steps.length - 1) S.idx = 0;
+      q('.play').textContent = '⏸ Pause';
+      S.timer = setInterval(() => { if (S.idx < S.steps.length - 1) { S.idx++; render(); } else stop(); }, 900);
+      return;
+    }
+    stop();
+    if (a === 'next' && S.idx < S.steps.length - 1) S.idx++;
+    if (a === 'prev' && S.idx > 0) S.idx--;
+    if (a === 'reset') S.idx = 0;
+    render();
+  });
+  q('.in').addEventListener('keydown', (e) => { if (e.key === 'Enter') load(); });
+  load();
+  return stop;
+}
+
+const stops = {};
+Object.keys(K).forEach((k, n) => {
+  const b = document.createElement('button');
+  b.className = 'tab' + (n === 0 ? ' active' : ''); b.dataset.k = k; b.textContent = K[k].tab;
+  $('#tabs').appendChild(b);
+  const p = document.createElement('section');
+  p.className = 'panel card' + (n === 0 ? ' active' : ''); p.id = 'p-' + k;
+  $('#panels').appendChild(p);
+  stops[k] = mount(k, p);
+});
+$('#tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  Object.values(stops).forEach((s) => s());
+  document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t === b));
+  document.querySelectorAll('.panel').forEach((p) => p.classList.toggle('active', p.id === 'p-' + b.dataset.k));
+});
+</script>
+</body>
+</html>

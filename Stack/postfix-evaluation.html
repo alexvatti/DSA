@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Infix → Postfix & Postfix Evaluation (Stack Visualizer)</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--tx:#1b1f27;--mut:#667085;--bd:#dfe3ea;--ac:#4f46e5;--ok:#16a34a;--bad:#dc2626;--cur:#e0e7ff;--done:#eef0f4;--hl:#fef3c7;--hlb:#f59e0b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1218;--card:#181c25;--tx:#e8eaf0;--mut:#98a2b3;--bd:#2a3040;--ac:#818cf8;--ok:#4ade80;--bad:#f87171;--cur:#2b2f55;--done:#222735;--hl:#3b3216;--hlb:#fbbf24}}
+:root[data-theme="dark"]{--bg:#0f1218;--card:#181c25;--tx:#e8eaf0;--mut:#98a2b3;--bd:#2a3040;--ac:#818cf8;--ok:#4ade80;--bad:#f87171;--cur:#2b2f55;--done:#222735;--hl:#3b3216;--hlb:#fbbf24}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.5rem;margin:0 0 4px}p.sub{color:var(--mut);margin:0 0 16px}
+.tabs{display:flex;gap:6px;border-bottom:2px solid var(--bd);margin-bottom:16px}
+.tabs button{border:none;background:none;color:var(--mut);padding:10px 16px;font:inherit;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs button.on{color:var(--ac);border-bottom-color:var(--ac)}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input{flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace}
+button{padding:9px 14px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit;cursor:pointer}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff}button:disabled{opacity:.45;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips button{font-size:.85rem;padding:4px 10px;font-family:ui-monospace,monospace}
+h2{font-size:.85rem;margin:0 0 10px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.tokens,.outq{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.tok{min-width:44px;text-align:center;padding:8px 10px;border-radius:8px;border:1px solid var(--bd);font-family:ui-monospace,monospace;font-size:1.1rem}
+.tok.done{background:var(--done);color:var(--mut)}.tok.cur{background:var(--cur);border-color:var(--ac);font-weight:700}
+.tok.o{background:var(--cur);border-color:var(--ac)}
+.explain{border-left:4px solid var(--ac);background:var(--cur);border-radius:8px;padding:12px 14px;margin-top:14px;min-height:3.2em}
+.explain.err{border-color:var(--bad);color:var(--bad);background:var(--card)}
+.res{font-size:1.15rem;font-weight:700;color:var(--ok);margin-top:10px;min-height:1.5em;font-family:ui-monospace,monospace}
+.grid{display:grid;grid-template-columns:1fr 1.5fr;gap:16px}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.stackbox{display:flex;flex-direction:column-reverse;gap:6px;min-height:200px;border:2px solid var(--bd);border-top:none;border-radius:0 0 10px 10px;padding:8px}
+.item{padding:8px;text-align:center;border-radius:6px;background:var(--cur);border:1px solid var(--ac);font-family:ui-monospace,monospace;font-size:1.1rem;animation:pop .25s ease}
+.item.top::after{content:" ← top";color:var(--mut);font-size:.75rem}
+.hold{margin-top:10px;font-family:ui-monospace,monospace;color:var(--mut);min-height:1.5em}
+@keyframes pop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.item{animation:none}}
+.code{margin:0;overflow-x:auto;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px 0;font:.85rem/1.6 ui-monospace,Menlo,Consolas,monospace}
+.code div{white-space:pre;padding:0 12px;border-left:3px solid transparent}
+.code div.hl{background:var(--hl);border-left-color:var(--hlb)}
+ol.log{margin:0;padding-left:20px;max-height:220px;overflow:auto;font-size:.9rem}ol.log li{margin-bottom:4px}ol.log li:last-child{font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<h1>Stack Visualizer: Infix → Postfix &amp; Postfix Evaluation</h1>
+<p class="sub">Step through each algorithm and watch the stack, the code line being run, and the reason for every move.</p>
+<div class="tabs" role="tablist">
+  <button class="on" data-tab="convert" role="tab">1. Infix → Postfix</button>
+  <button data-tab="evaluate" role="tab">2. Postfix Evaluation</button>
+</div>
+<section class="panel on" id="p-convert"></section>
+<section class="panel" id="p-evaluate"></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const PREC={'+':1,'-':1,'*':2,'/':2,'^':3};
+const OPS={'+':(a,b)=>a+b,'-':(a,b)=>a-b,'*':(a,b)=>a*b,'/':(a,b)=>Math.trunc(a/b),'^':(a,b)=>Math.pow(a,b)};
+
+/* ---------- code listings (line key → text) ---------- */
+const CONV_CODE=[
+['def infix_to_postfix(tokens):','def'],
+["    prec = {'+':1, '-':1, '*':2, '/':2, '^':3}",'prec'],
+['    stack, out = [], []','init'],
+['    for t in tokens:','for'],
+['        if t.isalnum():                  # operand','operand'],
+['            out.append(t)','outapp'],
+["        elif t == '(':",'lp'],
+['            stack.append(t)','lppush'],
+["        elif t == ')':",'rp'],
+["            while stack[-1] != '(':",'rpwhile'],
+['                out.append(stack.pop())','rppop'],
+['            stack.pop()                  # discard (','rpdisc'],
+['        else:                            # operator','op'],
+["            while stack and stack[-1] != '(' and (",'opw1'],
+['                prec[stack[-1]] > prec[t] or','opw2'],
+["                (prec[stack[-1]] == prec[t] and t != '^')):",'opw3'],
+['                out.append(stack.pop())','oppop'],
+['            stack.append(t)','oppush'],
+['    while stack:','flush'],
+['        out.append(stack.pop())','flushpop'],
+["    return ' '.join(out)",'ret']];
+const EVAL_CODE=[
+['def evaluate_postfix(tokens):','def'],
+['    stack = []','init'],
+['    for t in tokens:','for'],
+["        if t.lstrip('-').isdigit():      # operand",'operand'],
+['            stack.append(int(t))','push'],
+['        else:                            # operator','op'],
+['            b = stack.pop()              # right operand','popb'],
+['            a = stack.pop()              # left operand','popa'],
+['            stack.append(apply(t, a, b)) # a t b','calc'],
+['    return stack.pop()','ret']];
+
+/* ---------- frame generators ---------- */
+function genConv(expr){
+  const toks=expr.match(/\d+(?:\.\d+)?|[A-Za-z_]\w*|[-+*\/^()]/g)||[];
+  const F=[];let st=[],out=[];
+  const add=(t,lines,msg,extra)=>F.push(Object.assign({t,st:[...st],out:[...out],lines,msg,hold:''},extra));
+  if(toks.join('')!==expr.replace(/\s+/g,'')||!toks.length){add(-1,[],'Could not read that expression. Use numbers/letters, + - * / ^ and parentheses.',{err:1});return{toks,F};}
+  add(-1,['def','prec','init'],'Start with an empty operator stack and an empty output list. Scan the tokens left to right.');
+  try{
+    toks.forEach((t,k)=>{
+      if(/^[\w.]+$/.test(t)){out.push(t);add(k,['for','operand','outapp'],`${t} is an operand, so it goes straight to the output.`);}
+      else if(t==='('){st.push(t);add(k,['for','lp','lppush'],'( opens a group, so push it on the stack.');}
+      else if(t===')'){
+        let ok=false;
+        while(st.length){const top=st[st.length-1];if(top==='('){ok=true;break;}out.push(st.pop());add(k,['for','rp','rpwhile','rppop'],`) closes the group: pop ${top} to the output until ( is on top.`);}
+        if(!ok)throw new Error('Mismatched parentheses: found ) with no matching (.');
+        st.pop();add(k,['for','rp','rpdisc'],'Top is ( so discard it. Parentheses never appear in postfix.');
+      }else{
+        while(st.length){
+          const top=st[st.length-1];if(top==='(')break;
+          const pt=PREC[top],pc=PREC[t];
+          if(pt>pc||(pt===pc&&t!=='^')){out.push(st.pop());add(k,['for','op','opw1','opw2','opw3','oppop'],`Top ${top} has ${pt>pc?'higher':'equal (left-to-right)'} precedence than ${t}, so pop ${top} to the output first.`);}
+          else break;
+        }
+        const top=st[st.length-1];
+        const why=!st.length?'the stack is empty':top==='('?'the top is ( so we stop there':PREC[top]<PREC[t]?`top ${top} has lower precedence than ${t}`:`${t} is right-associative, so it does not pop an equal ^`;
+        st.push(t);add(k,['for','op','oppush'],`No more pops because ${why}. Push ${t}.`);
+      }
+    });
+    while(st.length){
+      const top=st[st.length-1];if(top==='(')throw new Error('Mismatched parentheses: ( was never closed.');
+      out.push(st.pop());add(toks.length,['flush','flushpop'],`Input finished. Pop the remaining operator ${top} to the output.`);
+    }
+    add(toks.length,['ret'],'Stack is empty. The output list is the postfix expression.',{done:out.join(' ')});
+  }catch(e){add(toks.length,[],e.message,{err:1});}
+  return{toks,F};
+}
+function genEval(expr){
+  const toks=expr.trim().split(/\s+/).filter(Boolean);
+  const F=[];let st=[];
+  const add=(t,lines,msg,hold,extra)=>F.push(Object.assign({t,st:[...st],out:[],lines,msg,hold:hold||''},extra));
+  if(!toks.length){add(-1,[],'Enter a postfix expression with spaces between tokens.',0,{err:1});return{toks,F};}
+  add(-1,['def','init'],'Start with an empty stack. Scan the tokens left to right.');
+  try{
+    toks.forEach((t,k)=>{
+      if(/^-?\d+(\.\d+)?$/.test(t)){st.push(parseFloat(t));add(k,['for','operand','push'],`${t} is an operand, so push it.`);}
+      else if(OPS[t]){
+        if(st.length<2)throw new Error(`Operator ${t} needs two operands but the stack has ${st.length}. Invalid expression.`);
+        const b=st.pop();add(k,['for','op','popb'],`${t} is an operator. Pop the right operand first: b = ${b}.`,`b = ${b}`);
+        const a=st.pop();add(k,['for','op','popa'],`Pop the left operand: a = ${a}.`,`b = ${b}, a = ${a}`);
+        if(t==='/'&&b===0)throw new Error('Division by zero.');
+        const r=OPS[t](a,b);st.push(r);add(k,['for','op','calc'],`Compute a ${t} b = ${a} ${t} ${b} = ${r}, then push ${r}.`,`${a} ${t} ${b} = ${r}`);
+      }else throw new Error(`Unknown token "${t}".`);
+    });
+    if(st.length!==1)throw new Error(`Invalid expression: ${st.length} values left on the stack (expected 1).`);
+    add(toks.length,['ret'],`Input finished. Pop the last value: that is the answer.`,0,{done:String(st[0])});
+  }catch(e){add(toks.length,[],e.message,0,{err:1});}
+  return{toks,F};
+}
+
+/* ---------- tab builder ---------- */
+const CFG={
+  convert:{code:CONV_CODE,gen:genConv,def:'(A+B)*C-D/E',samples:['(A+B)*C-D/E','A+B*C','A*(B+C)/D','2^3^2','(1+2)*(3+4)'],label:'Infix expression',out:true},
+  evaluate:{code:EVAL_CODE,gen:genEval,def:'2 3 1 * + 9 -',samples:['2 3 1 * + 9 -','5 1 2 + 4 * + 3 -','2 3 ^ 4 /','100 200 + 2 /'],label:'Postfix expression (space separated)',out:false}
+};
+const S={};
+function build(key){
+  const c=CFG[key],p=$('p-'+key),q=s=>p.querySelector('.'+s);
+  p.innerHTML=`<div class="card"><div class="row"><input class="in" aria-label="${c.label}" value="${c.def}"><button class="p load">Load</button></div><div class="chips"></div></div>
+  <div class="card"><h2>Input tokens</h2><div class="tokens"></div>
+  ${c.out?'<h2 style="margin-top:14px">Output (postfix so far)</h2><div class="outq"></div>':''}
+  <div class="row" style="margin-top:14px"><button class="back">◀ Back</button><button class="p step">Step ▶</button><button class="auto">Auto play</button><button class="reset">Reset</button><span class="mut" style="color:var(--mut);font-size:.9rem" id="ctr-${key}"></span></div>
+  <div class="explain"></div><div class="res"></div><div class="row go" style="margin-top:8px"></div></div>
+  <div class="grid"><div class="card"><h2>${c.out?'Operator stack':'Value stack'}</h2><div class="stackbox"></div><div class="hold"></div></div>
+  <div class="card"><h2>Python code (running line highlighted)</h2><pre class="code"></pre></div></div>
+  <div class="card"><h2>Step log</h2><ol class="log"></ol></div>`;
+  const s=S[key]={F:[],toks:[],i:0,timer:null};
+  const ch=q('chips');c.samples.forEach(x=>{const b=document.createElement('button');b.textContent=x;b.onclick=()=>{q('in').value=x;load()};ch.appendChild(b)});
+  q('code').innerHTML=c.code.map((l,n)=>`<div data-k="${l[1]}">${esc(l[0])}</div>`).join('');
+  function stop(){if(s.timer){clearInterval(s.timer);s.timer=null;q('auto').textContent='Auto play';}}
+  function load(){stop();const g=c.gen(q('in').value.trim());s.F=g.F;s.toks=g.toks;s.i=0;render();}
+  function render(){
+    const f=s.F[s.i],last=s.i>=s.F.length-1;
+    q('tokens').innerHTML=s.toks.map((t,k)=>`<div class="tok ${k<f.t?'done':k===f.t?'cur':''}">${esc(t)}</div>`).join('');
+    if(c.out)q('outq').innerHTML=f.out.map(t=>`<div class="tok o">${esc(t)}</div>`).join('');
+    q('stackbox').innerHTML=f.st.map((v,k)=>`<div class="item ${k===f.st.length-1?'top':''}">${esc(v)}</div>`).join('');
+    q('hold').textContent=f.hold?'In hand: '+f.hold:'';
+    const ex=q('explain');ex.textContent=f.msg;ex.className='explain'+(f.err?' err':'');
+    q('code').querySelectorAll('div').forEach(d=>d.classList.toggle('hl',f.lines.includes(d.dataset.k)));
+    q('log').innerHTML=s.F.slice(0,s.i+1).map(x=>`<li>${esc(x.msg)}</li>`).join('');
+    q('log').scrollTop=1e6;
+    q('res').textContent=f.done?(c.out?'Postfix: ':'Result = ')+f.done:'';
+    const go=q('go');go.innerHTML='';
+    if(key==='convert'&&f.done&&/^[\d.\s+\-*\/^]+$/.test(f.done)){const b=document.createElement('button');b.className='p';b.textContent='Evaluate this postfix →';b.onclick=()=>{S.evaluate.q.in.value=f.done;S.evaluate.load();showTab('evaluate')};go.appendChild(b)}
+    q('back').disabled=s.i===0;q('step').disabled=last;q('auto').disabled=last&&!s.timer;
+    $('ctr-'+key).textContent=`Step ${s.i} / ${s.F.length-1}`;
+    if(last)stop();
+  }
+  q('step').onclick=()=>{if(s.i<s.F.length-1){s.i++;render()}};
+  q('back').onclick=()=>{stop();if(s.i>0){s.i--;render()}};
+  q('reset').onclick=()=>{stop();s.i=0;render()};
+  q('load').onclick=load;
+  q('in').addEventListener('keydown',e=>{if(e.key==='Enter')load()});
+  q('auto').onclick=()=>{if(s.timer){stop();return}q('auto').textContent='Pause';s.timer=setInterval(()=>q('step').click(),1000)};
+  s.q={in:q('in')};s.load=load;load();
+}
+function showTab(k){
+  Object.keys(S).forEach(n=>{if(n!==k&&S[n].timer){clearInterval(S[n].timer);S[n].timer=null}});
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+k));
+  try{if(location.hash!=='#'+k)history.replaceState(null,'','#'+k)}catch(e){}
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+build('convert');build('evaluate');
+addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(CFG[h])showTab(h)});
+if(CFG[location.hash.slice(1)])showTab(location.hash.slice(1));
+</script>
+</body>
+</html>
