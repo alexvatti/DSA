@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🔗 Linked List (Medium) — Visual Playground</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--fg:#1d2433;--mut:#667085;--ac:#4f46e5;--bd:#e3e6ef;--ok:#d1fae5;--okb:#10b981;--bad:#fee2e2;--badb:#ef4444;--sh:#fef3c7;--shb:#f59e0b;--code:#0f172a;--codefg:#e2e8f0}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1220;--card:#181c2e;--fg:#e6e9f5;--mut:#9aa3b8;--ac:#8b86ff;--bd:#2a3050;--ok:#064e3b;--bad:#7f1d1d;--sh:#78350f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:0 16px 40px}
+.wrap{max-width:980px;margin:0 auto}
+header{text-align:center;padding:28px 0 8px}
+header h1{margin:0;font-size:2rem}
+.sub{color:var(--mut);margin:.3rem 0 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;margin:16px 0}
+h2{margin:0 0 6px;font-size:1.3rem}
+h3{margin:0 0 6px;font-size:1rem}
+code{background:rgba(127,127,160,.15);padding:1px 6px;border-radius:5px;font-size:.92em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:12px}
+.box{border:1px solid var(--bd);border-radius:10px;padding:12px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0}
+.tab{white-space:nowrap;border:1px solid var(--bd);background:var(--card);color:var(--fg);padding:9px 14px;border-radius:10px;cursor:pointer;font:inherit}
+.tab.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.panel{display:none}.panel.active{display:block}
+.meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 10px}
+.meta a{color:var(--ac);text-decoration:none}
+.diff{background:var(--ok);color:var(--fg);border-radius:20px;padding:1px 10px;font-size:.85rem}
+.badge{font-size:.78rem;background:rgba(79,70,229,.12);color:var(--ac);border-radius:20px;padding:2px 10px;vertical-align:middle;margin-left:6px}
+ol.steps li,ul.tips li{margin:4px 0}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600}
+pre{background:var(--code);color:var(--codefg);padding:14px;border-radius:10px;overflow-x:auto;font-size:.88rem;line-height:1.5;margin:8px 0 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:14px 0}
+.controls label{display:flex;flex-direction:column;font-size:.85rem;color:var(--mut)}
+.controls input{padding:7px 9px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;min-width:150px}
+.btn{padding:8px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--fg);cursor:pointer;font:inherit}
+.btn.primary{background:var(--ac);color:#fff;border-color:var(--ac)}
+.stage{border:1px dashed var(--bd);border-radius:12px;padding:14px;overflow-x:auto;min-height:120px}
+.rt{font-size:.85rem;color:var(--mut);margin:8px 0 4px}.rt:first-child{margin-top:0}
+.line{display:flex;align-items:flex-start;min-width:max-content}
+.cell{display:flex;flex-direction:column;align-items:center}
+.n{min-width:46px;height:42px;display:flex;align-items:center;justify-content:center;border:2px solid var(--ac);border-radius:10px;font-weight:700;padding:0 8px;background:var(--card)}
+.n.none{border-style:dotted;border-color:var(--mut);color:var(--mut);font-weight:400;font-size:.85rem}
+.n.done{background:var(--ok);border-color:var(--okb)}
+.n.bad{background:var(--bad);border-color:var(--badb)}
+.n.shared{background:var(--sh);border-color:var(--shb)}
+.n.entry{outline:2px dashed var(--shb);outline-offset:2px}
+.ptr{font-size:.75rem;color:var(--ac);font-weight:700;text-align:center;min-height:2.4em;margin-top:2px;line-height:1.2}
+.ar{width:30px;text-align:center;line-height:42px;color:var(--mut);font-size:1.1rem}
+.loop{font-size:.82rem;color:var(--shb);margin-top:4px}
+.log{margin-top:10px;max-height:190px;overflow-y:auto;font-size:.9rem;border-left:3px solid var(--bd);padding-left:12px}
+.log div{padding:2px 0;color:var(--mut)}.log .cur{color:var(--fg);font-weight:600}
+footer{text-align:center;color:var(--mut);font-size:.9rem;margin-top:24px}
+.info-cards,.style-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
+.info-card,.style-box{border:1px solid var(--bd);border-radius:10px;padding:12px}
+.info-card ul{margin:0;padding-left:18px}.info-card.when{border-left:4px solid var(--okb)}.info-card.idea{border-left:4px solid var(--ac)}.info-card.spot{border-left:4px solid var(--shb)}
+.mini-demo{display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin:8px 0}
+.mini-cell{border:2px solid var(--ac);border-radius:8px;padding:1px 9px;font-weight:700;font-size:.9rem}.mini-cell.dim{border-style:dashed;color:var(--mut);border-color:var(--mut)}
+.mini-ar{color:var(--mut);padding:0 3px}.mini-note{font-size:.78rem;color:var(--mut);margin-left:8px}.use-case{font-size:.85rem;color:var(--ac);margin:4px 0 0}
+.when{border-left:4px solid var(--okb);background:rgba(16,185,129,.07);border-radius:8px;padding:8px 14px;margin:12px 0}.when ul{margin:0;padding-left:18px}
+.kw{color:#c4b5fd}.fn{color:#7dd3fc}.st{color:#86efac}.cm{color:#94a3b8;font-style:italic}.nm{color:#fcd34d}
+.subtxt{font-size:.72rem;color:var(--mut);text-align:center;white-space:nowrap;margin-top:2px}
+.n.dim{border-style:dashed;color:var(--mut);border-color:var(--mut)}
+pre code{background:none;padding:0;font-size:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>🔗 Linked List — Part 2: Medium</h1>
+  <p class="sub">Step through each medium problem and <em>see</em> the pointers move</p>
+</header>
+
+<section class="card">
+  <h2>🤔 What makes a Medium Linked List problem?</h2>
+  <p>The tools are the same as in Part 1 — <code>next</code> pointers, <code>prev / curr</code>, <code>slow / fast</code>, a <code>dummy</code> head — but a Medium problem <strong>glues two or three of them together</strong> (or adds a hash map). Name the pieces first, then code them one by one.</p>
+<pre>class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next</pre>
+  <div class="info-cards">
+    <div class="info-card when"><h3>✅ When to use it</h3><ul>
+      <li>You need the <strong>nth node from the end</strong></li>
+      <li>The new order <strong>alternates</strong> front and back</li>
+      <li>You must <strong>clone</strong> nodes that have extra pointers</li>
+      <li>Numbers are <strong>digit lists</strong> with a carry</li>
+      <li>An array hides a <strong>linked list / cycle</strong></li><li>You need an <strong>LRU cache</strong> with O(1) operations</li></ul></div>
+    <div class="info-card idea"><h3>💡 Key idea</h3><p>Break the problem into <strong>easy building blocks</strong>: a <em>gap</em> between two pointers, <em>middle + reverse + merge</em>, an <em>old → new map</em>, a <em>dummy with carry</em>, or <em>Floyd's cycle trick</em>. Save <code>next</code> before every re-link.</p></div>
+    <div class="info-card spot"><h3>🔍 How to spot it</h3><p>Look for <em>nth from end, reorder, copy, add numbers, duplicate</em>. Ask: do I need a <strong>gap</strong>? the <strong>middle</strong>? a <strong>map</strong>? a <strong>carry</strong>?</p></div>
+  </div>
+  <div class="style-grid">
+    <div class="style-box"><h3>📏 Gap pointers</h3><p><code>fast</code> starts n steps ahead.</p><div class="mini-demo"><span class="mini-cell ">slow</span><span class="mini-ar">→</span><span class="mini-cell "> </span><span class="mini-ar">→</span><span class="mini-cell ">fast</span><span class="mini-note">gap = n</span></div><p class="use-case">Remove Nth From End</p></div>
+    <div class="style-box"><h3>🧩 Middle + Reverse + Weave</h3><p>Split, flip the back half, interleave.</p><div class="mini-demo"><span class="mini-cell ">1</span><span class="mini-ar">→</span><span class="mini-cell ">5</span><span class="mini-ar">→</span><span class="mini-cell ">2</span><span class="mini-ar">→</span><span class="mini-cell ">4</span><span class="mini-ar">→</span><span class="mini-cell ">3</span></div><p class="use-case">Reorder List</p></div>
+    <div class="style-box"><h3>🗺️ Old → New map</h3><p>Translate old pointers into new nodes.</p><div class="mini-demo"><span class="mini-cell ">7</span><span class="mini-ar">⇒</span><span class="mini-cell ">7'</span></div><p class="use-case">Copy List With Random Pointer</p></div>
+    <div class="style-box"><h3>➕ Dummy + carry</h3><p>Add digit by digit, build with <code>tail</code>.</p><div class="mini-demo"><span class="mini-cell dim">dummy</span><span class="mini-ar">→</span><span class="mini-cell ">7</span><span class="mini-ar">→</span><span class="mini-cell ">0</span><span class="mini-ar">→</span><span class="mini-cell ">8</span></div><p class="use-case">Add Two Numbers</p></div>
+    <div class="style-box"><h3>🐢🐇 Floyd on an array</h3><p>Index <code>i</code> points to <code>nums[i]</code>.</p><div class="mini-demo"><span class="mini-cell ">i</span><span class="mini-ar">→</span><span class="mini-cell ">nums[i]</span><span class="mini-note">cycle entrance = duplicate</span></div><p class="use-case">Find the Duplicate Number</p></div>
+    <div class="style-box"><h3>🧱 Map + doubly linked list</h3><p>Map finds the node, the list keeps the order.</p><div class="mini-demo"><span class="mini-cell dim">H</span><span class="mini-ar">⇄</span><span class="mini-cell">1:1</span><span class="mini-ar">⇄</span><span class="mini-cell">2:2</span><span class="mini-ar">⇄</span><span class="mini-cell dim">T</span></div><p class="use-case">LRU Cache</p></div>
+  </div>
+  <p style="margin-bottom:0"><strong>Roadmap:</strong> Part 1 Easy (31–36) → Part 2 Medium (37–42, this page) → Part 3 Hard (43–44).</p>
+</section>
+
+<nav class="tabs" id="tabs"></nav>
+<div id="panels"></div>
+
+<footer>Use <em>Play</em> to auto-run or step with <em>Next</em>. Edit the inputs and press <em>Load</em>.</footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const nums = s => s.split(',').map(x => x.trim()).filter(x => x !== '').map(Number).filter(x => !isNaN(x)).slice(0, 9);
+const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, isNaN(x) ? lo : x));
+
+/* ---------- frame helpers ----------
+   row(title, vals, opts): one linked list drawn as boxes.
+   next[i] = index node i points to (used to draw flipped arrows).
+   at(row, index, name): put a pointer label under a node (index == length -> the None box). */
+const row = (title, vals, o = {}) => ({ title, vals, next: null, ptrs: {}, cls: {}, subs: {}, none: true, loop: -1, ...o });
+const at = (r, i, name) => {
+  if (i >= 0 && (i < r.vals.length || (i === r.vals.length && r.none))) (r.ptrs[i] = r.ptrs[i] || []).push(name);
+};
+
+/* ---------- one generator per problem: returns a list of frames {rows, note} ---------- */
+const GEN = {
+  // 37 Remove Nth Node From End of List
+  rmn([s, q]) {
+    const v = nums(s), L = v.length; if (!L) return [];
+    const n = clamp(parseInt(q), 1, L), nodes = ['D', ...v], F = []; let sl = 0, f = 0;
+    const target = L - n + 1;
+    const snap = (note, hl) => {
+      const r = row('dummy → list', nodes); r.cls[0] = 'dim';
+      at(r, sl, 'slow'); at(r, f, 'fast'); if (hl) r.cls[target] = hl;
+      F.push({ rows: [r], note });
+    };
+    snap(`Start: dummy node (D) in front, slow = fast = dummy. n = ${n}`);
+    for (let k = 1; k <= n; k++) { f++; snap(`fast steps ahead (${k} of ${n}) → builds a gap of ${n} nodes`); }
+    while (f < L) { sl++; f++; snap('Move slow and fast together, one step each'); }
+    snap(`fast is on the last node → slow is just before the target (${v[L - n]}) → slow.next = slow.next.next`, 'bad');
+    const res = v.filter((_, i) => i !== L - n);
+    F.push({ rows: [row('Result (dummy.next)', res)], note: `Node ${v[L - n]} is skipped → ${res.join(' → ') || 'empty list'}` });
+    return F;
+  },
+  // 38 Reorder List
+  reo([s]) {
+    const v = nums(s), n = v.length; if (!n) return [];
+    const F = []; let sl = 0, f = 0;
+    const s1 = note => { const r = row('List', v); at(r, sl, 'slow'); at(r, f, 'fast'); F.push({ rows: [r], note }); };
+    s1('Step 1: find the middle (slow / fast)');
+    while (f + 2 < n) { sl++; f += 2; s1('slow moves 1, fast moves 2'); }
+    const A = v.slice(0, sl + 1), B = v.slice(sl + 1).reverse();
+    F.push({ rows: [row('First half (cut after slow)', A), row('Second half, reversed', B, { none: false })], note: 'Step 2: cut after slow, then reverse the second half' });
+    const res = [];
+    for (let k = 0; k < A.length; k++) {
+      res.push(A[k]); if (k < B.length) res.push(B[k]);
+      const r1 = row('First half', A), r2 = row('Second half, reversed', B, { none: false }), r3 = row('Reordered', res.slice());
+      A.forEach((_, j) => { if (j <= k) r1.cls[j] = 'done'; });
+      B.forEach((_, j) => { if (j <= k) r2.cls[j] = 'done'; });
+      at(r1, k, 'first'); at(r2, k, 'second');
+      F.push({ rows: [r1, r2, r3], note: k < B.length ? `Step 3: weave ${A[k]} → ${B[k]}` : `Step 3: ${A[k]} is left over → it stays at the end` });
+    }
+    return F;
+  },
+  // 39 Copy List With Random Pointer
+  cpy([s, q]) {
+    const v = nums(s), n = v.length; if (!n) return [];
+    const rd = q.split(',').map(x => parseInt(x.trim()));
+    const rnd = v.map((_, i) => (isNaN(rd[i]) || rd[i] < 0 || rd[i] >= n) ? -1 : rd[i]);
+    const lab = (i, t = '') => i < 0 ? 'None' : v[i] + t, F = [];
+    const orig = k => { const r = row('Original list', v); v.forEach((_, i) => r.subs[i] = 'rnd → ' + lab(rnd[i])); at(r, k, 'curr'); return r; };
+    const T = 'Copies (map: old → new)';
+    F.push({ rows: [orig(-1), row(T, [], { none: false })], note: 'Plan: pass 1 creates a copy of every node, pass 2 wires next and random using the map' });
+    for (let k = 0; k < n; k++) {
+      const r2 = row(T, v.slice(0, k + 1).map(x => x + "'"), { none: false, next: v.map(() => -1) }); r2.cls[k] = 'done';
+      F.push({ rows: [orig(k), r2], note: `Pass 1: create copy ${v[k]}' and store map[${v[k]}] = ${v[k]}'` });
+    }
+    for (let k = 0; k < n; k++) {
+      const r2 = row(T, v.map(x => x + "'"), { next: v.map((_, i) => i <= k ? i + 1 : -1) });
+      for (let i = 0; i <= k; i++) r2.subs[i] = 'rnd → ' + lab(rnd[i], "'"); r2.cls[k] = 'done';
+      F.push({ rows: [orig(k), r2], note: `Pass 2: ${v[k]}'.next = ${k + 1 < n ? v[k + 1] + "'" : 'None'}, ${v[k]}'.random = ${lab(rnd[k], "'")}` });
+    }
+    F[F.length - 1].note += ' — return map[head]: a brand-new list';
+    return F;
+  },
+  // 40 Add Two Numbers
+  add([a, b]) {
+    const A = nums(a).map(x => Math.abs(x) % 10), B = nums(b).map(x => Math.abs(x) % 10);
+    if (!A.length || !B.length) return [];
+    const F = [], res = []; let carry = 0, k = 0;
+    const snap = note => {
+      const r1 = row('l1 (digits, reversed)', A), r2 = row('l2 (digits, reversed)', B), r3 = row('sum', res.slice());
+      A.forEach((_, i) => { if (i < k) r1.cls[i] = 'done'; }); B.forEach((_, i) => { if (i < k) r2.cls[i] = 'done'; });
+      at(r1, k, 'p1'); at(r2, k, 'p2'); at(r3, res.length - 1, 'tail');
+      F.push({ rows: [r1, r2, r3], note });
+    };
+    snap('Start: dummy node, carry = 0. Digits are reversed, so we add from the ones place');
+    while (k < A.length || k < B.length || carry) {
+      const x = A[k] ?? 0, y = B[k] ?? 0, t = x + y + carry, nc = Math.floor(t / 10);
+      res.push(t % 10);
+      const note = `${x} + ${y} + carry ${carry} = ${t} → write ${t % 10}, carry ${nc}`;
+      carry = nc; k++; snap(note);
+    }
+    F[F.length - 1].note += ' — no digits and no carry left → done';
+    return F;
+  },
+  // 41 Find the Duplicate Number
+  dup([s]) {
+    const a = nums(s), n = a.length;
+    if (n < 2 || a.some(x => !Number.isInteger(x) || x < 1 || x > n - 1)) return [];
+    const idx = a.map((_, i) => i), F = []; let sl = 0, f = 0;
+    const snap = (note, hl) => {
+      const r = row('Node i → points to nums[i]', idx, { none: false, next: idx.map(() => -1) });
+      idx.forEach(i => r.subs[i] = '→ ' + a[i]); at(r, sl, 'slow'); at(r, f, 'fast'); if (hl) r.cls[sl] = hl;
+      F.push({ rows: [r], note });
+    };
+    snap('The array is a linked list: node i points to nums[i]. A duplicate value = two nodes pointing to one node = a cycle. slow = fast = 0');
+    let g = 0;
+    do { sl = a[sl]; f = a[a[f]]; snap('Phase 1: slow moves 1, fast moves 2'); } while (sl !== f && g++ < 50);
+    F[F.length - 1].note = `Phase 1: they meet at ${sl} (inside the cycle)`;
+    sl = 0; snap(`Phase 2: put slow back at 0, fast stays at ${f}. Both now move 1 step`);
+    while (sl !== f && g++ < 100) {
+      sl = a[sl]; f = a[f];
+      snap(sl === f ? `Both meet at ${sl} → the cycle entrance → duplicate = ${sl}` : 'both move 1 step', sl === f ? 'done' : undefined);
+    }
+    return F;
+  },
+  // 42 LRU Cache
+  lru([c, ops]) {
+    const cap = clamp(parseInt(c), 1, 5);
+    const O = ops.split(',').map(x => x.trim().split(/\s+/)).filter(t => /^(get|put)$/.test(t[0]) && !isNaN(+t[1])).slice(0, 14);
+    if (!O.length) return [];
+    const L = [], F = [];
+    const snap = (note, hl) => {
+      const vals = ['H', ...L.map(x => x[0] + ':' + x[1]), 'T'];
+      const r = row(`H ⇄ least recent … most recent ⇄ T   (cache: ${L.length}/${cap})`, vals, { none: false, arrow: '⇄' });
+      r.cls[0] = 'dim'; r.cls[vals.length - 1] = 'dim';
+      if (L.length) { at(r, 1, 'LRU'); at(r, L.length, 'MRU'); }
+      if (hl) Object.entries(hl).forEach(([i, cl]) => { r.cls[i] = cl; });
+      F.push({ rows: [r], note });
+    };
+    snap(`Start: empty cache, capacity = ${cap}. Dummy H and T mark the two ends`);
+    for (const [op, k, v] of O) {
+      const key = +k, val = +v, i = L.findIndex(x => x[0] === key);
+      if (op === 'get') {
+        if (i < 0) { snap(`get(${key}) → -1  (not in the cache, nothing changes)`); continue; }
+        const [it] = L.splice(i, 1); L.push(it);
+        snap(`get(${key}) → ${it[1]}  (hit: move ${key} to the most-recent end)`, { [L.length]: 'done' });
+      } else {
+        if (i >= 0) L.splice(i, 1);
+        L.push([key, val]);
+        snap(i >= 0 ? `put(${key}, ${val}) → key exists: update it and move it to the most-recent end` : `put(${key}, ${val}) → new key goes to the most-recent end`, { [L.length]: 'done' });
+        if (L.length > cap) {
+          snap(`Over capacity (${L.length} > ${cap}) → evict the least recent: ${L[0][0]}`, { 1: 'bad' });
+          const ev = L.shift(); snap(`${ev[0]} is removed from the list and from the map`);
+        }
+      }
+    }
+    return F;
+  }
+};
+
+/* ---------- problem content ---------- */
+const P = [
+  { key: 'rmn', title: 'Remove Nth Node From End of List', lc: 19, slug: 'remove-nth-node-from-end-of-list', n: 37, badge: '📏 Gap Pointers',
+    desc: 'Walk the list <strong>once</strong>: put <code>fast</code> exactly <code>n</code> steps ahead of <code>slow</code>. When <code>fast</code> reaches the last node, <code>slow</code> is right before the node to delete. A <strong>dummy</strong> head makes removing the first node easy.',
+    steps: ['Create <code>dummy</code> before <code>head</code>; set <code>slow = fast = dummy</code>.', 'Move <code>fast</code> forward <code>n</code> steps (this builds the gap).', 'Move <code>slow</code> and <code>fast</code> together until <code>fast.next</code> is <code>None</code>.', '<code>slow</code> is just before the target: <code>slow.next = slow.next.next</code>.', 'Return <code>dummy.next</code>.'],
+    tips: ['The dummy node handles "remove the head" with no special case.', 'A gap of <code>n</code> between the pointers means <code>n</code> from the end.', 'Time <strong>O(n)</strong> • Space <strong>O(1)</strong> — one pass, no length counting.'],
+    code: `def remove_nth_from_end(head, n):
+    dummy = ListNode(0, head)       # fake head, so removing the first node is easy
+    slow = fast = dummy
+
+    for _ in range(n):              # 1. fast goes n steps ahead
+        fast = fast.next
+
+    while fast.next:                # 2. move both until fast is on the last node
+        slow = slow.next
+        fast = fast.next
+
+    slow.next = slow.next.next      # 3. skip the target node
+    return dummy.next`,
+    inputs: [['List', '1, 2, 3, 4, 5'], ['n (remove the nth from the end)', '2']] },
+  { key: 'reo', title: 'Reorder List', lc: 143, slug: 'reorder-list', n: 38, badge: '🧩 Middle + Reverse + Weave',
+    desc: 'Reorder <code>L0 → L1 → … → Ln</code> into <code>L0 → Ln → L1 → Ln-1 → …</code>. It glues three easy tricks together: <strong>find the middle</strong>, <strong>reverse the second half</strong>, then <strong>weave</strong> the two halves one node at a time.',
+    steps: ['Find the middle with <code>slow</code> / <code>fast</code> (stop when <code>fast.next.next</code> is <code>None</code>).', 'Cut the list after <code>slow</code> and reverse the second half.', 'Weave: take one node from the first half, then one from the reversed second half.', 'Repeat until the second half is finished.'],
+    tips: ['Cut with <code>slow.next = None</code> so the first half ends cleanly.', 'Save both next pointers (<code>n1</code>, <code>n2</code>) before re-linking.', 'Time <strong>O(n)</strong> • Space <strong>O(1)</strong>. It changes the list in place and returns nothing.'],
+    code: `def reorder_list(head):
+    if not head or not head.next:
+        return
+
+    # 1. find the middle
+    slow, fast = head, head
+    while fast.next and fast.next.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    # 2. cut after slow, then reverse the second half
+    second = slow.next
+    slow.next = None
+    prev = None
+    while second:
+        nxt = second.next
+        second.next = prev
+        prev = second
+        second = nxt
+
+    # 3. weave the two halves together
+    first, second = head, prev
+    while second:
+        n1, n2 = first.next, second.next
+        first.next = second         # first -> second
+        second.next = n1            # second -> next of first
+        first, second = n1, n2`,
+    inputs: [['List', '1, 2, 3, 4, 5']] },
+  { key: 'cpy', title: 'Copy List With Random Pointer', lc: 138, slug: 'copy-list-with-random-pointer', n: 39, badge: '🗺️ Old → New Map',
+    desc: 'Each node has an extra <code>random</code> pointer. Make a <strong>deep copy</strong>: the new list must use <strong>brand-new nodes</strong>. Keep a dictionary <code>old → new</code> so any pointer of an old node can be translated into the matching new node.',
+    steps: ['Pass 1: walk the list and store <code>old_to_new[node] = Node(node.val)</code>.', 'Pass 2: walk again and set each copy\'s <code>next</code> and <code>random</code> using the map.', 'Return <code>old_to_new[head]</code>.'],
+    tips: ['<code>old_to_new.get(None)</code> gives <code>None</code>, so the end of the list needs no special case.', 'Two passes are needed because <code>random</code> may point <strong>forward</strong> to a copy that does not exist yet.', 'Time <strong>O(n)</strong> • Space <strong>O(n)</strong> for the map (an O(1) interleaving trick exists, but this is the clear one).'],
+    code: `def copy_random_list(head):
+    if not head:
+        return None
+
+    old_to_new = {}
+
+    # pass 1: create a copy of every node (no links yet)
+    curr = head
+    while curr:
+        old_to_new[curr] = Node(curr.val)
+        curr = curr.next
+
+    # pass 2: wire next and random using the map
+    curr = head
+    while curr:
+        old_to_new[curr].next = old_to_new.get(curr.next)
+        old_to_new[curr].random = old_to_new.get(curr.random)
+        curr = curr.next
+
+    return old_to_new[head]`,
+    inputs: [['List', '7, 13, 11, 10, 1'], ['random index of each node (-1 = None)', '-1, 0, 4, 2, 0']] },
+  { key: 'add', title: 'Add Two Numbers', lc: 2, slug: 'add-two-numbers', n: 40, badge: '➕ Dummy + Carry',
+    desc: 'Digits are stored in <strong>reverse</strong> order, so the head is the ones place — exactly how you add by hand. Add digit by digit, pass the carry along, and build the answer with a <strong>dummy</strong> head.',
+    steps: ['Make <code>dummy</code>, <code>tail</code> and <code>carry = 0</code>.', 'While <code>l1</code> or <code>l2</code> or <code>carry</code> remains: <code>total = carry + digit1 + digit2</code> (a missing digit counts as 0).', 'Append a node with <code>total % 10</code> and set <code>carry = total // 10</code>.', 'Move <code>l1</code>, <code>l2</code> and <code>tail</code> forward. Return <code>dummy.next</code>.'],
+    tips: ['Keep looping while <code>carry</code> is non-zero, or <code>9 + 1</code> would lose a digit.', 'A shorter list simply contributes <code>0</code>.', 'Time <strong>O(max(n, m))</strong> • Space <strong>O(1)</strong> extra (the output list is the answer).'],
+    code: `def add_two_numbers(l1, l2):
+    dummy = ListNode()
+    tail = dummy
+    carry = 0
+
+    while l1 or l2 or carry:
+        total = carry
+        if l1:
+            total += l1.val
+            l1 = l1.next
+        if l2:
+            total += l2.val
+            l2 = l2.next
+
+        carry = total // 10                 # 0 or 1
+        tail.next = ListNode(total % 10)    # the digit to keep
+        tail = tail.next
+
+    return dummy.next`,
+    inputs: [['l1 (digits, reversed)', '2, 4, 3'], ['l2 (digits, reversed)', '5, 6, 4']] },
+  { key: 'dup', title: 'Find the Duplicate Number', lc: 287, slug: 'find-the-duplicate-number', n: 41, badge: '🐢🐇 Floyd on an Array',
+    desc: 'An array of <code>n + 1</code> numbers in <code>1..n</code> is secretly a <strong>linked list</strong>: index <code>i</code> points to <code>nums[i]</code>. Two indexes hold the same value, so two nodes point to one node → a <strong>cycle</strong>, and the cycle entrance is the duplicate. Use slow &amp; fast to get into the cycle, then find the entrance.',
+    steps: ['Phase 1: <code>slow = nums[slow]</code>, <code>fast = nums[nums[fast]]</code> until they meet (inside the cycle).', 'Phase 2: put <code>slow</code> back at <code>0</code>; keep <code>fast</code> at the meeting point.', 'Move both <strong>one</strong> step at a time until they meet again.', 'That meeting index is the <strong>duplicate</strong>.'],
+    tips: ['Start at index <code>0</code>: nothing points to <code>0</code> (values are ≥ 1), so <code>0</code> is outside the cycle.', 'Do not change the array and use no extra set — that is why Floyd fits here.', 'Time <strong>O(n)</strong> • Space <strong>O(1)</strong>.'],
+    code: `def find_duplicate(nums):
+    # Phase 1: find a meeting point inside the cycle
+    slow = fast = 0
+    while True:
+        slow = nums[slow]               # 1 step
+        fast = nums[nums[fast]]         # 2 steps
+        if slow == fast:
+            break
+
+    # Phase 2: restart slow from 0; they meet at the cycle entrance
+    slow = 0
+    while slow != fast:
+        slow = nums[slow]
+        fast = nums[fast]
+
+    return slow                         # the duplicate number`,
+    inputs: [['nums (n+1 numbers in 1..n)', '1, 3, 4, 2, 2']] },
+  { key: 'lru', title: 'LRU Cache', lc: 146, slug: 'lru-cache', n: 42, badge: '🧱 Hash Map + Doubly Linked List',
+    desc: 'A cache with <strong>O(1)</strong> <code>get</code> and <code>put</code> that evicts the <strong>least recently used</strong> item when full. A <strong>hash map</strong> finds a node instantly; a <strong>doubly linked list</strong> keeps nodes in usage order and lets you remove or move any node in O(1). Dummy <code>head</code> and <code>tail</code> nodes remove the edge cases.',
+    steps: ['Keep the list ordered: <strong>least recent</strong> next to <code>head</code>, <strong>most recent</strong> next to <code>tail</code>.', '<code>get(key)</code>: if missing return <code>-1</code>; else move its node to the most-recent end and return its value.', '<code>put(key, value)</code>: if the key exists, remove its old node; add the new node at the most-recent end and store it in the map.', 'If the map is over capacity, remove the node right after <code>head</code> (least recent) and delete its key from the map.'],
+    tips: ['The node stores its <code>key</code> too, so evicting from the list can also delete from the map.', 'Two tiny helpers (<code>_remove</code>, <code>_add_to_end</code>) keep every operation short.', 'Time <strong>O(1)</strong> per operation • Space <strong>O(capacity)</strong>.'],
+    code: `class Node:
+    def __init__(self, key=0, val=0):
+        self.key = key
+        self.val = val
+        self.prev = None
+        self.next = None
+
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.cap = capacity
+        self.map = {}                       # key -> node
+        self.head = Node()                  # dummy: least recent side
+        self.tail = Node()                  # dummy: most recent side
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):                # unlink a node
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _add_to_end(self, node):            # put a node just before tail
+        last = self.tail.prev
+        last.next = node
+        node.prev = last
+        node.next = self.tail
+        self.tail.prev = node
+
+    def get(self, key):
+        if key not in self.map:
+            return -1
+        node = self.map[key]
+        self._remove(node)                  # now it is the most recent
+        self._add_to_end(node)
+        return node.val
+
+    def put(self, key, value):
+        if key in self.map:
+            self._remove(self.map[key])     # drop the old node
+        node = Node(key, value)
+        self.map[key] = node
+        self._add_to_end(node)
+
+        if len(self.map) > self.cap:        # too many -> evict the least recent
+            lru = self.head.next
+            self._remove(lru)
+            del self.map[lru.key]`,
+    inputs: [['Capacity', '2'], ['Operations (comma separated)', 'put 1 1, put 2 2, get 1, put 3 3, get 2, put 4 4, get 1, get 3, get 4']] }
+];
+
+const WHEN = {
+  rmn: ['You need the <strong>nth node from the end</strong> but do not know the length', 'You want <strong>one pass</strong> and O(1) space', '🔍 Keywords: <em>nth from the end, remove, last k nodes</em>'],
+  reo: ['The new order <strong>alternates</strong> between the front and the back', 'You can only move forward through the list', '🔍 Keywords: <em>reorder, interleave, first-last-second-second last</em>'],
+  cpy: ['A node has an extra pointer (<code>random</code>) and you need a <strong>deep copy</strong>', 'Pointers may refer to nodes that <strong>do not exist yet</strong>', '🔍 Keywords: <em>copy, clone, deep copy, random pointer</em>'],
+  add: ['Numbers are stored as <strong>digit lists</strong> and may be too big for an int', 'You must do <strong>schoolbook addition</strong> with a carry', '🔍 Keywords: <em>add two numbers, digits, reverse order, carry</em>'],
+  dup: ['Values are in <code>1..n</code> in an array of <code>n + 1</code>, so <code>nums[i]</code> works as a <strong>next pointer</strong>', 'The array must not change and extra space must be <strong>O(1)</strong>', '🔍 Keywords: <em>find the duplicate, 1..n, cannot modify, constant space</em>'],
+  lru: ['You need <strong>O(1)</strong> lookup <em>and</em> O(1) reordering / removal', 'The oldest or least-used item must be <strong>evicted</strong> when the cache is full', '🔍 Keywords: <em>LRU, cache, capacity, evict, least recently used</em>']
+};
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const hl = src => esc(src).replace(/(#.*$)|("[^"]*")|\b(def|class|while|if|elif|else|return|is|not|and|or|None|True|False|for|in|self|break)\b|\b(\d+)\b|(?<=def )(\w+)/gm,
+  (m, c, s, k, n, f) => c ? `<span class="cm">${c}</span>` : s ? `<span class="st">${s}</span>` : k ? `<span class="kw">${k}</span>` : n ? `<span class="nm">${n}</span>` : `<span class="fn">${f}</span>`);
+
+/* ---------- build the page ---------- */
+const tabs = $('#tabs'), panels = $('#panels');
+P.forEach((p, idx) => {
+  const b = document.createElement('button');
+  b.className = 'tab' + (idx ? '' : ' active'); b.textContent = `${p.n} · ${p.title.split(' (')[0]}`;
+  b.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(t => t.classList.remove('active'));
+    b.classList.add('active'); $('#panel-' + p.key).classList.add('active');
+  };
+  tabs.appendChild(b);
+
+  const sec = document.createElement('section');
+  sec.className = 'card panel' + (idx ? '' : ' active'); sec.id = 'panel-' + p.key;
+  sec.innerHTML = `
+    <h2>${p.n} · ${p.title} <span class="badge">${p.badge}</span></h2>
+    <p class="meta"><a href="https://leetcode.com/problems/${p.slug}/" target="_blank" rel="noopener">🔗 LeetCode ${p.lc}</a><span class="diff" style="background:var(--sh)">Medium</span></p>
+    <p>${p.desc}</p>
+    <div class="when"><h3>✅ When to use it</h3><ul>${WHEN[p.key].map(x => `<li>${x}</li>`).join('')}</ul></div>
+    <h3>Steps</h3><ol class="steps">${p.steps.map(x => `<li>${x}</li>`).join('')}</ol>
+    <h3>💡 Tips to remember</h3><ul class="tips">${p.tips.map(x => `<li>${x}</li>`).join('')}</ul>
+    <details open><summary>Python solution</summary><pre><code></code></pre></details>
+    <div class="controls">
+      ${p.inputs.map((inp, j) => `<label>${inp[0]}<input type="text" id="${p.key}-${j}" value="${inp[1]}"></label>`).join('')}
+      <button class="btn primary" data-a="load">Load</button>
+      <button class="btn" data-a="prev">◀ Prev</button>
+      <button class="btn" data-a="play">▶ Play</button>
+      <button class="btn" data-a="next">Next ▶</button>
+      <button class="btn" data-a="reset">⟲ Reset</button>
+    </div>
+    <div class="stage" id="${p.key}-stage"></div>
+    <div class="log" id="${p.key}-log"></div>`;
+  sec.querySelector('pre code').innerHTML = hl(p.code);
+  panels.appendChild(sec);
+  sec.querySelectorAll('[data-a]').forEach(btn => btn.onclick = () => act(p.key, btn.dataset.a, btn));
+});
+
+/* ---------- player ---------- */
+const S = {};
+function draw(k) {
+  const s = S[k], f = s.F[s.i];
+  $('#' + k + '-stage').innerHTML = f.rows.map(r => {
+    const n = r.vals.length; let h = `<div class="rt">${r.title}</div><div class="line">`;
+    const cell = (i, label, extra) => `<div class="cell"><div class="n ${extra}">${label}</div><div class="subtxt">${r.subs[i] || ''}</div><div class="ptr">${(r.ptrs[i] || []).join('<br>')}</div></div>`;
+    for (let i = 0; i < n; i++) {
+      h += cell(i, r.vals[i], r.cls[i] || '');
+      const nx = r.next;
+      const arrow = !nx ? (i < n - 1 || r.none ? (r.arrow || '→') : '') : nx[i] === i + 1 ? (r.arrow || '→') : nx[i + 1] === i ? '←' : '';
+      if (i < n - 1 || r.none) h += `<div class="ar">${arrow || '&nbsp;'}</div>`;
+    }
+    if (r.none) h += cell(n, 'None', 'none');
+    h += '</div>';
+    if (r.loop >= 0) h += `<div class="loop">⤺ the last node points back to <b>${r.vals[r.loop]}</b> (index ${r.loop})</div>`;
+    return h;
+  }).join('');
+  const log = $('#' + k + '-log');
+  log.innerHTML = s.F.slice(0, s.i + 1).map((x, j) => `<div class="${j === s.i ? 'cur' : ''}">${j + 1}. ${x.note}</div>`).join('');
+  log.scrollTop = log.scrollHeight;
+}
+function stop(k) { if (S[k] && S[k].t) { clearInterval(S[k].t); S[k].t = null; } }
+function load(k) {
+  stop(k);
+  const p = P.find(x => x.key === k);
+  const vals = p.inputs.map((_, j) => $('#' + k + '-' + j).value);
+  let F = [];
+  try { F = GEN[k](vals); } catch (e) { F = []; }
+  if (!F.length) { $('#' + k + '-stage').textContent = 'Please enter a valid list of numbers, e.g. 1, 2, 3'; $('#' + k + '-log').innerHTML = ''; S[k] = null; return; }
+  S[k] = { F, i: 0, t: null }; draw(k);
+}
+function act(k, a, btn) {
+  if (a === 'load') return load(k);
+  if (!S[k]) load(k); const s = S[k]; if (!s) return;
+  if (a === 'next') { stop(k); if (s.i < s.F.length - 1) s.i++; }
+  if (a === 'prev') { stop(k); if (s.i > 0) s.i--; }
+  if (a === 'reset') { stop(k); s.i = 0; }
+  if (a === 'play') {
+    if (s.t) { stop(k); return; }
+    if (s.i >= s.F.length - 1) s.i = 0;
+    s.t = setInterval(() => { if (s.i < s.F.length - 1) { s.i++; draw(k); } else stop(k); }, 1000);
+  }
+  draw(k);
+}
+P.forEach(p => load(p.key));
+</script>
+</body>
+</html>
