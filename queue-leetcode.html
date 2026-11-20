@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Python Queue + LeetCode Visualizer</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--tx:#1b1f27;--mut:#667085;--bd:#dfe3ea;--ac:#4f46e5;--ok:#16a34a;--bad:#dc2626;--cur:#e0e7ff;--done:#eef0f4;--hl:#fef3c7;--hlb:#f59e0b;--wrn:#fde68a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1218;--card:#181c25;--tx:#e8eaf0;--mut:#98a2b3;--bd:#2a3040;--ac:#818cf8;--ok:#4ade80;--bad:#f87171;--cur:#2b2f55;--done:#222735;--hl:#3b3216;--hlb:#fbbf24;--wrn:#5b4a14}}
+:root[data-theme="dark"]{--bg:#0f1218;--card:#181c25;--tx:#e8eaf0;--mut:#98a2b3;--bd:#2a3040;--ac:#818cf8;--ok:#4ade80;--bad:#f87171;--cur:#2b2f55;--done:#222735;--hl:#3b3216;--hlb:#fbbf24;--wrn:#5b4a14}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.5rem;margin:0 0 4px}p.sub{color:var(--mut);margin:0 0 16px}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tabs button{border:none;background:none;color:var(--mut);padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tabs button.on{color:var(--ac);border-bottom-color:var(--ac)}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input{flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace}
+button{padding:9px 14px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit;cursor:pointer}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff}button:disabled{opacity:.45;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips button{font-size:.82rem;padding:4px 10px;font-family:ui-monospace,monospace}
+h2{font-size:.85rem;margin:0 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.prob b{color:var(--ac)}.prob p{margin:4px 0 0;color:var(--mut);font-size:.95rem}
+.tokens{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.tok,.cell{min-width:44px;text-align:center;padding:8px 10px;border-radius:8px;border:1px solid var(--bd);font-family:ui-monospace,monospace;font-size:1.05rem}
+.tok.done{background:var(--done);color:var(--mut)}.tok.cur{background:var(--cur);border-color:var(--ac);font-weight:700}
+.explain{border-left:4px solid var(--ac);background:var(--cur);border-radius:8px;padding:12px 14px;margin-top:14px;min-height:3.2em}
+.explain.err{border-color:var(--bad);color:var(--bad);background:var(--card)}
+.hold{margin-top:8px;font-family:ui-monospace,monospace;color:var(--mut);min-height:1.5em;font-size:.92rem}
+.res{font-size:1.1rem;font-weight:700;color:var(--ok);margin-top:6px;min-height:1.4em;font-family:ui-monospace,monospace;overflow-wrap:anywhere}
+.vw{margin-bottom:14px}
+.qrow{display:flex;align-items:center;gap:8px;overflow-x:auto;padding:4px 0}
+.end{font-size:.7rem;color:var(--mut);font-weight:700;letter-spacing:.06em;white-space:nowrap}
+.cells{display:flex;gap:6px;min-height:46px;align-items:center;border-top:2px solid var(--bd);border-bottom:2px solid var(--bd);padding:4px 6px;flex:1;min-width:80px}
+.cell{background:var(--cur);border-color:var(--ac);animation:pop .25s ease}
+.cell.front{box-shadow:0 0 0 2px var(--ok)}.cell.rear{box-shadow:0 0 0 2px var(--hlb)}
+.empty{color:var(--mut);font-size:.85rem}
+.tree{display:flex;flex-direction:column;gap:8px;align-items:center}.trow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.node{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--bd);font-family:ui-monospace,monospace;font-size:.95rem}
+.node.q{background:var(--cur);border-color:var(--ac)}.node.cur{background:var(--wrn);border-color:var(--hlb);font-weight:700}.node.done{background:var(--done);color:var(--mut)}
+@keyframes pop{from{transform:translateY(-12px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.cell{animation:none}}
+.code{margin:0;overflow-x:auto;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px 0;font:.85rem/1.6 ui-monospace,Menlo,Consolas,monospace}
+.code div{white-space:pre;padding:0 12px;border-left:3px solid transparent}.code div.hl{background:var(--hl);border-left-color:var(--hlb)}
+ol.log{margin:0;padding-left:20px;max-height:220px;overflow:auto;font-size:.9rem}ol.log li{margin-bottom:4px}ol.log li:last-child{font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>Python Queue + LeetCode Visualizer</h1>
+<p class="sub">Learn the queue (FIFO), then watch it solve real LeetCode problems step by step.</p>
+<div class="tabs" role="tablist" id="tabs"></div>
+<div id="panels"></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---------- code listings ---------- */
+const BASIC_CODE=[['from collections import deque','imp'],['q = deque()                # empty queue','init'],['q.append(x)                # enqueue at the rear','enq'],['x = q.popleft()            # dequeue from the front','deq'],['x = q[0]                   # peek at the front','peek'],['n = len(q)                 # size','size']];
+const C933=[['class RecentCounter:','cls'],['    def __init__(self):','def'],['        self.q = deque()','init'],['    def ping(self, t):','ping'],['        self.q.append(t)','app'],['        while self.q[0] < t - 3000:','while'],['            self.q.popleft()','pop'],['        return len(self.q)','ret']];
+const C232=[['class MyQueue:','cls'],['    def __init__(self):','def'],['        self.inp, self.out = [], []','init'],['    def push(self, x):','push'],['        self.inp.append(x)','pushapp'],['    def _move(self):','move'],['        if not self.out:','mvif'],['            while self.inp:','mvw'],['                self.out.append(self.inp.pop())','mvapp'],['    def pop(self):','pop'],['        self._move()','popmove'],['        return self.out.pop()','popret'],['    def peek(self):','peek'],['        self._move()','peekmove'],['        return self.out[-1]','peekret']];
+const C102=[['def levelOrder(root):','def'],['    res, q = [], deque([root])','init'],['    while q:','while'],['        size, level = len(q), []','size'],['        for _ in range(size):','for'],['            node = q.popleft()','pop'],['            level.append(node.val)','lvl'],['            if node.left:','l'],['                q.append(node.left)','lapp'],['            if node.right:','r'],['                q.append(node.right)','rapp'],['        res.append(level)','resapp'],['    return res','ret']];
+
+/* ---------- frame helpers ---------- */
+const Q=(name,items)=>({name,kind:'queue',items:items.map(String)});
+const ST=(name,items)=>({name,kind:'stack',items:items.map(String)});
+const AR=(name,items)=>({name,kind:'array',items:items.map(String)});
+function mk(F,extra){return (t,lines,msg,views,hold,more)=>F.push(Object.assign({t,lines,msg,views,hold:hold||''},extra,more))}
+
+/* ---------- generators: each returns {toks,F} ---------- */
+function genBasics(expr){
+  const ops=expr.split(',').map(s=>s.trim()).filter(Boolean),F=[],q=[],add=mk(F);
+  const A=(t,l,m,h,more)=>add(t,l,m,[Q('Queue q',q)],h,more);
+  A(-1,['imp','init'],'Create an empty queue: q = deque(). Front is on the left, rear on the right. Items enter at the rear and leave from the front (first in, first out).');
+  try{
+    if(!ops.length)throw new Error('Enter operations like: enq 5, enq 3, deq, peek');
+    ops.forEach((op,k)=>{let m;
+      if(m=op.match(/^(?:enq|enqueue|push|append)\s+(\S+)$/i)){q.push(m[1]);A(k,['enq'],`enqueue ${m[1]}: q.append(${m[1]}) puts it at the rear.`)}
+      else if(/^(?:deq|dequeue|pop|popleft)$/i.test(op)){if(!q.length)throw new Error('Queue is empty: popleft() on an empty deque raises IndexError.');const x=q.shift();A(k,['deq'],`dequeue: q.popleft() removes ${x} from the front, the oldest item.`,'returned '+x)}
+      else if(/^(?:peek|front)$/i.test(op)){if(!q.length)throw new Error('Queue is empty: q[0] raises IndexError.');A(k,['peek'],`peek: q[0] is ${q[0]}. It is only read, not removed.`,'returned '+q[0])}
+      else if(/^(?:size|len)$/i.test(op))A(k,['size'],`size: len(q) = ${q.length}.`,'returned '+q.length);
+      else throw new Error(`Unknown operation "${op}". Use enq x, deq, peek, size.`)});
+    A(ops.length,[],'All operations done.',0,{done:'Final queue (front → rear): ['+q.join(', ')+']'});
+  }catch(e){A(ops.length,[],e.message,0,{err:1})}
+  return{toks:ops,F};
+}
+function gen933(expr){
+  const ts=expr.split(/[\s,]+/).filter(Boolean),F=[],q=[],out=[],add=mk(F);
+  const A=(t,l,m,h,more)=>add(t,l,m,[Q('Queue q (ping times)',q)],h,more);
+  A(-1,['cls','def','init'],'Create an empty queue of ping times. Window = last 3000 ms, so a ping at time t counts if it is ≥ t − 3000.');
+  try{
+    if(!ts.length||ts.some((x,i)=>!/^\d+$/.test(x)||(i&&+x<=+ts[i-1])))throw new Error('Enter strictly increasing integer times, e.g. 1 100 3001 3002');
+    ts.forEach((s,k)=>{const t=+s;q.push(t);A(k,['ping','app'],`ping(${t}): append ${t} at the rear.`,'returns: '+out.join(', '));
+      while(q[0]<t-3000){A(k,['while','pop'],`Front ${q[0]} < ${t} − 3000 = ${t-3000}, so it is too old: popleft().`,'returns: '+out.join(', '));q.shift()}
+      A(k,['while'],`Front ${q[0]} ≥ ${t-3000}, so it is inside the window. Stop popping.`,'returns: '+out.join(', '));
+      out.push(q.length);A(k,['ret'],`return len(q) = ${q.length} requests in the window.`,'returns: '+out.join(', '))});
+    A(ts.length,[],'All pings processed. Each time is appended once and popped at most once, so total work is O(n).',0,{done:'Output: ['+out.join(', ')+']'});
+  }catch(e){A(ts.length,[],e.message,0,{err:1})}
+  return{toks:ts,F};
+}
+function gen232(expr){
+  const ops=expr.split(',').map(s=>s.trim()).filter(Boolean),F=[],inp=[],out=[],ret=[],add=mk(F);
+  const A=(t,l,m,more)=>add(t,l,m,[ST('Input stack (inp)',inp),ST('Output stack (out)',out)],ret.length?'returns: '+ret.join(', '):'',more);
+  A(-1,['cls','def','init'],'Two stacks emulate one queue: push goes onto inp; pop/peek read from out. Stacks list bottom → top.');
+  try{
+    if(!ops.length)throw new Error('Enter operations like: push 1, push 2, peek, pop');
+    ops.forEach((op,k)=>{let m;
+      if(m=op.match(/^push\s+(\S+)$/i)){inp.push(m[1]);A(k,['push','pushapp'],`push(${m[1]}): inp.append(${m[1]}). Always O(1).`)}
+      else if(/^(?:pop|peek)$/i.test(op)){
+        const isPop=/pop/i.test(op),base=isPop?['pop','popmove']:['peek','peekmove'];
+        if(!out.length){
+          if(!inp.length)throw new Error(`${isPop?'pop':'peek'}() on an empty queue is not allowed.`);
+          A(k,[...base,'move','mvif'],'out is empty, so refill it from inp.');
+          while(inp.length){const x=inp.pop();out.push(x);A(k,[...base,'move','mvw','mvapp'],`Move ${x}: inp.pop() then out.append(). Reversing puts the oldest item on top of out.`)}
+        }else A(k,[...base,'move','mvif'],'out is not empty, so no transfer is needed. The top of out is already the oldest item.');
+        if(isPop){const x=out.pop();ret.push(x);A(k,['pop','popret'],`pop() returns out.pop() = ${x}, the oldest element.`)}
+        else{ret.push(out[out.length-1]);A(k,['peek','peekret'],`peek() returns out[-1] = ${out[out.length-1]} without removing it.`)}
+      }else throw new Error(`Unknown operation "${op}". Use push x, pop, peek.`)});
+    A(ops.length,[],'Each element moves from inp to out at most once, so pop/peek are amortized O(1).',{done:'Returned values: ['+ret.join(', ')+']'});
+  }catch(e){A(ops.length,[],e.message,{err:1})}
+  return{toks:ops,F};
+}
+function gen102(expr){
+  const vals=expr.split(/[\s,]+/).filter(Boolean),F=[],add=mk(F);
+  if(!vals.length||vals[0]==='null'||vals.some(v=>v!=='null'&&!/^-?\d+$/.test(v))){add(-1,[],'Enter a tree in LeetCode level-order format, e.g. 3 9 20 null null 15 7. The root cannot be null.',[],'',{err:1});return{toks:vals,F}}
+  const nodes=[],root={v:vals[0],id:0,d:0};nodes.push(root);
+  const bq=[root];let i=1;
+  while(bq.length&&i<vals.length){const n=bq.shift();
+    for(const side of ['l','r']){if(i<vals.length){if(vals[i]!=='null'){const c={v:vals[i],id:nodes.length,d:n.d+1};nodes.push(c);n[side]=c;bq.push(c)}i++}}}
+  const rows=[];nodes.forEach(n=>(rows[n.d]=rows[n.d]||[]).push(n));
+  const stt={},q=[root],res=[];stt[0]='q';
+  const V=lvl=>[{name:'Tree (rows = levels)',kind:'tree',rows,st:{...stt}},Q('Queue q',q.map(n=>n.v)),AR('level (current)',lvl),AR('res (finished levels)',res.map(l=>'['+l.join(',')+']'))];
+  let lvl=[];const A=(l,m,h,more)=>add(-1,l,m,V(lvl),h,more);
+  A(['def','init'],'res = [] and q = deque([root]): the queue starts with just the root.');
+  let level=0,prev=null;
+  while(q.length){
+    const size=q.length;lvl=[];
+    A(['while','size'],`Level ${level}: the queue holds ${size} node(s). Fix size = ${size} before the loop so nodes added later wait for the next round.`);
+    for(let s=0;s<size;s++){
+      if(prev!==null)stt[prev]='done';
+      const n=q.shift();prev=n.id;stt[n.id]='cur';lvl.push(n.v);
+      A(['for','pop','lvl'],`popleft() takes node ${n.v} from the front and level.append(${n.v}).`);
+      if(n.l){q.push(n.l);stt[n.l.id]='q';A(['l','lapp'],`Left child ${n.l.v} exists, so q.append it to the rear.`)}
+      if(n.r){q.push(n.r);stt[n.r.id]='q';A(['r','rapp'],`Right child ${n.r.v} exists, so q.append it to the rear.`)}
+    }
+    stt[prev]='done';prev=null;res.push(lvl);
+    A(['resapp'],`Level ${level} finished: res.append([${lvl.join(', ')}]).`);lvl=[];level++;
+  }
+  A(['ret'],'Queue is empty, so every level has been visited. Each node is enqueued and dequeued once: O(n).','',{done:'['+res.map(l=>'['+l.join(',')+']').join(',')+']'});
+  return{toks:vals,F};
+}
+
+/* ---------- tab config ---------- */
+const CFG={
+  basics:{tab:'Queue Basics',title:'Queue basics',lvl:'Concept',desc:'A queue is first-in, first-out (FIFO). In Python use collections.deque: append and popleft are both O(1), while list.pop(0) is O(n), so avoid lists for queues. Operations: enq x, deq, peek, size.',code:BASIC_CODE,gen:genBasics,def:'enq 5, enq 3, enq 8, deq, peek, enq 1, deq, size',label:'Operations (comma separated)',samples:['enq 5, enq 3, enq 8, deq, peek, enq 1, deq, size','enq 1, enq 2, deq, deq, deq']},
+  p933:{tab:'933 Recent Calls',title:'LeetCode 933: Number of Recent Calls',lvl:'Easy',desc:'ping(t) records a request at time t (always increasing) and returns how many requests happened in the last 3000 ms, meaning in [t − 3000, t]. Old pings expire from the front, which is what a queue is for.',code:C933,gen:gen933,def:'1 100 3001 3002 6500',label:'Ping times (increasing)',samples:['1 100 3001 3002 6500','1 2 3 4 5']},
+  p232:{tab:'232 Queue via Stacks',title:'LeetCode 232: Implement Queue using Stacks',lvl:'Easy',desc:'Build a FIFO queue using only LIFO stacks. Push onto an input stack. When you need the front, pour the input stack into an output stack. Pouring reverses the order, so the oldest item ends up on top.',code:C232,gen:gen232,def:'push 1, push 2, peek, pop, push 3, pop, pop',label:'Operations (comma separated)',samples:['push 1, push 2, peek, pop, push 3, pop, pop','push 4, push 5, push 6, pop, push 7, pop, pop, pop']},
+  p102:{tab:'102 Level Order',title:'LeetCode 102: Binary Tree Level Order Traversal',lvl:'Medium',desc:'Return a tree’s values level by level (BFS). The queue holds the nodes waiting to be visited. The queue length at the start of each round is exactly the size of that level. Input is level-order with null for missing children.',code:C102,gen:gen102,def:'3 9 20 null null 15 7',label:'Tree (LeetCode level-order format)',samples:['3 9 20 null null 15 7','1 2 3 4 5 null 6','1 null 2 null 3']}
+};
+
+/* ---------- rendering ---------- */
+function viewHTML(v){
+  if(v.kind==='tree')return`<div class="vw"><h2>${v.name}</h2><div class="tree">${v.rows.map(r=>`<div class="trow">${r.map(n=>`<div class="node ${v.st[n.id]||''}">${esc(n.v)}</div>`).join('')}</div>`).join('')}</div></div>`;
+  const it=v.items,q=v.kind==='queue',L=v.kind==='array'?'':q?'FRONT':'bottom',R=v.kind==='array'?'':q?'REAR':'top';
+  const cells=it.length?it.map((x,k)=>`<div class="cell ${q&&k===0?'front':''} ${q&&k===it.length-1?'rear':''}">${esc(x)}</div>`).join(''):'<span class="empty">(empty)</span>';
+  return`<div class="vw"><h2>${v.name}</h2><div class="qrow"><span class="end">${L}</span><div class="cells">${cells}</div><span class="end">${R}</span></div></div>`;
+}
+const S={};
+function build(key){
+  const c=CFG[key],p=document.createElement('section');p.className='panel';p.id='p-'+key;$('panels').appendChild(p);
+  p.innerHTML=`<div class="card prob"><b>${c.title}</b> · ${c.lvl}<p>${c.desc}</p></div>
+  <div class="card"><div class="row"><input class="in" aria-label="${c.label}" value="${c.def}"><button class="p load">Load</button></div><div class="chips"></div></div>
+  <div class="card"><h2>Input</h2><div class="tokens"></div>
+  <div class="row" style="margin-top:14px"><button class="back">◀ Back</button><button class="p step">Step ▶</button><button class="auto">Auto play</button><button class="reset">Reset</button><span class="ctr" style="color:var(--mut);font-size:.9rem"></span></div>
+  <div class="explain"></div><div class="hold"></div><div class="res"></div></div>
+  <div class="grid"><div class="card views"></div><div class="card"><h2>Python code (running line highlighted)</h2><pre class="code"></pre></div></div>
+  <div class="card"><h2>Step log</h2><ol class="log"></ol></div>`;
+  const q=s=>p.querySelector('.'+s),st=S[key]={F:[],toks:[],i:0,timer:null};
+  c.samples.forEach(x=>{const b=document.createElement('button');b.textContent=x;b.onclick=()=>{q('in').value=x;load()};q('chips').appendChild(b)});
+  q('code').innerHTML=c.code.map(l=>`<div data-k="${l[1]}">${esc(l[0])}</div>`).join('');
+  const stop=()=>{if(st.timer){clearInterval(st.timer);st.timer=null;q('auto').textContent='Auto play'}};
+  st.stop=stop;
+  function load(){stop();const g=c.gen(q('in').value.trim());st.F=g.F;st.toks=g.toks;st.i=0;render()}
+  function render(){
+    const f=st.F[st.i],last=st.i>=st.F.length-1;
+    q('tokens').innerHTML=st.toks.map((t,k)=>`<div class="tok ${f.t>=0&&k<f.t?'done':k===f.t?'cur':''}">${esc(t)}</div>`).join('');
+    q('views').innerHTML=f.views.map(viewHTML).join('');
+    const ex=q('explain');ex.textContent=f.msg;ex.className='explain'+(f.err?' err':'');
+    q('hold').textContent=f.hold||'';
+    q('code').querySelectorAll('div').forEach(d=>d.classList.toggle('hl',f.lines.includes(d.dataset.k)));
+    q('log').innerHTML=st.F.slice(0,st.i+1).map(x=>`<li>${esc(x.msg)}</li>`).join('');q('log').scrollTop=1e6;
+    q('res').textContent=f.done||'';
+    q('back').disabled=st.i===0;q('step').disabled=last;q('auto').disabled=last&&!st.timer;
+    q('ctr').textContent=`Step ${st.i} / ${st.F.length-1}`;if(last)stop();
+  }
+  q('step').onclick=()=>{if(st.i<st.F.length-1){st.i++;render()}};
+  q('back').onclick=()=>{stop();if(st.i>0){st.i--;render()}};
+  q('reset').onclick=()=>{stop();st.i=0;render()};q('load').onclick=load;
+  q('in').addEventListener('keydown',e=>{if(e.key==='Enter')load()});
+  q('auto').onclick=()=>{if(st.timer){stop();return}q('auto').textContent='Pause';st.timer=setInterval(()=>q('step').click(),1000)};
+  const tb=document.createElement('button');tb.textContent=c.tab;tb.dataset.tab=key;tb.onclick=()=>showTab(key);$('tabs').appendChild(tb);
+  load();
+}
+function showTab(k){
+  Object.values(S).forEach(s=>s.stop());
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+k));
+  try{if(location.hash!=='#'+k)history.replaceState(null,'','#'+k)}catch(e){}
+}
+Object.keys(CFG).forEach(build);
+addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(CFG[h])showTab(h)});
+showTab(CFG[location.hash.slice(1)]?location.hash.slice(1):'basics');
+</script>
+</body>
+</html>

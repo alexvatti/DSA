@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Linked List Basics in Python (Visualizer)</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--tx:#1b1f27;--mut:#667085;--bd:#dfe3ea;--ac:#4f46e5;--ok:#16a34a;--bad:#dc2626;--cur:#e0e7ff;--done:#eef0f4;--hl:#fef3c7;--hlb:#f59e0b;--wrn:#fde68a;--pv:#a855f7;--nx:#0891b2;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1218;--card:#181c25;--tx:#e8eaf0;--mut:#98a2b3;--bd:#2a3040;--ac:#818cf8;--ok:#4ade80;--bad:#f87171;--cur:#2b2f55;--done:#222735;--hl:#3b3216;--hlb:#fbbf24;--wrn:#5b4a14;--pv:#c084fc;--nx:#22d3ee}}
+:root[data-theme="dark"]{--bg:#0f1218;--card:#181c25;--tx:#e8eaf0;--mut:#98a2b3;--bd:#2a3040;--ac:#818cf8;--ok:#4ade80;--bad:#f87171;--cur:#2b2f55;--done:#222735;--hl:#3b3216;--hlb:#fbbf24;--wrn:#5b4a14;--pv:#c084fc;--nx:#22d3ee}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.5rem;margin:0 0 4px}p.sub{color:var(--mut);margin:0 0 16px}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tabs button{border:none;background:none;color:var(--mut);padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tabs button.on{color:var(--ac);border-bottom-color:var(--ac)}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+label.f{display:flex;flex-direction:column;font-size:.75rem;color:var(--mut);gap:3px;flex:1;min-width:110px}
+input{padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace;width:100%}
+button{padding:9px 14px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit;cursor:pointer}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff}button:disabled{opacity:.45;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips button{font-size:.82rem;padding:4px 10px;font-family:ui-monospace,monospace}
+h2{font-size:.85rem;margin:0 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.prob b{color:var(--ac)}.prob p{margin:4px 0 0;color:var(--mut);font-size:.95rem}
+.explain{border-left:4px solid var(--ac);background:var(--cur);border-radius:8px;padding:12px 14px;margin-top:14px;min-height:3.2em}
+.explain.err{border-color:var(--bad);color:var(--bad);background:var(--card)}
+.hold{margin-top:8px;font-family:ui-monospace,monospace;color:var(--mut);min-height:1.5em;font-size:.92rem}
+.res{font-size:1.05rem;font-weight:700;color:var(--ok);margin-top:6px;min-height:1.4em;font-family:ui-monospace,monospace;overflow-wrap:anywhere}
+.ll{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px}
+.slot{display:flex;flex-direction:column;align-items:center;min-width:92px}
+.top{height:62px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-size:.7rem;color:var(--mut)}
+.node{display:flex;border:2px solid var(--ac);border-radius:8px;background:var(--cur);font-family:ui-monospace,monospace;overflow:hidden;animation:pop .25s ease}
+.node .v{padding:8px 12px;font-weight:700;font-size:1.05rem}
+.node .n{padding:8px 8px;border-left:2px dashed var(--ac);color:var(--mut);font-size:.8rem;display:grid;place-items:center;min-width:34px}
+.node.none{border-style:dashed;border-color:var(--bd);background:none;color:var(--mut);padding:8px 12px;font-size:.85rem}
+.node.faded{opacity:.5;border-style:dashed}
+.node.fl{border-color:var(--hlb);background:var(--wrn)}
+.free{margin-bottom:6px;display:flex;align-items:center;gap:8px;min-height:46px;font-size:.8rem;color:var(--mut)}
+.tags{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:6px;min-height:22px}
+.tag{font-size:.7rem;font-weight:700;padding:1px 7px;border-radius:99px;color:#fff;background:var(--mut)}
+.t-head{background:var(--ok)}.t-curr{background:var(--hlb);color:#1b1f27}.t-prev{background:var(--pv)}.t-nxt{background:var(--nx)}
+@keyframes pop{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.node{animation:none}}
+.code{margin:0;overflow-x:auto;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px 0;font:.85rem/1.6 ui-monospace,Menlo,Consolas,monospace}
+.code div{white-space:pre;padding:0 12px;border-left:3px solid transparent}.code div.hl{background:var(--hl);border-left-color:var(--hlb)}
+ol.log{margin:0;padding-left:20px;max-height:220px;overflow:auto;font-size:.9rem}ol.log li{margin-bottom:4px}ol.log li:last-child{font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<h1>Linked List Basics in Python</h1>
+<p class="sub">See nodes, <code>next</code> pointers and the <code>curr</code> / <code>prev</code> / <code>nxt</code> variables move one line of code at a time.</p>
+<div class="tabs" role="tablist" id="tabs"></div>
+<div id="panels"></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---------- code listings ---------- */
+const NODE=[['class Node:','node'],['    def __init__(self, val):','ni'],['        self.val = val','nv'],['        self.next = None','nn']];
+const C_BUILD=[...NODE,['class LinkedList:','ll'],['    def __init__(self):','llinit'],['        self.head = None','headnone'],['    def append(self, val):','append'],['        new = Node(val)','new'],['        if not self.head:','ifhead'],['            self.head = new; return','sethead'],['        curr = self.head','curr0'],['        while curr.next:','while'],['            curr = curr.next','step'],['        curr.next = new','link'],['    def traverse(self):','trav'],['        curr = self.head','tcurr'],['        while curr:','twhile'],['            print(curr.val)','tprint'],['            curr = curr.next','tstep']];
+const C_INS=[['def insert_at(self, index, val):','def'],['    new = Node(val)','new'],['    if index == 0:','if0'],['        new.next = self.head','n2h'],['        self.head = new; return','sethead'],['    curr = self.head','curr0'],['    for _ in range(index - 1):','for'],['        curr = curr.next','step'],['    new.next = curr.next','nn'],['    curr.next = new','cn']];
+const C_DEL=[['def delete(self, val):','def'],['    if not self.head: return','empty'],['    if self.head.val == val:','h'],['        self.head = self.head.next; return','hset'],['    curr = self.head','curr0'],['    while curr.next and curr.next.val != val:','while'],['        curr = curr.next','step'],['    if curr.next:','found'],['        curr.next = curr.next.next','skip']];
+const C_SEARCH=[['def search(self, target):','def'],['    curr, idx = self.head, 0','init'],['    while curr:','while'],['        if curr.val == target:','if'],['            return idx','ret'],['        curr = curr.next','step'],['        idx += 1','idx'],['    return -1','none']];
+const C_REV=[['def reverse(self):','def'],['    prev = None','prev'],['    curr = self.head','curr0'],['    while curr:','while'],['        nxt = curr.next','nxt'],['        curr.next = prev','flip'],['        prev = curr','pprev'],['        curr = nxt','pcurr'],['    self.head = prev','sethead']];
+
+/* ---------- frame helpers ---------- */
+const L=vals=>vals.map((v,i)=>({v,nx:i+1<vals.length?i+1:-1}));
+const relink=nodes=>nodes.forEach((n,i)=>n.nx=i+1<nodes.length?i+1:-1);
+function chain(nodes,head){const a=[];let i=head;while(i>=0&&i<nodes.length&&a.length<30){a.push(nodes[i].v);i=nodes[i].nx}return a.length?a.join(' → ')+' → None':'None (empty list)'}
+function mk(F,st){return(lines,msg,o)=>{o=o||{};F.push({lines,msg,nodes:st.nodes.map(n=>({...n})),head:st.head,ptrs:{...o.ptrs},float:o.float||null,hold:o.hold||'',done:o.done,err:o.err})}}
+const parseList=s=>s.split(/[\s,]+/).filter(Boolean);
+function bad(msg){const F=[];mk(F,{nodes:[],head:-1})([],msg,{err:1});return F}
+const chk=v=>v.length>7?'Please use at most 7 values so the picture stays readable.':null;
+
+/* ---------- generators (take array of field strings) ---------- */
+function genBuild(f){
+  const vals=parseList(f[0]);if(!vals.length||chk(vals))return bad(chk(vals)||'Enter some values to append.');
+  const F=[],st={nodes:[],head:-1},A=mk(F,st);
+  A(['ll','llinit','headnone'],'Start with an empty list: head is None, so there are no nodes yet.');
+  vals.forEach(v=>{const n=st.nodes.length;
+    A(['append','new'],`append(${v}): create new = Node(${v}). It is not linked yet.`,{float:{v,to:n}});
+    if(!n){st.nodes.push({v,nx:-1});st.head=0;A(['ifhead','sethead'],`The list is empty, so head = new. ${v} is the first node.`);return}
+    A(['curr0'],'Not empty: start at the head and walk to the last node (the one whose next is None).',{ptrs:{curr:0},float:{v,to:n}});
+    for(let i=1;i<n;i++)A(['while','step'],`curr.next exists, so curr = curr.next.`,{ptrs:{curr:i},float:{v,to:n}});
+    A(['while'],'curr.next is None, so curr is the tail.',{ptrs:{curr:n-1},float:{v,to:n}});
+    st.nodes[n-1].nx=n;st.nodes.push({v,nx:-1});A(['link'],`curr.next = new: the old tail now points to ${v}.`,{ptrs:{curr:n-1}});
+  });
+  A(['trav','tcurr'],'traverse(): start at the head and visit every node until curr becomes None.',{ptrs:{curr:0}});
+  const out=[];st.nodes.forEach((n,i)=>{out.push(n.v);A(['twhile','tprint'],`curr is not None, so print(curr.val) → ${n.v}. Then curr = curr.next.`,{ptrs:{curr:i},hold:'printed: '+out.join(', ')})});
+  A(['twhile'],'curr is None, so the loop ends. Visiting every node is O(n).',{ptrs:{curr:st.nodes.length},done:chain(st.nodes,st.head)});
+  return F;
+}
+function genInsert(f){
+  const vals=parseList(f[0]),idx=+f[1],val=(f[2]||'').trim();
+  if(chk(vals))return bad(chk(vals));
+  if(!val||!/^\d+$/.test(f[1].trim())||idx>vals.length)return bad(`Index must be a whole number from 0 to ${vals.length}, and a value is needed.`);
+  const F=[],st={nodes:L(vals),head:vals.length?0:-1},A=mk(F),n=vals.length;const B=mk(F,st);
+  B(['def','new'],`Create new = Node(${val}). It is not linked yet, so it points nowhere.`,{float:{v:val,to:null}});
+  if(idx===0){
+    B(['if0','n2h'],'Index 0: new.next = self.head, so the new node points at the old head.',{float:{v:val,to:0}});
+    st.nodes.unshift({v:val,nx:0});relink(st.nodes);st.head=0;
+    B(['sethead'],'self.head = new. The new node is now the head. O(1).',{done:chain(st.nodes,st.head)});return F;
+  }
+  B(['curr0'],`Walk to the node just before index ${idx}: start at the head.`,{ptrs:{curr:0},float:{v:val,to:null}});
+  for(let k=1;k<=idx-1;k++)B(['for','step'],`Step ${k} of ${idx-1}: curr = curr.next.`,{ptrs:{curr:k},float:{v:val,to:null}});
+  B(['nn'],`new.next = curr.next: the new node points at ${idx<n?vals[idx]:'None'}. Nothing is lost yet.`,{ptrs:{curr:idx-1},float:{v:val,to:idx}});
+  st.nodes.splice(idx,0,{v:val});relink(st.nodes);
+  B(['cn'],`curr.next = new: ${vals[idx-1]} now points at ${val}. Inserted. Finding the spot is O(n), the relinking is O(1).`,{ptrs:{curr:idx-1},done:chain(st.nodes,st.head)});
+  return F;
+}
+function genDelete(f){
+  const vals=parseList(f[0]),t=(f[1]||'').trim();
+  if(chk(vals))return bad(chk(vals));if(!t)return bad('Enter the value to delete.');
+  const F=[],st={nodes:L(vals),head:vals.length?0:-1},A=mk(F,st),n=vals.length;
+  A(['def'],`delete(${t}): remove the first node whose value is ${t}.`);
+  if(!n){A(['empty'],'The list is empty, so there is nothing to delete.',{done:'None (empty list)'});return F}
+  if(vals[0]===t){
+    st.nodes.shift();relink(st.nodes);st.head=st.nodes.length?0:-1;
+    A(['h','hset'],`head.val is ${t}: self.head = self.head.next. The old head is unlinked.`,{float:{v:t,to:null,faded:1},done:chain(st.nodes,st.head)});return F;
+  }
+  A(['h','curr0'],`head.val is ${vals[0]}, not ${t}. Walk with curr and always look at curr.next.`,{ptrs:{curr:0}});
+  for(let i=0;;i++){
+    if(i+1>=n){A(['while','found'],`curr.next is None: ${t} is not in the list. Nothing was deleted.`,{ptrs:{curr:i},done:chain(st.nodes,st.head)});break}
+    if(st.nodes[i+1].v!==t){A(['while','step'],`curr.next.val is ${st.nodes[i+1].v}, not ${t}, so curr = curr.next.`,{ptrs:{curr:i}});continue}
+    A(['while','found'],`curr.next.val is ${t}: found it. Stop with curr just before it.`,{ptrs:{curr:i}});
+    st.nodes.splice(i+1,1);relink(st.nodes);
+    A(['skip'],`curr.next = curr.next.next: ${vals[i]} now skips over ${t}. The removed node is unreachable.`,{ptrs:{curr:i},float:{v:t,to:null,faded:1},done:chain(st.nodes,st.head)});break;
+  }
+  return F;
+}
+function genSearch(f){
+  const vals=parseList(f[0]),t=(f[1]||'').trim();
+  if(chk(vals))return bad(chk(vals));if(!t)return bad('Enter a target value.');
+  const F=[],st={nodes:L(vals),head:vals.length?0:-1},A=mk(F,st),n=vals.length;
+  A(['def','init'],`Look for ${t}. Start with curr = head and idx = 0.`,{ptrs:{curr:0},hold:'idx = 0'});
+  for(let i=0;i<n;i++){const eq=vals[i]===t;
+    A(['while','if'],`curr.val is ${vals[i]}. Compare with ${t}: ${eq?'match!':'no match, so curr = curr.next and idx += 1.'}`,{ptrs:{curr:i},hold:'idx = '+i});
+    if(eq){A(['ret'],`return ${i}: found ${t} at index ${i}. Worst case this scans every node: O(n).`,{ptrs:{curr:i},hold:'idx = '+i,done:'Found at index '+i});return F}
+  }
+  A(['while','none'],'curr is None: the whole list was checked. return -1.',{ptrs:{curr:n},done:'Not found: -1'});
+  return F;
+}
+function genReverse(f){
+  const vals=parseList(f[0]);if(!vals.length||chk(vals))return bad(chk(vals)||'Enter some values.');
+  const F=[],st={nodes:L(vals),head:0},A=mk(F,st),n=vals.length;
+  A(['def','prev','curr0'],'prev = None, curr = head. Flip each next pointer to point backwards, one node at a time.',{ptrs:{curr:0},hold:'prev = None'});
+  for(let i=0;i<n;i++){const pv=i?vals[i-1]:'None',P={curr:i,nxt:i+1};if(i)P.prev=i-1;
+    A(['while','nxt'],`Save nxt = curr.next (${i+1<n?vals[i+1]:'None'}) first, otherwise flipping the pointer would lose the rest of the list.`,{ptrs:P,hold:`prev = ${pv}, curr = ${vals[i]}`});
+    st.nodes[i].nx=i?i-1:-1;
+    A(['flip'],`curr.next = prev: node ${vals[i]} now points ${i?'back at '+pv:'to None'}.`,{ptrs:P,hold:`prev = ${pv}, curr = ${vals[i]}`});
+    A(['pprev','pcurr'],'prev = curr, then curr = nxt: slide both pointers one step forward.',{ptrs:{prev:i,curr:i+1},hold:`prev = ${vals[i]}, curr = ${i+1<n?vals[i+1]:'None'}`});
+  }
+  st.head=n-1;
+  A(['while','sethead'],'curr is None, so the loop ends. self.head = prev: the old tail is the new head. O(n) time, O(1) extra space.',{ptrs:{prev:n-1},done:chain(st.nodes,st.head)});
+  return F;
+}
+
+/* ---------- tabs ---------- */
+const CFG={
+ build:{tab:'1. Build & Traverse',title:'Node, append and traverse',lvl:'Basics',desc:'A linked list is a chain of nodes. Each node stores a value and a next reference. The list only keeps head. To reach the last node you must walk from the head, so append without a tail pointer is O(n).',code:C_BUILD,gen:genBuild,fields:[['Values to append (space separated)','10 20 30']],samples:[[['10 20 30']],[['5 8 13 21 34']]]},
+ insert:{tab:'2. Insert',title:'Insert at an index',lvl:'Basics',desc:'To insert, first point the new node at what comes next, then point the previous node at the new node. Do it in this order, or you lose the rest of the list.',code:C_INS,gen:genInsert,fields:[['List','10 20 30 40'],['Index','2'],['New value','99']],samples:[['10 20 30 40','2','99'],['10 20 30','0','5'],['10 20 30','3','40']]},
+ delete:{tab:'3. Delete',title:'Delete by value',lvl:'Basics',desc:'To delete, make the previous node skip over the target. The head is a special case because it has no previous node. Only the first match is removed.',code:C_DEL,gen:genDelete,fields:[['List','10 20 30 40'],['Value to delete','30']],samples:[['10 20 30 40','30'],['10 20 30 40','10'],['10 20 30 40','99']]},
+ search:{tab:'4. Search',title:'Linear search',lvl:'Basics',desc:'There is no random access in a linked list, so lookup means walking node by node from the head. That is O(n), unlike list[i] which is O(1).',code:C_SEARCH,gen:genSearch,fields:[['List','7 3 9 4'],['Target','9']],samples:[['7 3 9 4','9'],['7 3 9 4','5']]},
+ reverse:{tab:'5. Reverse',title:'Reverse a list in place',lvl:'Basics',desc:'The classic three-pointer technique (prev, curr, nxt). Save the next node, flip the pointer backwards, then step forward. Watch the next cells change from → to ←.',code:C_REV,gen:genReverse,fields:[['List','1 2 3 4']],samples:[[['1 2 3 4']],[['5 10 15']]]}
+};
+CFG.build.samples=[['10 20 30'],['5 8 13 21 34']];CFG.reverse.samples=[['1 2 3 4'],['5 10 15']];
+
+function nodeHTML(n,i,fl){const g=fl?(fl.to===null?'?':'↓'):(n.nx===i+1?'→':n.nx===-1?'None':n.nx<i?'←':'→');return`<div class="node ${fl?'fl':''} ${fl&&fl.faded?'faded':''}"><span class="v">${esc(n.v)}</span><span class="n">${g}</span></div>`}
+function listHTML(f){
+  const n=f.nodes.length,tg=Array.from({length:n+1},()=>[]);
+  if(f.head>=0)tg[f.head].push('head');if(f.head<0)tg[n].push('head');
+  Object.entries(f.ptrs).forEach(([k,v])=>{if(v>=0&&v<=n)tg[v].push(k)});
+  let h='';
+  if(f.float&&f.float.to===null)h+=`<div class="free">${nodeHTML({v:f.float.v},0,f.float)}<span>${f.float.faded?'unlinked (no longer reachable)':'new node, not linked yet'}</span></div>`;
+  h+='<div class="ll">';
+  for(let i=0;i<=n;i++){
+    const fl=f.float&&f.float.to===i?f.float:null;
+    h+=`<div class="slot"><div class="top">${fl?`<span>new</span>${nodeHTML({v:fl.v},0,fl)}`:''}</div>${i<n?nodeHTML(f.nodes[i],i):'<div class="node none">None</div>'}<div class="tags">${tg[i].map(t=>`<span class="tag t-${t}">${t}</span>`).join('')}</div></div>`;
+  }
+  return h+'</div>';
+}
+const S={};
+function build(key){
+  const c=CFG[key],p=document.createElement('section');p.className='panel';p.id='p-'+key;$('panels').appendChild(p);
+  p.innerHTML=`<div class="card prob"><b>${c.title}</b> · ${c.lvl}<p>${c.desc}</p></div>
+  <div class="card"><div class="row">${c.fields.map((f,i)=>`<label class="f">${f[0]}<input class="in" data-i="${i}" value="${f[1]}"></label>`).join('')}<button class="p load">Load</button></div><div class="chips"></div></div>
+  <div class="card"><h2>Linked list</h2><div class="view"></div>
+  <div class="row" style="margin-top:10px;align-items:center"><button class="back">◀ Back</button><button class="p step">Step ▶</button><button class="auto">Auto play</button><button class="reset">Reset</button><span class="ctr" style="color:var(--mut);font-size:.9rem"></span></div>
+  <div class="explain"></div><div class="hold"></div><div class="res"></div></div>
+  <div class="card"><h2>Python code (running line highlighted)</h2><pre class="code"></pre></div>
+  <div class="card"><h2>Step log</h2><ol class="log"></ol></div>`;
+  const q=s=>p.querySelector('.'+s),ins=[...p.querySelectorAll('.in')],st=S[key]={F:[],i:0,timer:null};
+  c.samples.forEach(s=>{const b=document.createElement('button');b.textContent=s.join(' | ');b.onclick=()=>{ins.forEach((el,i)=>el.value=s[i]);load()};q('chips').appendChild(b)});
+  q('code').innerHTML=c.code.map(l=>`<div data-k="${l[1]}">${esc(l[0])}</div>`).join('');
+  const stop=()=>{if(st.timer){clearInterval(st.timer);st.timer=null;q('auto').textContent='Auto play'}};st.stop=stop;
+  function load(){stop();st.F=c.gen(ins.map(e=>e.value.trim()));st.i=0;render()}
+  function render(){
+    const f=st.F[st.i],last=st.i>=st.F.length-1;
+    q('view').innerHTML=listHTML(f);
+    const ex=q('explain');ex.textContent=f.msg;ex.className='explain'+(f.err?' err':'');
+    q('hold').textContent=f.hold||'';
+    q('code').querySelectorAll('div').forEach(d=>d.classList.toggle('hl',f.lines.includes(d.dataset.k)));
+    q('log').innerHTML=st.F.slice(0,st.i+1).map(x=>`<li>${esc(x.msg)}</li>`).join('');q('log').scrollTop=1e6;
+    q('res').textContent=f.done?'Result: '+f.done:'';
+    q('back').disabled=st.i===0;q('step').disabled=last;q('auto').disabled=last&&!st.timer;
+    q('ctr').textContent=`Step ${st.i} / ${st.F.length-1}`;if(last)stop();
+  }
+  q('step').onclick=()=>{if(st.i<st.F.length-1){st.i++;render()}};
+  q('back').onclick=()=>{stop();if(st.i>0){st.i--;render()}};
+  q('reset').onclick=()=>{stop();st.i=0;render()};q('load').onclick=load;
+  ins.forEach(e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter')load()}));
+  q('auto').onclick=()=>{if(st.timer){stop();return}q('auto').textContent='Pause';st.timer=setInterval(()=>q('step').click(),1000)};
+  const tb=document.createElement('button');tb.textContent=c.tab;tb.dataset.tab=key;tb.onclick=()=>showTab(key);$('tabs').appendChild(tb);
+  load();
+}
+function showTab(k){
+  Object.values(S).forEach(s=>s.stop());
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+k));
+  try{if(location.hash!=='#'+k)history.replaceState(null,'','#'+k)}catch(e){}
+}
+Object.keys(CFG).forEach(build);
+addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(CFG[h])showTab(h)});
+showTab(CFG[location.hash.slice(1)]?location.hash.slice(1):'build');
+</script>
+</body>
+</html>
