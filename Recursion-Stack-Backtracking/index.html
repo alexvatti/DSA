@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Recursion · Stack · Backtracking — Base Course</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <h1>🧭 Recursion · Stack · Backtracking</h1>
+  <p class="subt">10 basic problems, each solved <strong>4 ways</strong>. Step through every line and watch the stacks move. Goal: jump into LeetCode recursion / backtracking problems with confidence.</p>
+</header>
+
+<section class="card" id="stack">
+  <h2>📦 Step 0 — Our own Stack (base code, written ONCE)</h2>
+  <p>You already know stacks. This is the only stack we use in methods 3 and 4. Whenever a problem says <em>“our own stack”</em>, <strong>refer back to this code</strong> (file: <code>code/stack_base.py</code>).</p>
+<pre class="codeblock"><span class="kw">class</span> Stack:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.items = []                 <span class="cm"># the end of the list is the TOP</span>
+
+    <span class="kw">def</span> <span class="fn">push</span>(self, x):                  <span class="cm"># put x on the TOP</span>
+        self.items.append(x)
+
+    <span class="kw">def</span> <span class="fn">pop</span>(self):                      <span class="cm"># remove and return the TOP</span>
+        <span class="kw">return</span> self.items.pop()
+
+    <span class="kw">def</span> <span class="fn">peek</span>(self):                     <span class="cm"># look at the TOP, do not remove</span>
+        <span class="kw">return</span> self.items[-<span class="nm">1</span>]
+
+    <span class="kw">def</span> <span class="fn">is_empty</span>(self):                 <span class="cm"># True when nothing is inside</span>
+        <span class="kw">return</span> len(self.items) == <span class="nm">0</span>
+
+    <span class="kw">def</span> <span class="fn">size</span>(self):
+        <span class="kw">return</span> len(self.items)</pre>
+  <p class="mut"><code>push(x)</code> puts x on top • <code>pop()</code> removes and returns the top • <code>is_empty()</code> tells if nothing is inside. In the code files: <code>from stack_base import Stack</code></p>
+</section>
+
+<section class="card">
+  <h2>🧩 The 4 ways (same answer every time)</h2>
+  <div class="four">
+    <div class="way"><h3>🔁 1 · Loop</h3><p>Plain <code>for</code> / <code>while</code> with variables.</p></div>
+    <div class="way"><h3>🔂 2 · Recursion</h3><p>The function calls itself. <strong>Python</strong> keeps the pending work on its <em>call stack</em>.</p></div>
+    <div class="way"><h3>📚 3 · Recursion + our own Stack</h3><p>We do what Python does: <strong>push</strong> pending work going down, <strong>pop</strong> it coming up.</p></div>
+    <div class="way"><h3>🧭 4 · Own Stack + Backtracking</h3><p>One loop, items are <code>(state, "go" / "back")</code>. <em>go</em> = enter / choose, <em>back</em> = leave / undo. <strong>The LeetCode template.</strong></p></div>
+  </div>
+  <div class="two">
+    <div><h3>Template for method 3</h3><pre class="codeblock">stack = Stack()
+<span class="kw">while</span> &lt;going DOWN&gt;:            <span class="cm"># push every pending piece of work</span>
+    stack.push(piece)
+result = &lt;base case&gt;
+<span class="kw">while</span> <span class="kw">not</span> stack.is_empty():    <span class="cm"># coming UP: pop and finish the work</span>
+    result = combine(result, stack.pop())</pre></div>
+    <div><h3>Template for method 4</h3><pre class="codeblock">stack = Stack()
+stack.push((start, <span class="st">"go"</span>))
+<span class="kw">while</span> <span class="kw">not</span> stack.is_empty():
+    state, phase = stack.pop()
+    <span class="kw">if</span> phase == <span class="st">"go"</span>:                      <span class="cm"># ENTER  (choose)</span>
+        <span class="kw">if</span> &lt;base case&gt;:
+            &lt;record the answer&gt;
+        <span class="kw">else</span>:
+            stack.push((state, <span class="st">"back"</span>))    <span class="cm"># UNDO / combine later</span>
+            <span class="kw">for</span> child <span class="kw">in</span> &lt;children&gt;:       <span class="cm"># push so the first child comes out first</span>
+                stack.push((child, <span class="st">"go"</span>))
+    <span class="kw">else</span>:                                  <span class="cm"># "back": LEAVE (undo / combine)</span>
+        &lt;undo the choice <span class="kw">or</span> combine the answers&gt;</pre></div>
+  </div>
+  <table class="cmp"><tr><th>Recursion says…</th><th>Our own stack says…</th></tr>
+    <tr><td>call a function</td><td><code>stack.push(state)</code></td></tr>
+    <tr><td>base case reached</td><td>record the answer</td></tr>
+    <tr><td>the call returns</td><td><code>stack.pop()</code> (the <code>"back"</code> frame)</td></tr>
+    <tr><td>undo after the recursive call</td><td>the work in the <code>"back"</code> phase</td></tr>
+    <tr><td>RecursionError (depth ≈ 1000)</td><td>no limit: the stack lives on the heap</td></tr></table>
+</section>
+
+<section class="card">
+  <h2>🗺️ The 10 problems</h2>
+  <p class="mut">Each page: problem • 4 method tabs • code with the current line highlighted • live <em>Variables / Call stack / Our Stack</em> panels • Prev / Play / Next.</p>
+  <div class="probs"><a class="prob" href="pages/01_factorial.html"><span class="num">01</span><span class="pt"><b>Factorial</b><small>Linear recursion (1 branch)</small></span><span class="lv">Basic</span></a>
+<a class="prob" href="pages/02_fibonacci.html"><span class="num">02</span><span class="pt"><b>Fibonacci</b><small>Tree recursion (2 branches)</small></span><span class="lv">Basic</span></a>
+<a class="prob" href="pages/03_sum_of_digits.html"><span class="num">03</span><span class="pt"><b>Sum of Digits</b><small>Linear recursion (1 branch)</small></span><span class="lv">Basic</span></a>
+<a class="prob" href="pages/04_reverse_number.html"><span class="num">04</span><span class="pt"><b>Reverse a Number</b><small>Linear recursion (1 branch)</small></span><span class="lv">Basic</span></a>
+<a class="prob" href="pages/05_palindrome_number.html"><span class="num">05</span><span class="pt"><b>Palindrome Number</b><small>Two-ended check</small></span><span class="lv">Basic</span></a>
+<a class="prob" href="pages/06_power.html"><span class="num">06</span><span class="pt"><b>Power  x ^ n</b><small>Linear recursion (1 branch)</small></span><span class="lv">Basic</span></a>
+<a class="prob" href="pages/07_reverse_string.html"><span class="num">07</span><span class="pt"><b>Reverse a String</b><small>Linear recursion (1 branch)</small></span><span class="lv">Basic</span></a>
+<a class="prob" href="pages/08_numbers_1_to_n.html"><span class="num">08</span><span class="pt"><b>Numbers 1 to N  (before vs after)</b><small>Work BEFORE vs AFTER the call</small></span><span class="lv">Basic</span></a>
+<a class="prob" href="pages/09_binary_strings.html"><span class="num">09</span><span class="pt"><b>Binary Strings of Length n</b><small>Backtracking: choose / explore / undo</small></span><span class="lv">Backtracking intro</span></a>
+<a class="prob" href="pages/10_subsets.html"><span class="num">10</span><span class="pt"><b>Subsets</b><small>Backtracking: choose / explore / undo</small></span><span class="lv">LeetCode 78 · Medium</span></a></div>
+</section>
+
+<section class="card">
+  <h2>🚀 Then jump to LeetCode</h2>
+  <p>Start with <strong>509 Fibonacci</strong>, <strong>70 Climbing Stairs</strong>, <strong>344 Reverse String</strong>, <strong>7 Reverse Integer</strong>, <strong>9 Palindrome Number</strong>, <strong>50 Pow(x, n)</strong>, then the backtracking family: <strong>78 Subsets</strong>, <strong>46 Permutations</strong>, <strong>17 Letter Combinations</strong>, <strong>22 Generate Parentheses</strong>, <strong>39 Combination Sum</strong>. For each one write method 2 first (recursion), then convert it to method 4 using the template above.</p>
+</section>
+<footer>Files: <code>pages/</code> (web pages) • <code>notes/</code> (md) • <code>code/</code> (py, run with <code>python3 NN_name.py</code>)</footer>
+</div>
+</body>
+</html>
